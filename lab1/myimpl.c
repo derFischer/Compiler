@@ -97,11 +97,12 @@ void printStm (A_expList expList)
 	{
 		if (expList->kind == A_lastExp)
 		{
-			printf("%d\n", interExp())
-			return
+			printf("%d\n", interExp(expList->u.last));
+			return;
 		}
 		else
 		{
+			printf("%d ", interExp(expList->u.pair.head));
 			expList = expList->u.pair.tail;
 		}
 	}
@@ -136,5 +137,18 @@ int interpExp(A_exp exp)
 void interp(A_stm stm)
 {
 	//TODO: put your code here.
+	switch (exp->kind)
+	{
+		case A_CompoundStm:
+			interp(stm->u.compound.stm1);
+			interp(stm->u.compound.stm2);
+			break;
+		case A_assignStm:
+			modifiyValueOfIdentifier(stm->u.assign.id, interpExp(stm->u.assign.exp));
+			break;
+		case A_printStm:
+			printStm(stm->u.print.exps);
+			break;
+	}
 
 }
