@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include "prog1.h"
 #include "string.h"
 #include "stdlib.h"
@@ -217,7 +216,6 @@ void interp(A_stm stm)
 	//TODO: put your code here.
 	interpStm(stm, NULL);
 }
-=======
 #include "prog1.h"
 #include "string.h"
 #include "stdlib.h"
@@ -436,4 +434,3 @@ void interp(A_stm stm)
 	//TODO: put your code here.
 	interpStm(stm, NULL);
 }
->>>>>>> d6c24d832cd914814d0071498d0af97dcce11b63
