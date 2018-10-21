@@ -68,7 +68,7 @@ void yyerror(char *s)
 %start program
 %left OR
 %left AND
-%noassoc EQ NEQ LT LE GT GE
+%nonassoc EQ NEQ LT LE GT GE
 %left PLUS MINUS
 %left TIMES DIVIDE
 %left UMINUS
@@ -93,8 +93,8 @@ exp:
 	|exp LE exp {$$ = A_OpExp(EM_tokPos, A_leOp, $1, $3);}
 	|exp GT exp {$$ = A_OpExp(EM_tokPos, A_gtOp, $1, $3);}
 	|exp GE exp {$$ = A_OpExp(EM_tokPos, A_geOp, $1, $3);}
-	|MINUS exp %prec UMINUS{$$ = A_OpExp(EM_tokPos, A_minusOp, A_IntExp(EM_tokPos, 0), $3);}
-	|ID LBRACE rec RBACE {$$ = A_RecordExp(EM_tokPos, S_Symbol($1), $3);}
+	|MINUS exp %prec UMINUS{$$ = A_OpExp(EM_tokPos, A_minusOp, A_IntExp(EM_tokPos, 0), $2);}
+	|ID LBRACE rec RBRACE {$$ = A_RecordExp(EM_tokPos, S_Symbol($1), $3);}
 	|LPAREN sequencing RPAREN {$$ = A_SeqExp(EM_tokPos, $2);}
 	|lvalue ASSIGN exp {$$ = A_AssignExp(EM_tokPos, $1, $3);}
 	|exp OR exp {$$ = A_IfExp(EM_tokPos, $1, A_IntExp(EM_tokPos, 1), $3);}
@@ -111,24 +111,26 @@ exp:
 actuals:
 	exp COMMA actuals {$$ = A_ExpList($1, $3);}
 	|exp {$$ = A_ExpList($1, NULL);}
-	|{$$ = A_ExpList(NULL, NULL);}
+	|{$$ = NULL;}
 	;
 
 sequencing: 
 	exp SEMICOLON sequencing {$$ = A_ExpList($1, $3);}
 	|exp {$$ = A_ExpList($1, NULL);}
-	|{$$ = A_ExpList(NULL, NULL);}
+	|{$$ = NULL;}
 	;
 
 lvalue:
 	ID {$$ = A_SimpleVar(EM_tokPos, S_Symbol($1));}
 	|lvalue DOT ID {$$ = A_FieldVar(EM_tokPos, $1, S_Symbol($3));}
 	|lvalue LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, $1, $3);}
+	|ID DOT ID {$$ = A_FieldVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), S_Symbol($3));}
+	|ID LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3);}
 	;
 
 decs:
 	decs_nonempty_s decs {$$ = A_DecList($1, $2);}
-	|{$$ = A_DecList(NULL, NULL);}
+	|{$$ = NULL;}
 	;
 
 decs_nonempty_s:
@@ -144,7 +146,7 @@ rec_one:
 rec:
 	rec_one COMMA rec {$$ = A_EfieldList($1, $3);}
 	|rec_one {$$ = A_EfieldList($1, NULL);}
-	|{$$ = A_EfieldList(NULL, NULL);}
+	|{$$ = NULL;}
 	;
 
 vardec:	
@@ -159,7 +161,7 @@ fundec_one:
 
 fundec:
 	fundec_one fundec {$$ = A_FundecList($1, $2);}
-	|{$$ = A_FundecList(NULL, NULL);}
+	|{$$ = NULL;}
 	;
 
 tydec_one:
@@ -168,7 +170,7 @@ tydec_one:
 
 tydec:
 	tydec_one tydec {$$ = A_NametyList($1, $2);}
-	|{$$ = A_NametyList(NULL, NULL);}
+	|{$$ = NULL;}
 	;
 
 ty:
@@ -182,7 +184,8 @@ tyfield_one:
 	;
 
 tyfields:
-	tyfield_one tyfields {$$ = A_FieldList($1, $2);}
-	|{$$ = A_FieldList(NULL, NULL);}
+	tyfield_one COMMA tyfields {$$ = A_FieldList($1, $3);}
+	|tyfield_one {$$ = A_FieldList($1, NULL);}
+	|{$$ = NULL;}
 	;
 

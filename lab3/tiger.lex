@@ -2,7 +2,7 @@
 /* Lab2 Attention: You are only allowed to add code in this file and start at Line 26.*/
 #include <string.h>
 #include "util.h"
-#include "tokens.h"
+#include "symbol.h"
 #include "errormsg.h"
 #include "absyn.h"
 #include "y.tab.h"
@@ -64,7 +64,7 @@ char *getstr(const char *str)
 <STR>\\\" {adjustPos(); text[idx] = '\"'; ++idx;}
 <STR>\\\\ {adjustPos(); text[idx] = '\\'; ++idx;}
 <STR>\\ {adjustPos();}
-<STR>\" {adjustPos(); text[idx] = '\0';yylval.sval = String(text); BEGIN INITIAL; if(strlen(text) == 0){yylval.sval = "(null)";} return STRING;}
+<STR>\" {adjustPos(); text[idx] = '\0';yylval.sval = String(text); BEGIN INITIAL; if(strlen(text) == 0){yylval.sval = "";} return STRING;}
 <STR>\n {adjustPos(); EM_error(charPos, "didn't close the string");}
 <STR>. {adjustPos(); strcpy(text + idx, yytext); idx += yyleng;}
 
