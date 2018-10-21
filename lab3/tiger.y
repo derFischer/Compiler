@@ -137,6 +137,16 @@ decs_nonempty_s:
 	|tydec {$$ = A_TypeDec(EM_tokPos, $1);}
 	;
 
+rec_one:
+	ID EQ exp {$$ = A_Efield(S_Symbol($1), $3);}
+	;
+
+rec:
+	rec_one COMMA rec {$$ = A_EfieldList($1, $3);}
+	|rec_one {$$ = A_EfieldList($1, NULL);}
+	|{$$ = A_EfieldList(NULL, NULL);}
+	;
+
 vardec:	
 	VAR ID ASSIGN exp  {$$ = A_VarDec(EM_tokPos,S_Symbol($2), NULL, $4);}
     |VAR ID COLON ID ASSIGN exp  {$$ = A_VarDec(EM_tokPos,S_Symbol($2),S_Symbol($4),$6);}
