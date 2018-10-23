@@ -110,7 +110,7 @@ exp:
 
 expseq:
 	sequencing_exps {$$ = A_SeqExp(EM_tokPos, $1);}
-	|{$$ = NULL}
+	|{$$ = NULL;}
 	;
 
 nonemptyactuals:
