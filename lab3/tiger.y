@@ -118,18 +118,30 @@ actuals:
 	|{$$ = NULL;}
 	;
 
-sequencing: 
-	exp SEMICOLON sequencing {$$ = A_ExpList($1, $3);}
+sequencing_exps:
+	exp SEMICOLON sequencing_exps {$$ = A_ExpList($1, $3);}
 	|exp {$$ = A_ExpList($1, NULL);}
+	;
+
+sequencing: 
+	sequencing_exps {$$ = $1;}
 	|{$$ = NULL;}
 	;
 
-lvalue:
+one:
 	ID {$$ = A_SimpleVar(EM_tokPos, S_Symbol($1));}
-	|lvalue DOT ID {$$ = A_FieldVar(EM_tokPos, $1, S_Symbol($3));}
-	|lvalue LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, $1, $3);}
-	|ID DOT ID {$$ = A_FieldVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), S_Symbol($3));}
-	|ID LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3);}
+	;
+
+oneormore:
+	one {$$ = $1;}
+	|one DOT ID {$$ = A_FieldVar(EM_tokPos, $1, S_Symbol($3));}
+	|one LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, $1, $3);}
+	;
+
+lvalue:
+	oneormore {$$ = $1;}
+	|oneormore DOT ID {$$ = A_FieldVar(EM_tokPos, $1, S_Symbol($3));}
+	|oneormore LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, $1, $3);}
 	;
 
 decs:
