@@ -104,8 +104,13 @@ exp:
 	|WHILE exp DO exp {$$ = A_WhileExp(EM_tokPos, $2, $4);}
 	|FOR ID ASSIGN exp TO exp DO exp {$$ = A_ForExp(EM_tokPos, S_Symbol($2), $4, $6, $8);}
 	|BREAK {$$ = A_BreakExp(EM_tokPos);}
-	|LET decs IN sequencing END {$$ = A_LetExp(EM_tokPos, $2, A_SeqExp(EM_tokPos, $4));}
+	|LET decs IN expseq END {$$ = A_LetExp(EM_tokPos, $2, $4);}
 	|ID LBRACK exp RBRACK OF exp {$$ = A_ArrayExp(EM_tokPos, S_Symbol($1), $3, $6);}
+	;
+
+expseq:
+	sequencing_exps {$$ = A_SeqExp(EM_tokPos, $1);}
+	|{$$ = NULL}
 	;
 
 nonemptyactuals:
