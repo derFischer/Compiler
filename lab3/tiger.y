@@ -50,16 +50,16 @@ void yyerror(char *s)
   BREAK NIL
   FUNCTION VAR TYPE 
 
-%type <exp> exp
-%type <explist> actuals  sequencing
-%type <var>  lvalue one
-%type <declist> decs
+%type <exp> exp expseq
+%type <explist> actuals  nonemptyactuals sequencing  sequencing_exps
+%type <var>  lvalue one oneormore
+%type <declist> decs decs_nonempty
 %type <dec>  decs_nonempty_s vardec
-%type <efieldlist> rec
+%type <efieldlist> rec rec_nonempty 
 %type <efield> rec_one
 %type <nametylist> tydec
 %type <namety>  tydec_one
-%type <fieldlist> tyfields
+%type <fieldlist> tyfields tyfields_nonempty
 %type <field> tyfield_one
 %type <ty> ty
 %type <fundeclist> fundec
@@ -108,9 +108,13 @@ exp:
 	|ID LBRACK exp RBRACK OF exp {$$ = A_ArrayExp(EM_tokPos, S_Symbol($1), $3, $6);}
 	;
 
-actuals:
-	exp COMMA actuals {$$ = A_ExpList($1, $3);}
+nonemptyactuals:
+	exp COMMA nonemptyactuals {$$ = A_ExpList($1, $3);}
 	|exp {$$ = A_ExpList($1, NULL);}
+	;
+
+actuals:
+	nonemptyactuals {$$ = $1;}
 	|{$$ = NULL;}
 	;
 
@@ -120,15 +124,12 @@ sequencing:
 	|{$$ = NULL;}
 	;
 
-one:
-	ID {$$ = A_SimpleVar(EM_tokPos, S_Symbol($1));}
-	|ID DOT ID {$$ = A_FieldVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), S_Symbol($3));}
-	|ID LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3);}
-
 lvalue:
-	one {$$ = $1;}
+	ID {$$ = A_SimpleVar(EM_tokPos, S_Symbol($1));}
 	|lvalue DOT ID {$$ = A_FieldVar(EM_tokPos, $1, S_Symbol($3));}
 	|lvalue LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, $1, $3);}
+	|ID DOT ID {$$ = A_FieldVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), S_Symbol($3));}
+	|ID LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3);}
 	;
 
 decs:
