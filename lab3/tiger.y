@@ -57,7 +57,7 @@ void yyerror(char *s)
 %type <dec>  decs_nonempty_s vardec
 %type <efieldlist> rec rec_nonempty 
 %type <efield> rec_one
-%type <nametylist> tydec
+%type <nametylist> tydec tydec_nonempty
 %type <namety>  tydec_one
 %type <fieldlist> tyfields tyfields_nonempty
 %type <field> tyfield_one
@@ -130,6 +130,8 @@ sequencing:
 
 one:
 	ID {$$ = A_SimpleVar(EM_tokPos, S_Symbol($1));}
+	|ID DOT ID {$$ = A_FieldVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), S_Symbol($3));}
+    |ID LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3);}
 	;
 
 oneormore:
@@ -191,8 +193,13 @@ tydec_one:
 	TYPE ID EQ ty {$$ = A_Namety(S_Symbol($2), $4);}
 	;
 
+tydec_nonempty:
+	tydec_one tydec_nonempty {$$ = A_NametyList($1, $2);}
+	|tydec_one {$$ = A_NametyList($1, NULL);}
+	;
+
 tydec:
-	tydec_one tydec {$$ = A_NametyList($1, $2);}
+	tydec_nonempty {$$ = $1;}
 	|{$$ = NULL;}
 	;
 
@@ -206,9 +213,13 @@ tyfield_one:
 	ID COLON ID {$$ = A_Field(EM_tokPos, S_Symbol($1), S_Symbol($3));}
 	;
 
-tyfields:
-	tyfield_one COMMA tyfields {$$ = A_FieldList($1, $3);}
+tyfields_nonempty:
+	tyfield_one COMMA tyfields_nonempty {$$ = A_FieldList($1, $3);}
 	|tyfield_one {$$ = A_FieldList($1, NULL);}
+	;
+
+tyfields:
+	tyfields_nonempty {$$ = $1;}
 	|{$$ = NULL;}
 	;
 
