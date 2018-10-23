@@ -82,7 +82,7 @@ else
 		fi	
 	done
 	echo -e "${GREEN_COLOR}[^_^]$ite: Pass Part A${RES}"
-	# echo "TOTAL SCORE: 50"
+	echo "TOTAL SCORE: 50"
 
 	for tcase in `ls $TESTCASEDIR`
 	do		
@@ -90,7 +90,7 @@ else
 			tfileName=${tcase##*/}
 			
 
-			./$BIN $TESTCASEDIR/$tfileName 0 >& _tmp.txt
+			./$BIN $TESTCASEDIR/$tfileName >& _tmp.txt
 			# fix bison version diff
 			if [ $tfileName = "test49.tig" ]; then
 				#echo $tfileName

@@ -34,9 +34,9 @@ symbol.o: symbol.c symbol.h
 	gcc -g -c symbol.c
 
 handin:
-	@tar -czf lab3.tar.gz tiger.y tiger.lex
-	@echo "Please rename lab3.tar.gz to <your student id>.tar.gz."
-	@echo "For example, 5140379000.tar.gz."                           
+	@tar -czf lab3_xxx.tar.gz tiger.y tiger.lex
+	@echo "Please rename lab3_xxx.tar.gz to lab3_<your student id>.tar.gz."
+	@echo "For example, lab3_5140379000.tar.gz."                           
 
 grade:
 	./gradeMe.sh

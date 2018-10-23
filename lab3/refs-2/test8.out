@@ -1,7 +1,10 @@
  iffExp(
-  opExp(
-   GREAT,
-   intExp(10),
-   intExp(20)),
+  seqExp(
+   expList(
+    opExp(
+     GREAT,
+     intExp(10),
+     intExp(20)),
+    expList())),
   intExp(30),
   intExp(40))

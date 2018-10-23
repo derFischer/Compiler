@@ -16,7 +16,6 @@
      nametyList())),
    decList(
     varDec(a,
-     ,
      nilExp(),
      TRUE),
     decList())),

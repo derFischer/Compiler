@@ -1,9 +1,8 @@
  letExp(
   decList(
    varDec(a,
-    ,
-    varExp(
-     simpleVar(b)),
+    seqExp(
+     expList()),
     TRUE),
    decList()),
   seqExp(

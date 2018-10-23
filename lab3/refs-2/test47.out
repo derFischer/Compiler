@@ -7,7 +7,6 @@
      nametyList())),
    decList(
     varDec(b,
-     ,
      intExp(4),
      TRUE),
     decList(

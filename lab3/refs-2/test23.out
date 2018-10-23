@@ -16,7 +16,6 @@
      nametyList())),
    decList(
     varDec(rec1,
-     ,
      recordExp(rectype,
       efieldList(
        efield(name,

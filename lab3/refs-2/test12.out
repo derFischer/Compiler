@@ -1,7 +1,6 @@
  letExp(
   decList(
    varDec(a,
-    ,
     intExp(0),
     TRUE),
    decList()),
@@ -10,12 +9,18 @@
     forExp(i,
      intExp(0),
      intExp(100),
-     assignExp(
-      simpleVar(a),
-      opExp(
-       PLUS,
-       varExp(
-        simpleVar(a)),
-       intExp(1))),
+     seqExp(
+      expList(
+       assignExp(
+        simpleVar(a),
+        opExp(
+         PLUS,
+         varExp(
+          simpleVar(a)),
+         intExp(1))),
+       expList(
+        seqExp(
+         expList()),
+        expList()))),
      TRUE),
     expList())))

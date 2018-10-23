@@ -1,7 +1,6 @@
  letExp(
   decList(
    varDec(N,
-    ,
     intExp(8),
     TRUE),
    decList(
@@ -12,7 +11,6 @@
       nametyList())),
     decList(
      varDec(row,
-      ,
       arrayExp(intArray,
        varExp(
         simpleVar(N)),
@@ -20,7 +18,6 @@
       TRUE),
      decList(
       varDec(col,
-       ,
        arrayExp(intArray,
         varExp(
          simpleVar(N)),
@@ -28,7 +25,6 @@
        TRUE),
       decList(
        varDec(diag1,
-        ,
         arrayExp(intArray,
          opExp(
           MINUS,
@@ -43,7 +39,6 @@
         TRUE),
        decList(
         varDec(diag2,
-         ,
          arrayExp(intArray,
           opExp(
            MINUS,
@@ -61,7 +56,6 @@
           fundecList(
            fundec(printboard,
             fieldList(),
-            ,
             seqExp(
              expList(
               forExp(i,
@@ -118,84 +112,51 @@
                int,
                TRUE),
               fieldList()),
-             ,
-             iffExp(
-              opExp(
-               EQUAL,
-               varExp(
-                simpleVar(c)),
-               varExp(
-                simpleVar(N))),
-              callExp(printboard,
-               expList()),
-              forExp(r,
-               intExp(0),
-               opExp(
-                MINUS,
-                varExp(
-                 simpleVar(N)),
-                intExp(1)),
+             seqExp(
+              expList(
                iffExp(
-                iffExp(
-                 iffExp(
-                  opExp(
-                   EQUAL,
-                   varExp(
-                    subscriptVar(
-                     simpleVar(row),
-                     varExp(
-                      simpleVar(r)))),
-                   intExp(0)),
-                  opExp(
-                   EQUAL,
-                   varExp(
-                    subscriptVar(
-                     simpleVar(diag1),
-                     opExp(
-                      PLUS,
-                      varExp(
-                       simpleVar(r)),
-                      varExp(
-                       simpleVar(c))))),
-                   intExp(0)),
-                  intExp(0)),
+                opExp(
+                 EQUAL,
+                 varExp(
+                  simpleVar(c)),
+                 varExp(
+                  simpleVar(N))),
+                callExp(printboard,
+                 expList()),
+                forExp(r,
+                 intExp(0),
                  opExp(
-                  EQUAL,
+                  MINUS,
                   varExp(
-                   subscriptVar(
-                    simpleVar(diag2),
+                   simpleVar(N)),
+                  intExp(1)),
+                 iffExp(
+                  iffExp(
+                   iffExp(
                     opExp(
-                     MINUS,
-                     opExp(
-                      PLUS,
-                      varExp(
-                       simpleVar(r)),
-                      intExp(7)),
+                     EQUAL,
                      varExp(
-                      simpleVar(c))))),
-                  intExp(0)),
-                 intExp(0)),
-                seqExp(
-                 expList(
-                  assignExp(
-                   subscriptVar(
-                    simpleVar(row),
+                      subscriptVar(
+                       simpleVar(row),
+                       varExp(
+                        simpleVar(r)))),
+                     intExp(0)),
+                    opExp(
+                     EQUAL,
+                     varExp(
+                      subscriptVar(
+                       simpleVar(diag1),
+                       opExp(
+                        PLUS,
+                        varExp(
+                         simpleVar(r)),
+                        varExp(
+                         simpleVar(c))))),
+                     intExp(0)),
+                    intExp(0)),
+                   opExp(
+                    EQUAL,
                     varExp(
-                     simpleVar(r))),
-                   intExp(1)),
-                  expList(
-                   assignExp(
-                    subscriptVar(
-                     simpleVar(diag1),
-                     opExp(
-                      PLUS,
-                      varExp(
-                       simpleVar(r)),
-                      varExp(
-                       simpleVar(c)))),
-                    intExp(1)),
-                   expList(
-                    assignExp(
                      subscriptVar(
                       simpleVar(diag2),
                       opExp(
@@ -206,59 +167,95 @@
                          simpleVar(r)),
                         intExp(7)),
                        varExp(
-                        simpleVar(c)))),
+                        simpleVar(c))))),
+                    intExp(0)),
+                   intExp(0)),
+                  seqExp(
+                   expList(
+                    assignExp(
+                     subscriptVar(
+                      simpleVar(row),
+                      varExp(
+                       simpleVar(r))),
                      intExp(1)),
                     expList(
                      assignExp(
                       subscriptVar(
-                       simpleVar(col),
-                       varExp(
-                        simpleVar(c))),
-                      varExp(
-                       simpleVar(r))),
+                       simpleVar(diag1),
+                       opExp(
+                        PLUS,
+                        varExp(
+                         simpleVar(r)),
+                        varExp(
+                         simpleVar(c)))),
+                      intExp(1)),
                      expList(
-                      callExp(try,
-                       expList(
+                      assignExp(
+                       subscriptVar(
+                        simpleVar(diag2),
                         opExp(
-                         PLUS,
+                         MINUS,
+                         opExp(
+                          PLUS,
+                          varExp(
+                           simpleVar(r)),
+                          intExp(7)),
                          varExp(
-                          simpleVar(c)),
-                         intExp(1)),
-                        expList())),
+                          simpleVar(c)))),
+                       intExp(1)),
                       expList(
                        assignExp(
                         subscriptVar(
-                         simpleVar(row),
+                         simpleVar(col),
                          varExp(
-                          simpleVar(r))),
-                        intExp(0)),
+                          simpleVar(c))),
+                        varExp(
+                         simpleVar(r))),
                        expList(
-                        assignExp(
-                         subscriptVar(
-                          simpleVar(diag1),
+                        callExp(try,
+                         expList(
                           opExp(
                            PLUS,
                            varExp(
-                            simpleVar(r)),
-                           varExp(
-                            simpleVar(c)))),
-                         intExp(0)),
+                            simpleVar(c)),
+                           intExp(1)),
+                          expList())),
                         expList(
                          assignExp(
                           subscriptVar(
-                           simpleVar(diag2),
-                           opExp(
-                            MINUS,
+                           simpleVar(row),
+                           varExp(
+                            simpleVar(r))),
+                          intExp(0)),
+                         expList(
+                          assignExp(
+                           subscriptVar(
+                            simpleVar(diag1),
                             opExp(
                              PLUS,
                              varExp(
                               simpleVar(r)),
-                             intExp(7)),
-                            varExp(
-                             simpleVar(c)))),
-                          intExp(0)),
-                         expList())))))))))),
-               TRUE))),
+                             varExp(
+                              simpleVar(c)))),
+                           intExp(0)),
+                          expList(
+                           assignExp(
+                            subscriptVar(
+                             simpleVar(diag2),
+                             opExp(
+                              MINUS,
+                              opExp(
+                               PLUS,
+                               varExp(
+                                simpleVar(r)),
+                               intExp(7)),
+                              varExp(
+                               simpleVar(c)))),
+                            intExp(0)),
+                           expList()))))))))),
+                  nilExp()),
+                 TRUE)),
+               expList()))),
             fundecList()))),
          decList()))))))),
   seqExp(

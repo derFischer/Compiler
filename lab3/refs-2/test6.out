@@ -12,7 +12,6 @@
          string,
          TRUE),
         fieldList())),
-      ,
       callExp(do_nothing2,
        expList(
         opExp(
@@ -28,7 +27,6 @@
          int,
          TRUE),
         fieldList()),
-       ,
        callExp(do_nothing1,
         expList(
          varExp(

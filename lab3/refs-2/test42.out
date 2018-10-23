@@ -45,14 +45,12 @@
          nametyList())))))),
    decList(
     varDec(arr1,
-     ,
      arrayExp(arrtype1,
       intExp(10),
       intExp(0)),
      TRUE),
     decList(
      varDec(arr2,
-      ,
       arrayExp(arrtype2,
        intExp(5),
        recordExp(rectype1,
@@ -79,7 +77,6 @@
        TRUE),
       decList(
        varDec(rec1,
-        ,
         recordExp(rectype1,
          efieldList(
           efield(name,
@@ -97,7 +94,6 @@
         TRUE),
        decList(
         varDec(rec2,
-         ,
          recordExp(rectype2,
           efieldList(
            efield(name,

@@ -12,7 +12,6 @@
      nametyList())),
    decList(
     varDec(buffer,
-     ,
      callExp(getchar,
       expList()),
      TRUE),
@@ -29,7 +28,6 @@
         letExp(
          decList(
           varDec(i,
-           ,
            intExp(0),
            TRUE),
           decList(
@@ -69,7 +67,6 @@
              fundecList(
               fundec(skipto,
                fieldList(),
-               ,
                whileExp(
                 iffExp(
                  opExp(
@@ -170,7 +167,6 @@
           letExp(
            decList(
             varDec(any,
-             ,
              recordExp(any,
               efieldList(
                efield(any,
@@ -179,7 +175,6 @@
              TRUE),
             decList(
              varDec(i,
-              ,
               callExp(readint,
                expList(
                 varExp(
@@ -292,7 +287,6 @@
               int,
               TRUE),
              fieldList()),
-            ,
             letExp(
              decList(
               functionDec(
@@ -303,7 +297,6 @@
                    int,
                    TRUE),
                   fieldList()),
-                 ,
                  iffExp(
                   opExp(
                    GREAT,
@@ -345,7 +338,8 @@
                             expList()))),
                          expList())),
                        expList())),
-                     expList()))))),
+                     expList()))),
+                  nilExp())),
                 fundecList())),
               decList()),
              seqExp(
@@ -395,7 +389,6 @@
                list,
                TRUE),
               fieldList()),
-             ,
              iffExp(
               opExp(
                EQUAL,
@@ -433,13 +426,11 @@
             fundecList()))))),
        decList(
         varDec(list1,
-         ,
          callExp(readlist,
           expList()),
          TRUE),
         decList(
          varDec(list2,
-          ,
           seqExp(
            expList(
             assignExp(
