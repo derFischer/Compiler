@@ -128,16 +128,12 @@ sequencing:
 	|{$$ = NULL;}
 	;
 
-one:
-	ID {$$ = A_SimpleVar(EM_tokPos, S_Symbol($1));}
-	|ID DOT ID {$$ = A_FieldVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), S_Symbol($3));}
-    |ID LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3);}
-	;
-
 lvalue:
-	one {$$ = $1;}
+	ID {$$ = A_SimpleVar(EM_tokPos, S_Symbol($1));}
 	|lvalue DOT ID {$$ = A_FieldVar(EM_tokPos, $1, S_Symbol($3));}
 	|lvalue LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, $1, $3);}
+	|ID DOT ID {$$ = A_FieldVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), S_Symbol($3));}
+    |ID LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3);}
 	;
 
 decs_nonempty:
