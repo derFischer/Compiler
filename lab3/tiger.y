@@ -50,7 +50,7 @@ void yyerror(char *s)
   BREAK NIL
   FUNCTION VAR TYPE 
 
-%type <exp> exp
+%type <exp> exp expseq
 %type <explist> actuals  nonemptyactuals sequencing  sequencing_exps
 %type <var>  lvalue
 %type <declist> decs decs_nonempty
