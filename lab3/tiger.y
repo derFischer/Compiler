@@ -50,19 +50,19 @@ void yyerror(char *s)
   BREAK NIL
   FUNCTION VAR TYPE 
 
-%type <exp> exp expseq
+%type <exp> exp
 %type <explist> actuals  nonemptyactuals sequencing  sequencing_exps
-%type <var>  lvalue one oneormore
+%type <var>  lvalue
 %type <declist> decs decs_nonempty
 %type <dec>  decs_nonempty_s vardec
 %type <efieldlist> rec rec_nonempty 
 %type <efield> rec_one
-%type <nametylist> tydec tydec_nonempty
+%type <nametylist> tydec
 %type <namety>  tydec_one
 %type <fieldlist> tyfields tyfields_nonempty
 %type <field> tyfield_one
 %type <ty> ty
-%type <fundeclist> fundec fundec_nonempty
+%type <fundeclist> fundec
 %type <fundec> fundec_one
 
 %start program
