@@ -134,18 +134,21 @@ one:
 
 oneormore:
 	one {$$ = $1;}
-	|one DOT ID {$$ = A_FieldVar(EM_tokPos, $1, S_Symbol($3));}
-	|one LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, $1, $3);}
-	;
-
-lvalue:
-	oneormore {$$ = $1;}
 	|oneormore DOT ID {$$ = A_FieldVar(EM_tokPos, $1, S_Symbol($3));}
 	|oneormore LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, $1, $3);}
 	;
 
+lvalue:
+	oneormore {$$ = $1;}
+	;
+
+decs_nonempty:
+	decs_nonempty_s decs_nonempty {$$ = A_DecList($1, $2);}
+	|decs_nonempty_s {$$ = A_DecList($1, NULL);}
+	;
+
 decs:
-	decs_nonempty_s decs {$$ = A_DecList($1, $2);}
+	decs_nonempty {$$ = $1;}
 	|{$$ = NULL;}
 	;
 
@@ -159,9 +162,13 @@ rec_one:
 	ID EQ exp {$$ = A_Efield(S_Symbol($1), $3);}
 	;
 
-rec:
-	rec_one COMMA rec {$$ = A_EfieldList($1, $3);}
+rec_nonempty:
+	rec_one COMMA rec_nonempty {$$ = A_EfieldList($1, $3);}
 	|rec_one {$$ = A_EfieldList($1, NULL);}
+	;
+
+rec:
+	rec_nonempty {$$ = $1;}
 	|{$$ = NULL;}
 	;
 
