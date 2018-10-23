@@ -134,14 +134,10 @@ one:
     |ID LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, A_SimpleVar(EM_tokPos, S_Symbol($1)), $3);}
 	;
 
-oneormore:
-	one {$$ = $1;}
-	|oneormore DOT ID {$$ = A_FieldVar(EM_tokPos, $1, S_Symbol($3));}
-	|oneormore LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, $1, $3);}
-	;
-
 lvalue:
-	oneormore {$$ = $1;}
+	one {$$ = $1;}
+	|lvalue DOT ID {$$ = A_FieldVar(EM_tokPos, $1, S_Symbol($3));}
+	|lvalue LBRACK exp RBRACK {$$ = A_SubscriptVar(EM_tokPos, $1, $3);}
 	;
 
 decs_nonempty:
@@ -186,7 +182,7 @@ fundec_one:
 
 fundec:
 	fundec_one fundec {$$ = A_FundecList($1, $2);}
-	fundec_one {$$ = A_FundecList($1, NULL);}
+	|fundec_one {$$ = A_FundecList($1, NULL);}
 	;
 
 tydec_one:
