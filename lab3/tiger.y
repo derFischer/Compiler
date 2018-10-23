@@ -62,7 +62,7 @@ void yyerror(char *s)
 %type <fieldlist> tyfields tyfields_nonempty
 %type <field> tyfield_one
 %type <ty> ty
-%type <fundeclist> fundec
+%type <fundeclist> fundec fundec_nonempty
 %type <fundec> fundec_one
 
 %start program
@@ -104,8 +104,13 @@ exp:
 	|WHILE exp DO exp {$$ = A_WhileExp(EM_tokPos, $2, $4);}
 	|FOR ID ASSIGN exp TO exp DO exp {$$ = A_ForExp(EM_tokPos, S_Symbol($2), $4, $6, $8);}
 	|BREAK {$$ = A_BreakExp(EM_tokPos);}
-	|LET decs IN sequencing END {$$ = A_LetExp(EM_tokPos, $2, A_SeqExp(EM_tokPos, $4));}
+	|LET decs IN expseq END {$$ = A_LetExp(EM_tokPos, $2, $4);}
 	|ID LBRACK exp RBRACK OF exp {$$ = A_ArrayExp(EM_tokPos, S_Symbol($1), $3, $6);}
+	;
+
+expseq:
+	sequencing_exps {$$ = A_SeqExp(EM_tokPos, $1);}
+	|{$$ = NULL}
 	;
 
 nonemptyactuals:
@@ -184,8 +189,13 @@ fundec_one:
 	|FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp {$$ = A_Fundec(EM_tokPos, S_Symbol($2), $4, S_Symbol($7), $9);}
 	;
 
+fundec_nonempty:
+	fundec_one fundec_nonempty {$$ = A_FundecList($1, $2);}
+	fundec_one {$$ = A_FundecList($1, NULL);}
+	;
+
 fundec:
-	fundec_one fundec {$$ = A_FundecList($1, $2);}
+	fundec_nonempty {$$ = $1;}
 	|{$$ = NULL;}
 	;
 
