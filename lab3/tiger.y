@@ -189,28 +189,18 @@ fundec_one:
 	|FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp {$$ = A_Fundec(EM_tokPos, S_Symbol($2), $4, S_Symbol($7), $9);}
 	;
 
-fundec_nonempty:
-	fundec_one fundec_nonempty {$$ = A_FundecList($1, $2);}
-	fundec_one {$$ = A_FundecList($1, NULL);}
-	;
-
 fundec:
-	fundec_nonempty {$$ = $1;}
-	|{$$ = NULL;}
+	fundec_one fundec {$$ = A_FundecList($1, $2);}
+	fundec_one {$$ = A_FundecList($1, NULL);}
 	;
 
 tydec_one:
 	TYPE ID EQ ty {$$ = A_Namety(S_Symbol($2), $4);}
 	;
 
-tydec_nonempty:
-	tydec_one tydec_nonempty {$$ = A_NametyList($1, $2);}
-	|tydec_one {$$ = A_NametyList($1, NULL);}
-	;
-
 tydec:
-	tydec_nonempty {$$ = $1;}
-	|{$$ = NULL;}
+	tydec_one tydec {$$ = A_NametyList($1, $2);}
+	|tydec_one {$$ = A_NametyList($1, NULL);}
 	;
 
 ty:
