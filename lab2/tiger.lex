@@ -52,6 +52,7 @@ char *getstr(const char *str)
   * and write reguler expressions and actions of your own.
   */ 
 
+<STR>\\ {adjustPos();}
 <STR>\\n {adjustPos(); text[idx] = '\n'; ++idx;}
 <STR>\\t {adjustPos(); text[idx] = '\t'; ++idx;}
 <STR>\\[\ \t\n\f]+\\ {adjustPos();}
@@ -61,7 +62,6 @@ char *getstr(const char *str)
 <STR>\\\^\[ {adjustPos(); text[idx] = 27; ++idx;}
 <STR>\\\" {adjustPos(); text[idx] = '\"'; ++idx;}
 <STR>\\\\ {adjustPos(); text[idx] = '\\'; ++idx;}
-<STR>\\ {adjustPos();}
 <STR>\" {adjustPos(); text[idx] = '\0';yylval.sval = String(text); BEGIN INITIAL; if(strlen(text) == 0){yylval.sval = "(null)";} return STRING;}
 <STR>\n {adjustPos(); EM_error(charPos, "didn't close the string");}
 <STR>. {adjustPos(); strcpy(text + idx, yytext); idx += yyleng;}
