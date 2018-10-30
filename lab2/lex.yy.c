@@ -366,13 +366,13 @@ static const flex_int16_t yy_accept[118] =
        56,   16,   17,   31,   29,   33,   55,   20,   21,   55,
        55,   55,   55,   55,   55,   55,   55,   55,   55,   55,
        55,   22,   36,   23,   63,   63,   63,   13,   12,   11,
-       10,   14,   56,   37,   32,   30,   34,   55,   55,   55,
+        1,   14,   56,   37,   32,   30,   34,   55,   55,   55,
        45,   55,   55,   55,   55,   39,   47,   55,   55,   49,
-       55,   44,   55,   55,   55,   62,   61,    0,    8,    0,
-        9,    0,    1,    2,   55,   55,   55,   48,   43,   55,
-       46,   51,   55,   55,   53,   55,    3,    0,    6,    5,
+       55,   44,   55,   55,   55,   62,   61,    0,    9,    0,
+       10,    0,    2,    3,   55,   55,   55,   48,   43,   55,
+       46,   51,   55,   55,   53,   55,    4,    0,    7,    6,
 
-        7,   55,   55,   41,   55,   40,   54,   55,    4,   38,
+        8,   55,   55,   41,   55,   40,   54,   55,    5,   38,
        50,   55,   42,   55,   55,   52,    0
     } ;
 
@@ -854,53 +854,53 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 56 "tiger.lex"
-{adjustPos(); text[idx] = '\n'; ++idx;}
+{adjustPos();}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 57 "tiger.lex"
-{adjustPos(); text[idx] = '\t'; ++idx;}
+{adjustPos(); text[idx] = '\n'; ++idx;}
 	YY_BREAK
 case 3:
-/* rule 3 can match eol */
 YY_RULE_SETUP
 #line 58 "tiger.lex"
-{adjustPos();}
+{adjustPos(); text[idx] = '\t'; ++idx;}
 	YY_BREAK
 case 4:
+/* rule 4 can match eol */
 YY_RULE_SETUP
 #line 59 "tiger.lex"
-{adjustPos(); text[idx] = atoi(yytext + 1); ++idx;}
+{adjustPos();}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 60 "tiger.lex"
-{adjustPos(); text[idx] = yytext[2] - 'A' + 1; ++idx;}
+{adjustPos(); text[idx] = atoi(yytext + 1); ++idx;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 61 "tiger.lex"
-{adjustPos(); text[idx] = 0; ++idx;}
+{adjustPos(); text[idx] = yytext[2] - 'A' + 1; ++idx;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 62 "tiger.lex"
-{adjustPos(); text[idx] = 27; ++idx;}
+{adjustPos(); text[idx] = 0; ++idx;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 63 "tiger.lex"
-{adjustPos(); text[idx] = '\"'; ++idx;}
+{adjustPos(); text[idx] = 27; ++idx;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 64 "tiger.lex"
-{adjustPos(); text[idx] = '\\'; ++idx;}
+{adjustPos(); text[idx] = '\"'; ++idx;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 65 "tiger.lex"
-{adjustPos();}
+{adjustPos(); text[idx] = '\\'; ++idx;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
