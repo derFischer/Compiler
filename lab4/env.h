@@ -7,7 +7,7 @@ typedef struct E_enventry_ *E_enventry;
 
 struct E_enventry_ {
 	enum {E_varEntry, E_funEntry} kind;
-	bool RO;
+	int RO;
 	union 
 	{
 		struct {Ty_ty ty;} var;
