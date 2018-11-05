@@ -536,12 +536,12 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 		}
 
 		tylist = d->u.type;
-		for(; tylist;tylist = tylist->tail)
+		for(; tylist; tylist = tylist->tail)
 		{
 			A_namety tmp = tylist->head;
 			Ty_ty type = S_look(tenv, tmp->name);
 			Ty_ty t = type->u.name.ty;
-			for (; t->kind == Ty_name && t; t = t->u.name.ty)
+			for (; t && t->kind == Ty_name; t = t->u.name.ty)
 			{
 				if(t == type)
 				{
