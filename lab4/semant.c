@@ -387,27 +387,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
 		A_exp initial = a->u.array.init;
 		struct expty initialTy = transExp(venv, tenv, initial);
-		if (actual_ty(initialTy.ty) != actual_ty(tmp->u.array))
+		if (actual_ty(initialTy.ty) != actual_ty(tmp->u.array.typ))
 		{
 			EM_error(a->pos, "type mismatch");
-			Ty_ty initial1 = actual_ty(initialTy.ty);
-			Ty_ty actual1 = actual_ty(tmp->u.array);
-			if(initial1->kind != Ty_int)
-			{
-				EM_error(a->pos, "wrong initial %d", initial1->kind);
-				if(initial1->kind == Ty_name)
-				{
-					EM_error(a->pos, "type of initial: %s", S_name(initial1->u.name.sym));
-				}
-			}
-			if(actual1->kind != Ty_int)
-			{
-				EM_error(a->pos, "wrong actual %d", actual1->kind);
-				if(actual1->kind == Ty_name)
-				{
-					EM_error(a->pos, "type of actual: %s", S_name(actual1->u.name.sym));
-				}
-			}
 		}
 		return expTy(NULL, actual_ty(tmp));
 	}
