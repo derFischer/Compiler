@@ -372,7 +372,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 	case A_arrayExp:
 	{
 		Ty_ty tmp = S_look(tenv, a->u.array.typ);
-		if (!tmp || actual_ty(tmp)->kind != Ty_array)
+		tmp = actual_ty(tmp);
+		if (!tmp || tmp->kind != Ty_array)
 		{
 			EM_error(a->pos, "undefined array %s", S_name(a->u.array.typ));
 			return expTy(NULL, Ty_Int());
@@ -387,7 +388,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
 		A_exp initial = a->u.array.init;
 		struct expty initialTy = transExp(venv, tenv, initial);
-		if (actual_ty(initialTy.ty) != actual_ty(tmp->u.array.typ))
+		if (actual_ty(initialTy.ty) != actual_ty())
 		{
 			EM_error(a->pos, "type mismatch");
 		}
