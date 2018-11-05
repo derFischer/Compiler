@@ -62,7 +62,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 
 	case A_fieldVar:
 	{
-		struct expty tmp = transSimpleVar(venv, tenv, v->u.field.var);
+		struct expty tmp = transVar(venv, tenv, v->u.field.var);
 		if (tmp.ty->kind != Ty_record)
 		{
 			EM_error(v->pos, "it is not a record type");
@@ -81,7 +81,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 	}
 	case A_subscriptVar:
 	{
-		struct expty tmp = transSimpleVar(venv, tenv, v->u.subscript.var);
+		struct expty tmp = transVar(venv, tenv, v->u.subscript.var);
 		if (tmp.ty->kind != Ty_array)
 		{
 			EM_error(v->pos, "array type required");
