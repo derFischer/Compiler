@@ -336,7 +336,6 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 		if (actual_ty(initialTy.ty)->kind != Ty_int || actual_ty(endTy.ty)->kind != Ty_int)
 		{
 			EM_error(a->pos, "for exp's range type is not integer");
-			return expTy(NULL, Ty_Int());
 		}
 
 		S_beginScope(venv);
