@@ -235,14 +235,14 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 		A_expList list = a->u.seq;
 		if (!list)
 		{
-			return expTy(NULL, Ty_void());
+			return expTy(NULL, Ty_Void());
 		}
 		else
 		{
 			struct expty result;
 			for (; list; list = list->tail)
 			{
-				result = transExp(list->head);
+				result = transExp(venv, tenv, list->head);
 			}
 			return result;
 		}
@@ -283,7 +283,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 		}
 
 		A_exp thenExp = a->u.iff.then;
-		A_exp elseExp = a->u.iff.else;
+		A_exp elseExp = a->u.iff.elsee;
 		struct expty thenExpTy = transExp(venv, tenv, thenExp);
 		struct expty elseExpTy = transExp(venv, tenv, elseExp);
 		if (actual_ty(elseExpTy.ty)->kind == Ty_nil)
@@ -330,8 +330,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 		A_exp initial = a->u.forr.lo;
 		A_exp end = a->u.forr.hi;
 
-		struct initialTy = transExp(venv, tenv, initial);
-		struct endTy = transExp(venv, tenv, end);
+		struct expty initialTy = transExp(venv, tenv, initial);
+		struct expty endTy = transExp(venv, tenv, end);
 
 		if (actual_ty(initialTy.ty)->kind != Ty_int || actual_ty(endTy.ty)->kind != Ty_int)
 		{
@@ -340,7 +340,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 		}
 
 		S_beginScope(venv);
-		S_enter(venv, a->u.forr.var, RO_E_VarEntry(Ty_Int());
+		S_enter(venv, a->u.forr.var, RO_E_VarEntry(Ty_Int()));
 
 		A_exp body = a->u.forr.body;
 		struct expty bodyTy = transExp(venv, tenv, body);
@@ -354,7 +354,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 	}
 	case A_breakExp:
 	{
-		return expTy(NULL, Ty_void());
+		return expTy(NULL, Ty_Void());
 	}
 	case A_letExp:
 	{
@@ -392,7 +392,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 		{
 			EM_error(a->pos, "type mismatch");
 		}
-		return expTy(a->pos, actual_ty(tmp));
+		return expTy(NULL, actual_ty(tmp));
 	}
 	}
 }
@@ -572,7 +572,7 @@ Ty_fieldList makeRecordTyList(S_table tenv, A_fieldList params)
 	Ty_field firstfield = Ty_Field(params->head->name, first);
 	Ty_fieldList tail = makeRecordTyList(tenv, params->tail);
 
-	return Ty_TyList(firstfield, tail);
+	return Ty_FieldList(firstfield, tail);
 }
 
 Ty_ty transTy(S_table tenv, A_ty a)
