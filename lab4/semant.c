@@ -607,7 +607,7 @@ Ty_ty transTy(S_table tenv, A_ty a)
 	}
 }
 
-void Sem_transProg(A_exp exp)
+void SEM_transProg(A_exp exp)
 {
 	transExp(E_base_venv(), E_base_tenv(), exp);
 }
