@@ -98,14 +98,14 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 	}
 }
 
-void explistSame(S_table venv, S_table tenv, A_explist args, Ty_tylist formals, A_exp a)
+void explistSame(S_table venv, S_table tenv, A_expList args, Ty_tyList formals, A_exp a)
 {
 	for (; args && formals; args = args->tail, formals = formals->tail)
 	{
 		A_exp tmp = args->head;
 		Ty_ty t = formals->head;
 		struct expty tt = transExp(venv, tenv, tmp);
-		if (actual(tt.ty) != actual(t))
+		if (actual_ty(tt.ty) != actual_ty(t))
 		{
 			EM_error(tmp->pos, "para type mismatch");
 			return;
@@ -140,7 +140,7 @@ void fieldlistSame(S_table venv, S_table tenv, A_efieldList inputs, Ty_fieldList
 		}
 
 		struct expty input = transExp(venv, tenv, tmp->exp);
-		if (actual(input.ty) != actual_ty(t->ty))
+		if (actual_ty(input.ty) != actual_ty(t->ty))
 		{
 			EM_error(a->pos, "wrong exp type");
 			return;
@@ -160,7 +160,7 @@ void fieldlistSame(S_table venv, S_table tenv, A_efieldList inputs, Ty_fieldList
 
 struct expty transExp(S_table venv, S_table tenv, A_exp a)
 {
-	switch (v->kind)
+	switch (a->kind)
 	{
 	case A_varExp:
 	{
@@ -187,7 +187,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 			return expTy(NULL, Ty_Int());
 		}
 		A_expList args = a->u.call.args;
-		Ty_tylist formals = func->u.fun.formals;
+		Ty_tyList formals = func->u.fun.formals;
 		Ty_ty result = func->u.fun.result;
 		explistSame(venv, tenv, args, formals, a);
 		return expTy(NULL, actual_ty(result));
@@ -200,9 +200,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
 		if (oper == A_plusOp || oper == A_minusOp || oper == A_timesOp || oper == A_divideOp)
 		{
-			if (actual(left.ty)->kind != Ty_int || actual(right.ty)->kind != Ty_int)
+			if (actual_ty(left.ty)->kind != Ty_int || actual_ty(right.ty)->kind != Ty_int)
 			{
-				EM_error(a->u.op.left.pos, "integer required");
+				EM_error(a->u.op.left->pos, "integer required");
 			}
 		}
 		else
@@ -226,7 +226,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 		}
 
 		A_efieldList tmp = a->u.record.fields;
-		Ty_filedList list = type->u.record;
+		Ty_fieldList list = type->u.record;
 		fieldlistSame(venv, tenv, tmp, list, a);
 		return expTy(NULL, type);
 	}
@@ -276,7 +276,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 		A_exp condition = a->u.iff.test;
 
 		struct expty conditionTy = transExp(venv, tenv, condition);
-		if (actual(conditionTy.ty)->kind != Ty_int)
+		if (actual_ty(conditionTy.ty)->kind != Ty_int)
 		{
 			EM_error(a->pos, "the condition exp should be an int expression");
 			return expTy(NULL, Ty_Int());
@@ -407,7 +407,7 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
 	Ty_ty first = S_look(tenv, params->head->typ);
 	if (!first)
 	{
-		EM_error(first->pos, "wrong type");
+		EM_error(params->head->pos, "wrong type");
 		first = Ty_Int();
 	}
 	Ty_tyList tail = makeFormalTyList(tenv, params->tail);
@@ -417,7 +417,7 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
 
 void transDec(S_table venv, S_table tenv, A_dec d)
 {
-	switch (v->kind)
+	switch (d->kind)
 	{
 	case A_functionDec:
 	{
@@ -463,7 +463,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 			struct expty returnType = transExp(venv, tenv, tmp->body);
 			if (actual_ty(returnType.ty) != actual_ty(e->u.fun.result))
 			{
-				if (actual_ty(e->u.fun.resule)->kind == Ty_void)
+				if (actual_ty(e->u.fun.result)->kind == Ty_void)
 				{
 					EM_error(d->pos, "procedure returns value");
 				}
@@ -487,7 +487,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 			Ty_ty type = S_look(tenv, d->u.var.typ);
 			if (!type)
 			{
-				EM_error(a->pos, "undefined type %s", S_name(d->u.var.typ));
+				EM_error(d->pos, "undefined type %s", S_name(d->u.var.typ));
 				return;
 			}
 			if (actual_ty(type) != actual_ty(initial.ty))
@@ -523,7 +523,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 			}
 			else
 			{
-				S_enter(tenv, t->name, Ty_Name(t->name, NULL));
+				S_enter(tenv, tmp->name, Ty_Name(tmp->name, NULL));
 			}
 		}
 
@@ -566,10 +566,10 @@ Ty_fieldList makeRecordTyList(S_table tenv, A_fieldList params)
 	Ty_ty first = S_look(tenv, params->head->typ);
 	if (!first)
 	{
-		EM_error(first->pos, "wrong type");
+		EM_error(params->head->pos, "wrong type");
 		first = Ty_Int();
 	}
-	Ty_field firstfield = Ty_field(params->head->name, first);
+	Ty_field firstfield = Ty_Field(params->head->name, first);
 	Ty_fieldList tail = makeRecordTyList(tenv, params->tail);
 
 	return Ty_TyList(firstfield, tail);
