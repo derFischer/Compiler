@@ -32,7 +32,7 @@ struct expty expTy(Tr_exp exp, Ty_ty ty)
 
 Ty_ty actual_ty(Ty_ty t)
 {
-	for (; t->kind == Ty_name && t; t = t->u.name.ty)
+	for (; t && t->kind == Ty_name; t = t->u.name.ty)
 		;
 	return t;
 }
