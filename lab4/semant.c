@@ -388,7 +388,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
 		A_exp initial = a->u.array.init;
 		struct expty initialTy = transExp(venv, tenv, initial);
-		if (actual_ty(initialTy.ty) != actual_ty())
+		if (actual_ty(initialTy.ty) != actual_ty(tmp->u.array))
 		{
 			EM_error(a->pos, "type mismatch");
 		}
