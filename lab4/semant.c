@@ -519,7 +519,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 			A_namety tmp = tylist->head;
 			if(S_look(tenv, tmp->name))
 			{
-				EM_error(d->pos, "tow types have the same name");
+				EM_error(d->pos, "two types have the same name");
 			}
 			else
 			{
