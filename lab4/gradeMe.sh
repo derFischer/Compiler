@@ -31,7 +31,7 @@ fi
 	do		
 		if [ ${tcase##*.} = "tig" ]; then
 			tfileName=${tcase##*/}
-			#echo $tfileName
+			echo $tfileName
 			rm -f _ref.txt _tmp.txt .tmp.txt
 			./$BIN $TESTCASEDIR/$tfileName >& _tmp.txt
 			# fix bison version diff
