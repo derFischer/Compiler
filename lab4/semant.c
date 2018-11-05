@@ -219,7 +219,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 		Ty_ty type = S_look(tenv, a->u.record.typ);
 		type = actual_ty(type);
 
-		EM_error(a->pos, "arrive here");
+		fprintf("arrive here\n");
 		if (!type || type->kind != Ty_record)
 		{
 			EM_error(a->pos, "undefined type %s", S_name(a->u.record.typ));
