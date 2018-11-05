@@ -84,7 +84,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 		struct expty tmp = transSimpleVar(venv, tenv, v->u.subscript.var);
 		if (tmp.ty->kind != Ty_array)
 		{
-			EM_error(v->pos, "it is not an array type");
+			EM_error(v->pos, "array type required");
 			return expTy(NULL, Ty_Int());
 		}
 		struct expty t = transExp(venv, tenv, v->u.subscript.exp);
