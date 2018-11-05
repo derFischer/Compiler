@@ -428,7 +428,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 			A_fundec tmp = list->head;
 			if (S_look(venv, tmp->name))
 			{
-				EM_error(d->pos, "function name duplicated");
+				EM_error(d->pos, "two functions have the same name");
 				continue;
 			}
 			if (!tmp->result)
