@@ -133,7 +133,7 @@ void fieldlistSame(S_table venv, S_table tenv, A_efieldList inputs, Ty_fieldList
 	{
 		A_efield tmp = inputs->head;
 		Ty_field t = actuals->head;
-		if (!strcmp(S_name(tmp->name), S_name(t->name)))
+		if (strcmp(S_name(tmp->name), S_name(t->name)))
 		{
 			EM_error(a->pos, "field %s doesn't exist", S_name(tmp->name));
 			return;
