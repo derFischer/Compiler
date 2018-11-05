@@ -72,7 +72,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 		Ty_fieldList t = tmp.ty->u.record;
 		for (; t && t->head->name != v->u.field.sym; t = t->tail)
 			;
-		if (t)
+		if (!t)
 		{
 			EM_error(v->pos, "field %s doesn't exist", S_name(v->u.field.sym));
 			return expTy(NULL, Ty_Int());
