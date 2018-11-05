@@ -406,7 +406,7 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
 	Ty_ty first = S_look(tenv, params->head->typ);
 	if (!first)
 	{
-		EM_error(params->head->pos, "undefined type %s", S_name(first->u.name));
+		EM_error(params->head->pos, "undefined type %s", S_name(first->u.name.sym));
 		first = Ty_Int();
 	}
 	Ty_tyList tail = makeFormalTyList(tenv, params->tail);
@@ -565,7 +565,7 @@ Ty_fieldList makeRecordTyList(S_table tenv, A_fieldList params)
 	Ty_ty first = S_look(tenv, params->head->typ);
 	if (!first)
 	{
-		EM_error(params->head->pos, "undefined type %s", S_name(first->u.name));
+		EM_error(params->head->pos, "undefined type %s", S_name(first->u.name.sym));
 		first = Ty_Int();
 	}
 	Ty_field firstfield = Ty_Field(params->head->name, first);
