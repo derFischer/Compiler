@@ -390,7 +390,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 		struct expty body = transExp(venv, tenv, a->u.let.body, level, label);
 		S_endScope(tenv);
 		S_endScope(venv);
-		EM_error("reach here let exp\n");
+		EM_error(a->pos, "reach here let exp\n");
 		return body;
 	}
 	case A_arrayExp:
