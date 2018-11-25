@@ -28,6 +28,7 @@ E_enventry E_FunEntry(Tr_level level, Temp_label label, Ty_tyList formals, Ty_ty
 {
 	E_enventry entry = checked_malloc(sizeof(*entry));
 
+	entry->kind = E_funEntry;
 	entry->u.fun.level = level;
 	entry->u.fun.label = label;
 	entry->u.fun.formals = formals;
