@@ -111,7 +111,7 @@ static Tr_exp Tr_Cx(patchList trues, patchList falses, T_stm stm)
 
 static T_exp unEx(Tr_exp e)
 {
-	EM_error(0, "ex kind %d\n", e->kind);
+	EM_error(0, "ex kind\n");
 	switch (e->kind)
 	{
 	case Tr_ex:
