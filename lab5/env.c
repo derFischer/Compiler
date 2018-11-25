@@ -69,14 +69,14 @@ S_table E_base_venv(void)
 	level = Tr_outermost();
 	venv = S_empty();
 
-	S_enter(venv,S_Symbol("flush"),E_FunEntry(level,label,NULL,NULL));
+	S_enter(venv,S_Symbol("flush"),E_FunEntry(level,label,NULL,Ty_Void()));
 	
 	result = Ty_Int();
 
 	formals = checked_malloc(sizeof(*formals));
 	formals->head = Ty_Int();
 	formals->tail = NULL;
-	S_enter(venv,S_Symbol("exit"),E_FunEntry(level,label,formals,NULL));
+	S_enter(venv,S_Symbol("exit"),E_FunEntry(level,label,formals,Ty_Void()));
 
 	S_enter(venv,S_Symbol("not"),E_FunEntry(level,label,formals,result));
 
@@ -90,7 +90,7 @@ S_table E_base_venv(void)
 	formals->head = Ty_String();
 	formals->tail = NULL;
 
-	S_enter(venv,S_Symbol("print"),E_FunEntry(level,label,formals,NULL));
+	S_enter(venv,S_Symbol("print"),E_FunEntry(level,label,formals,Ty_Void()));
 
 	result = Ty_Int();
 	S_enter(venv,S_Symbol("ord"),E_FunEntry(level,label,formals,result));
