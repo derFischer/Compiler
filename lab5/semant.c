@@ -365,6 +365,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 		}
 
 		Tr_access access = Tr_allocLocal(level, a->u.forr.escape);
+						EM_error(a->pos, "For exp here alloc finish\n");
 		S_beginScope(venv);
 		S_enter(venv, a->u.forr.var, E_ROVarEntry(access, Ty_Int()));
 
