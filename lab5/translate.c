@@ -114,7 +114,9 @@ static T_exp unEx(Tr_exp e)
 	{
 	case Tr_ex:
 		EM_error(0, "ex reach here\n");
-		return e->u.ex;
+		T_exp tmp = e->u.ex;
+				EM_error(0, "ex reach here111\n");
+		return tmp;
 	case Tr_cx:
 	{
 		Temp_temp r = Temp_newtemp();
