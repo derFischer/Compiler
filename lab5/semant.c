@@ -281,8 +281,10 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 		}
 
 		struct expty v = transVar(venv, tenv, tmp, level, label);
+		EM_error(a->pos, "assign exp lv\n");
 		A_exp t = a->u.assign.exp;
 		struct expty exp = transExp(venv, tenv, t, level, label);
+		EM_error(a->pos, "assign exp v\n");
 
 		if (actual_ty(v.ty) != actual_ty(exp.ty))
 		{
