@@ -9,6 +9,7 @@
 #include "printtree.h"
 #include "frame.h"
 #include "translate.h"
+#include "errormsg.h"
 
 #define WORDSIZE 8
 //LAB5: you can modify anything you want.
