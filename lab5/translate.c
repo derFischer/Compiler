@@ -83,9 +83,11 @@ patchList joinPatch(patchList first, patchList second)
 
 static Tr_exp Tr_Ex(T_exp ex)
 {
+	EM_error(0, "trexp here\n");
 	Tr_exp e = malloc(sizeof(*e));
 	e->kind = Tr_ex;
 	e->u.ex = ex;
+	EM_error(0, "trexp hereeee\n");
 	return e;
 }
 
