@@ -314,9 +314,9 @@ Tr_exp Tr_opExp(A_oper oper, Tr_exp left, Tr_exp right)
 		op = T_div;
 		break;
 	}
-	TM_error(0, "op exp here\n");
+	EM_error(0, "op exp here\n");
 	T_exp rightr = unEx(right);
-	TM_error(0, "op exp jere\n");
+	EM_error(0, "op exp jere\n");
 	return Tr_Ex(T_Binop(op, unEx(left), rightr));
 }
 
