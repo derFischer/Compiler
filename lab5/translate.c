@@ -64,6 +64,22 @@ static patchList PatchList(Temp_label *head, patchList tail)
 	return list;
 }
 
+void doPatch(patchList tList, Temp_label label)
+{
+	for (; tList; tList = tList->tail)
+		*(tList->head) = label;
+}
+
+patchList joinPatch(patchList first, patchList second)
+{
+	if (!first)
+		return second;
+	for (; first->tail; first = first->tail)
+		;
+	first->tail = second;
+	return first;
+}
+
 static Tr_exp Tr_Ex(T_exp ex)
 {
 	Tr_exp e = malloc(sizeof(*e));
@@ -99,7 +115,7 @@ static T_exp unEx(Tr_exp e)
 	case Tr_cx:
 	{
 		Temp_temp r = Temp_newtemp();
-		Temp_label t = Temp_newlabel, f = Temp_newlabel();
+		Temp_label t = Temp_newlabel(), f = Temp_newlabel();
 		doPatch(e->u.cx.trues, t);
 		doPatch(e->u.cx.falses, f);
 		return T_Eseq(T_Move(T_Temp(r), T_Const(1)),
@@ -149,22 +165,6 @@ static struct Cx unCx(Tr_exp e)
 	case Tr_cx:
 		return e->u.cx;
 	}
-}
-
-void doPatch(patchList tList, Temp_label label)
-{
-	for (; tList; tList = tList->tail)
-		*(tList->head) = label;
-}
-
-patchList joinPatch(patchList first, patchList second)
-{
-	if (!first)
-		return second;
-	for (; first->tail; first = first->tail)
-		;
-	first->tail = second;
-	return first;
 }
 
 //constructor
@@ -246,7 +246,7 @@ Tr_exp Tr_simpleVar(Tr_access access, Tr_level level)
 
 Tr_exp Tr_fieldVar(Tr_exp address, int offset)
 {
-	return Tr_Ex(T_Mem(T_Binop(T_plus, T_Const(offset * WORDSIZE), unEx(unEx(address)))));
+	return Tr_Ex(T_Mem(T_Binop(T_plus, T_Const(offset * WORDSIZE), unEx(address))));
 }
 
 Tr_exp Tr_subscriptVar(Tr_exp address, int offset)
@@ -276,7 +276,7 @@ Tr_exp Tr_callExp(Temp_label fname, Tr_expList params, Tr_level caller, Tr_level
 	T_expList args = NULL;
 	for (; params; params = params->tail)
 	{
-		args = T_ExpList(params->head, args);
+		args = T_ExpList(unEx(params->head), args);
 	}
 
 	T_exp fp = T_Temp(F_FP());
@@ -365,7 +365,7 @@ Tr_exp Tr_recordExp(int size, Tr_expList list)
 
 Tr_exp Tr_assignExp(Tr_exp lvalue, Tr_exp value)
 {
-	return Tr_Nx(T_Move(unEx(lvalue), value));
+	return Tr_Nx(T_Move(unEx(lvalue), unEx(value)));
 }
 
 Tr_exp Tr_ifExp(Tr_exp test, Tr_exp then, Tr_exp elsee)
@@ -396,7 +396,7 @@ Tr_exp Tr_whileExp(Tr_exp test, Tr_exp body, Temp_label finish)
 	T_stm stm = T_Seq(T_Label(testt),
 					T_Seq(cx.stm, 
 						T_Seq(T_Label(bodyy), 
-							T_Seq(unEx(body),
+							T_Seq(unNx(body),
 								T_Seq(T_Jump(T_Name(testt), Temp_LabelList(testt, NULL)),
 									T_Label(finish)))))); 
 	return Tr_Nx(stm);
