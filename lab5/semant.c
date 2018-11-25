@@ -386,6 +386,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 		for (; tmp; tmp = tmp->tail)
 		{
 			transDec(venv, tenv, tmp->head, level, label);
+			EM_error(a->pos, "reach here let dec\n");
 		}
 		struct expty body = transExp(venv, tenv, a->u.let.body, level, label);
 		S_endScope(tenv);
