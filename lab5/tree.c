@@ -70,6 +70,7 @@ T_exp T_Binop(T_binOp op, T_exp left, T_exp right)
  p->u.BINOP.op=op;
  p->u.BINOP.left=left;
  p->u.BINOP.right=right;
+ EM_error(0, "TBINOP finish\n");
  return p;
 }
  
