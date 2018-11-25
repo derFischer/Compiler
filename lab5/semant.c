@@ -190,7 +190,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 	case A_callExp:
 	{
 		E_enventry func = S_look(venv, a->u.call.func);
-		if (!func || func->kind != E_funEntry)
+		if (func == NULL || func->kind != E_funEntry)
 		{
 			EM_error(a->pos, "undefined function %s", S_name(a->u.call.func));
 			return expTy(NULL, Ty_Int());
