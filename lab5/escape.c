@@ -88,11 +88,11 @@ static void traverseExp(S_table env, int depth, A_exp e)
         }
         case A_forExp:
         {
-            S_beginScope(env);
-            S_enter(env, get_forexp_var(e), &(a->forr.escape));
-            a->u.forr->ecape = FALSE;
             traverseExp(env, depth, get_forexp_lo(e));
             traverseExp(env, depth, get_forexp_hi(e));
+            S_beginScope(env);
+            S_enter(env, get_forexp_var(e), EscapeEntry(depth, &(a->u.forr.escape));
+            a->u.forr->ecape = FALSE;
             traverseExp(env, depth, get_forexp_body(e));
             S_endScope(env);
             return;
@@ -143,6 +143,8 @@ static void traverseDec(S_table env, int depth, A_dec d)
         {
             S_enter(env, get_vardec_var(d), EscapeEntry(depth, &(d->u.var.escape)));
             d->u.var.escape = FALSE;   
+            traverseExp(env, depth, get_vardec_init(d));
+            return;
         }
     }
 }

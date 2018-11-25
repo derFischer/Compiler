@@ -62,5 +62,18 @@ Tr_exp Tr_simpleVar(Tr_access access, Tr_level level);
 Tr_exp Tr_fieldVar(Tr_access access, Tr_level level);
 Tr_exp Tr_subscriptVar(Tr_access access, Tr_level level, int index);
 
-Tr_exp Tr_
+Tr_exp Tr_nilExp();
+Tr_exp Tr_intExp(int intt);
+Tr_exp Tr_stringExp(string stringg);
+Tr_exp Tr_callExp(Temp_label fname, Tr_expList params, Tr_level caller, Tr_level callee);
+Tr_exp Tr_opExp(A_oper oper, Tr_exp left, Tr_exp right);
+Tr_exp Tr_intCompExp(A_oper op, Tr_exp left, Tr_exp right);
+Tr_exp Tr_stringCompExp(A_oper op, Tr_exp left, Tr_exp right);
+Tr_exp Tr_recordExp(int size, Tr_expList list);
+Tr_exp Tr_assignExp(Tr_exp lvalue, Tr_exp value);
+Tr_exp Tr_ifExp(Tr_exp test, Tr_exp then, Tr_exp elsee);
+Tr_exp Tr_whileExp(Tr_exp test, Tr_exp body, Temp_label finish);
+Tr_exp Tr_forExp(Tr_access access, Tr_exp lo, Tr_exp hi, Tr_exp body, Temp_label finish);
+Tr_exp Tr_breakExp(Temp_label label);
+Tr_exp Tr_arrayExp(A_exp size, Tr_exp init);
 #endif

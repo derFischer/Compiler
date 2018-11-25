@@ -10,7 +10,7 @@
 #include "frame.h"
 
 /*Lab5: Your implementation here.*/
-#define WORDSIZE 4
+#define WORDSIZE 8
 //varibales
 struct F_frame_ {
 	Temp_lable name;
@@ -84,6 +84,7 @@ F_frame F_newFrame(Temp_label name, U_boolList formals)
 	frame->specialregs = NULL;
 
 	int argSize = 0;
+	int frame_offset = WORDSIZE * 2;
 
 	F_accessList list = malloc(sizeof(*list));
 	F_accessList tmp = list;
