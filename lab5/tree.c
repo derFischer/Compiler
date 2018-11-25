@@ -3,6 +3,7 @@
 #include "symbol.h"
 #include "temp.h"
 #include "tree.h"
+#include "errormsg.h"
 
 T_expList T_ExpList(T_exp head, T_expList tail)
 {T_expList p = (T_expList) checked_malloc (sizeof *p);
