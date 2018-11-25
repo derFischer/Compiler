@@ -206,7 +206,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 	case A_opExp:
 	{
 		struct expty left = transExp(venv, tenv, a->u.op.left, level, label);
+		EM_error(a->pos, "op exp lv\n");
 		struct expty right = transExp(venv, tenv, a->u.op.right, level, label);
+		EM_error(a->pos, "op exp rv\n");
 		A_oper oper = a->u.op.oper;
 
 		if (oper == A_plusOp || oper == A_minusOp || oper == A_timesOp || oper == A_divideOp)
