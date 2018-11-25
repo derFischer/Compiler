@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "util.h"
 #include "table.h"
 #include "symbol.h"
@@ -9,18 +10,13 @@
 #include "frame.h"
 #include "translate.h"
 
+#define WORDSIZE 8
 //LAB5: you can modify anything you want.
-
+F_fragList frags = NULL;
 struct Tr_access_
 {
 	Tr_level level;
 	F_access access;
-};
-
-struct Tr_accessList_
-{
-	Tr_access head;
-	Tr_accessList tail;
 };
 
 struct Tr_level_
@@ -28,12 +24,6 @@ struct Tr_level_
 	F_frame frame;
 	Tr_level parent;
 };
-
-struct Tr_expList_
-{
-	Tr_exp head;
-	Tr_expList tail;
-}
 
 typedef struct patchList_ *patchList;
 struct patchList_
@@ -149,7 +139,13 @@ static struct Cx unCx(Tr_exp e)
 		cx.falses = PatchList(&(stm->u.CJUMP.false), NULL);
 	}
 	case Tr_nx:
-		return Tr_Cx(NULL, NULL, NULL);
+	{
+		struct Cx tmp;
+		tmp.trues = NULL;
+		tmp.falses = NULL;
+		tmp.stm = NULL;
+		return tmp;
+	}
 	case Tr_cx:
 		return e->u.cx;
 	}
@@ -174,7 +170,7 @@ patchList joinPatch(patchList first, patchList second)
 //constructor
 Tr_access Tr_Access(Tr_level level, F_access access)
 {
-	Tr_access acc = malloc(sizeof(*access));
+	Tr_access acc = malloc(sizeof(*acc));
 	acc->level = level;
 	acc->access = access;
 	return acc;
@@ -209,7 +205,7 @@ Tr_level Tr_newLevel(Tr_level parent, Temp_label name, U_boolList formals)
 	Tr_level level = malloc(sizeof(*level));
 
 	//add static link to formals
-	level->frame = F_newFrame(name, U_boolList(TRUE, formals));
+	level->frame = F_newFrame(name, U_BoolList(TRUE, formals));
 	level->parent = parent;
 	return level;
 }
@@ -234,23 +230,23 @@ Tr_access Tr_allocLocal(Tr_level level, bool escape)
 	Tr_access access = malloc(sizeof(*access));
 	access->level = level;
 	access->access = F_allocLocal(level->frame, escape);
-	return Tr_access;
+	return access;
 }
 
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level level)
 {
-	T_exp fp = T_TEMP(F_FP());
-	while (l != access->level)
+	T_exp fp = T_Temp(F_FP());
+	while (level != access->level)
 	{
 		fp = T_Mem(T_Binop(T_plus, T_Const(2 * WORDSIZE), fp));
-		l = l->parent;
+		level = level->parent;
 	}
 	return Tr_Ex(F_exp(access->access, fp));
 }
 
 Tr_exp Tr_fieldVar(Tr_exp address, int offset)
 {
-	return Tr_Ex(T_Mem(T_Binop(T_plus, T_Const(offset * WORDSIZE), unEx(unEx(address))));
+	return Tr_Ex(T_Mem(T_Binop(T_plus, T_Const(offset * WORDSIZE), unEx(unEx(address)))));
 }
 
 Tr_exp Tr_subscriptVar(Tr_exp address, int offset)
@@ -265,7 +261,7 @@ Tr_exp Tr_nilExp()
 
 Tr_exp Tr_intExp(int intt)
 {
-	RETURN Tr_Ex(T_Const(intt));
+	return Tr_Ex(T_Const(intt));
 }
 
 Tr_exp Tr_stringExp(string stringg)
@@ -358,7 +354,7 @@ Tr_exp Tr_recordExp(int size, Tr_expList list)
 	T_stm mallocSpace = T_Move(T_Temp(addr), F_externalCall("malloc", T_ExpList(T_Const(size * WORDSIZE), NULL)));
 	T_exp exp = T_Temp(addr);
 	int i = 0;
-	for (; list; list = list > tail)
+	for (; list; list = list -> tail)
 	{
 		exp = T_Eseq(T_Move(T_Mem(T_Binop(T_plus, T_Temp(addr), T_Const(i * WORDSIZE))), unEx(list->head)), exp);
 		++i;
@@ -385,7 +381,7 @@ Tr_exp Tr_ifExp(Tr_exp test, Tr_exp then, Tr_exp elsee)
 											T_Jump(T_Name(finish), Temp_LabelList(finish, NULL))));
 	T_stm elseStm = T_Seq(T_Label(f), T_Seq(T_Move(T_Temp(r), unEx(elsee)),
 											T_Jump(T_Name(finish), Temp_LabelList(finish, NULL))));
-	T_exp exp = T_Eseq(cx.stm, T_Eseq(thenStm, T_Eseq(elseStm, T_Eseq(T_Lable(finish), T_Temp(r)))));
+	T_exp exp = T_Eseq(cx.stm, T_Eseq(thenStm, T_Eseq(elseStm, T_Eseq(T_Label(finish), T_Temp(r)))));
 	return Tr_Ex(exp);
 }
 
@@ -402,7 +398,7 @@ Tr_exp Tr_whileExp(Tr_exp test, Tr_exp body, Temp_label finish)
 						T_Seq(T_Label(bodyy), 
 							T_Seq(unEx(body),
 								T_Seq(T_Jump(T_Name(testt), Temp_LabelList(testt, NULL)),
-									T_Label(finishi)))))); 
+									T_Label(finish)))))); 
 	return Tr_Nx(stm);
 }
 
@@ -420,9 +416,9 @@ Tr_exp Tr_forExp(Tr_access access, Tr_exp lo, Tr_exp hi, Tr_exp body, Temp_label
 											T_Jump(T_Name(looptest), Temp_LabelList(looptest, NULL))));
 	T_stm forStm = T_Seq(T_Label(looptest),
 							T_Seq(loopStm,
-								T_Seq(T_Label(loopbody),
+								T_Seq(T_Label(loopBody),
 									T_Seq(bodyStm,
-										T_Lable(finish)))));
+										T_Label(finish)))));
 	return Tr_Nx(T_Seq(initStm, forStm));
 }
 
@@ -430,10 +426,10 @@ Tr_exp Tr_breakExp(Temp_label label)
 {
 	return Tr_Nx(T_Jump(T_Name(label), Temp_LabelList(label, NULL)));
 }
-Tr_exp Tr_arrayExp(int size, Tr_exp init)
+Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init)
 {
 	Temp_temp r = Temp_newtemp();
-	return Tr_Ex(T_Eseq(T_Move(T_Temp(r), F_externalCall("initArray", T_ExpList(T_Const(size * WORDSIZE), T_ExpList(unEx(init), NULL))))));
+	return Tr_Ex(T_Eseq(T_Move(T_Temp(r), F_externalCall("initArray", T_ExpList(T_Binop(T_mul, unEx(size), T_Const(WORDSIZE)), T_ExpList(unEx(init), NULL)))), T_Temp(r)));
 }
 
 void Tr_procEntryExit1(Tr_level level, Tr_exp body, Tr_accessList formals)

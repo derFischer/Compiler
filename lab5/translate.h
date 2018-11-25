@@ -7,7 +7,6 @@
 #include "frame.h"
 
 /* Lab5: your code below */
-
 typedef struct Tr_exp_ *Tr_exp;
 
 typedef struct Tr_access_ *Tr_access;
@@ -17,6 +16,18 @@ typedef struct Tr_accessList_ *Tr_accessList;
 typedef struct Tr_level_ *Tr_level;
 
 typedef struct Tr_expList_ *Tr_expList;
+
+struct Tr_accessList_
+{
+	Tr_access head;
+	Tr_accessList tail;
+};
+
+struct Tr_expList_
+{
+	Tr_exp head;
+	Tr_expList tail;
+};
 
 Tr_accessList Tr_AccessList(Tr_access head, Tr_accessList tail);
 
@@ -57,10 +68,11 @@ struct Tr_exp_ {
 	union {T_exp ex; T_stm nx; struct Cx cx; } u;
 };
 */
+Tr_expList Tr_ExpList(Tr_exp head, Tr_expList tail);
 
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level level);
-Tr_exp Tr_fieldVar(Tr_access access, Tr_level level);
-Tr_exp Tr_subscriptVar(Tr_access access, Tr_level level, int index);
+Tr_exp Tr_fieldVar(Tr_exp address, int offset);
+Tr_exp Tr_subscriptVar(Tr_exp address, int offset);
 
 Tr_exp Tr_nilExp();
 Tr_exp Tr_intExp(int intt);
@@ -75,5 +87,8 @@ Tr_exp Tr_ifExp(Tr_exp test, Tr_exp then, Tr_exp elsee);
 Tr_exp Tr_whileExp(Tr_exp test, Tr_exp body, Temp_label finish);
 Tr_exp Tr_forExp(Tr_access access, Tr_exp lo, Tr_exp hi, Tr_exp body, Temp_label finish);
 Tr_exp Tr_breakExp(Temp_label label);
-Tr_exp Tr_arrayExp(A_exp size, Tr_exp init);
+Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init);
+
+void Tr_procEntryExit1(Tr_level level, Tr_exp body, Tr_accessList formals);
+F_fragList Tr_getResult(void);
 #endif

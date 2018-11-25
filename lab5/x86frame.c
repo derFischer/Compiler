@@ -13,7 +13,7 @@
 #define WORDSIZE 8
 //varibales
 struct F_frame_ {
-	Temp_lable name;
+	Temp_label name;
 
 	F_accessList formals;
 	F_accessList locals;
@@ -28,7 +28,7 @@ struct F_frame_ {
 	Temp_tempList calleesaves;
 	Temp_tempList callersaves;
 	Temp_tempList specialregs;
-}
+};
 
 struct F_access_ {
 	enum {inFrame, inReg} kind;
@@ -41,15 +41,15 @@ static F_access InFrame(int offset)
 {
 	F_access access = malloc(sizeof(*access));
 	access->kind = inFrame;
-	access->offset = offset;
+	access->u.offset = offset;
 	return access;
 }
 
-static F_access inReg(Temp_temp reg)
+static F_access inRegg(Temp_temp reg)
 {
 	F_access access = malloc(sizeof(*access));
 	access->kind = inReg;
-	access->reg = reg;
+	access->u.reg = reg;
 	return access;
 }
 
@@ -59,19 +59,15 @@ F_accessList F_AccessList(F_access head, F_accessList tail)
 	list->head = head;
 	list->tail = tail;
 	return list;
-}
+}                                                    
 
-F_frag F_StringFrag(Temp_label label, string str) {   
-	    return NULL;                                      
-}                                                     
-                                                      
-F_frag F_ProcFrag(T_stm body, F_frame frame) {        
-	    return NULL;                                      
-}                                                     
-                                                      
-F_fragList F_FragList(F_frag head, F_fragList tail) { 
-	    return NULL;                                      
-}                                                     
+F_fragList F_FragList(F_frag head, F_fragList tail) 
+{ 
+	F_fragList list = malloc(sizeof(*list));
+	list->head = head;
+	list->tail = tail;
+	return list;                                      
+} 
 
 F_frame F_newFrame(Temp_label name, U_boolList formals)
 {
@@ -92,12 +88,12 @@ F_frame F_newFrame(Temp_label name, U_boolList formals)
 	{
 		if(formals->head)
 		{
-			F_access access = inReg(Temp_newtemp());
+			F_access access = inRegg(Temp_newtemp());
 			tmp->tail = F_AccessList(access, NULL);
 		}
 		else
 		{
-			F_access access = inFrame(frame_offset);
+			F_access access = InFrame(frame_offset);
 			tmp->tail = F_AccessList(access, NULL);
 			frame_offset += WORDSIZE;
 		}
@@ -126,11 +122,11 @@ F_access F_allocLocal(F_frame frame, bool escape)
 	F_access access;
 	if(escape)
 	{
-		access = inFrame(-WORDSIZE * (frame->length));
+		access = InFrame(-WORDSIZE * (frame->length));
 	}
 	else
 	{
-		access = inReg(Temp_newtemp());
+		access = inRegg(Temp_newtemp());
 	}
 	frame->locals = F_AccessList(access, frame->locals);
 	++frame->length;
@@ -152,7 +148,7 @@ T_exp F_exp(F_access acc, T_exp framePtr)
 	switch(acc->kind)
 	{
 		case inFrame:
-		return T_Men(T_Binop(T_plus, T_Const(acc->u.offset), framePtr));
+		return T_Mem(T_Binop(T_plus, T_Const(acc->u.offset), framePtr));
 		case inReg:
 		return T_Temp(acc->u.reg);
 	}
@@ -165,15 +161,25 @@ T_exp F_externalCall(string s, T_expList args)
 
 T_stm F_procEntryExit1(F_frame frame, T_stm stm)
 {
-
+	return stm;
 }
 
 F_frag F_StringFrag(Temp_label label, string str)
 {
+	F_frag f = malloc(sizeof(*f));
+	f->kind = F_stringFrag;
+	f->u.stringg.label = label;
+	f->u.stringg.str = str;
 
+	return f; 
 }
 
-F_frag F_procFrag(T_stm body, F_frame frame)
+F_frag F_ProcFrag(T_stm body, F_frame frame)
 {
+	F_frag f = malloc(sizeof(*f));
+	f->kind = F_procFrag;
+	f->u.proc.body = body;
+	f->u.proc.frame = frame;
 
+	return f;  
 }

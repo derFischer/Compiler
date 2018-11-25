@@ -47,6 +47,4 @@ T_exp F_exp(F_access acc, T_exp framePtr);
 T_exp F_externalCall(string s, T_expList args);
 T_stm F_procEntryExit1(F_frame frame, T_stm stm);
 
-F_frag F_StringFrag(Temp_label label, string str);
-F_frag F_procFrag(T_stm body, F_frame frame);
 #endif
