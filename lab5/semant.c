@@ -371,6 +371,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 
 		A_exp body = a->u.forr.body;
 		struct expty bodyTy = transExp(venv, tenv, body, level, finish);
+						EM_error(a->pos, "For exp here body finish\n");
 		S_endScope(venv);
 		if(actual_ty(bodyTy.ty)->kind != Ty_void)
 		{
