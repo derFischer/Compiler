@@ -113,6 +113,7 @@ static T_exp unEx(Tr_exp e)
 	switch (e->kind)
 	{
 	case Tr_ex:
+		EM_error(0, "ex reach here\n");
 		return e->u.ex;
 	case Tr_cx:
 	{
@@ -155,6 +156,7 @@ static struct Cx unCx(Tr_exp e)
 		T_stm stm = T_Cjump(T_ne, e->u.ex, T_Const(0), NULL, NULL);
 		cx.trues = PatchList(&(stm->u.CJUMP.true), NULL);
 		cx.falses = PatchList(&(stm->u.CJUMP.false), NULL);
+		return cx;
 	}
 	case Tr_nx:
 	{
