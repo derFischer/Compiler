@@ -492,6 +492,7 @@ struct expty transDec(S_table venv, S_table tenv, A_dec d, Tr_level level, Temp_
 		{
 			A_fundec tmp = list->head;
 			E_enventry e = S_look(venv, tmp->name);
+					EM_error(d->pos, "fundec arrive here000\n");
 			Ty_tyList formals = e->u.fun.formals;
 			S_beginScope(venv);
 			A_fieldList fieldlist = tmp->params;
