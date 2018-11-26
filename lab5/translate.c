@@ -217,7 +217,7 @@ Tr_accessList Tr_formals(Tr_level level)
 	if(!level)
 	{
 		EM_error(0, "formals faile!");
-		return;
+		return NULL；
 	}
 	F_accessList list = F_formals(level->frame);
 	Tr_accessList tlist = malloc(sizeof(*tlist));
