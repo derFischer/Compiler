@@ -206,9 +206,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 	case A_opExp:
 	{
 		struct expty left = transExp(venv, tenv, a->u.op.left, level, label);
-		EM_error(a->pos, "op exp lv\n");
 		struct expty right = transExp(venv, tenv, a->u.op.right, level, label);
-		EM_error(a->pos, "op exp rv\n");
 		A_oper oper = a->u.op.oper;
 
 		if (oper == A_plusOp || oper == A_minusOp || oper == A_timesOp || oper == A_divideOp)
@@ -283,10 +281,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 		}
 
 		struct expty v = transVar(venv, tenv, tmp, level, label);
-		EM_error(a->pos, "assign exp lv\n");
 		A_exp t = a->u.assign.exp;
 		struct expty exp = transExp(venv, tenv, t, level, label);
-		EM_error(a->pos, "assign exp v\n");
 
 		if (actual_ty(v.ty) != actual_ty(exp.ty))
 		{
@@ -352,16 +348,13 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 	}
 	case A_forExp:
 	{
-		EM_error(a->pos, "For exp here start\n");
 		Temp_label finish = Temp_newlabel();
 		A_exp initial = a->u.forr.lo;
 		A_exp end = a->u.forr.hi;
 
 		struct expty initialTy = transExp(venv, tenv, initial, level, label);
-				EM_error(a->pos, "For exp here initial finish\n");
 
 		struct expty endTy = transExp(venv, tenv, end, level, label);
-				EM_error(a->pos, "For exp here end finish\n");
 
 		if (actual_ty(initialTy.ty)->kind != Ty_int || actual_ty(endTy.ty)->kind != Ty_int)
 		{
@@ -370,13 +363,11 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 		}
 
 		Tr_access access = Tr_allocLocal(level, a->u.forr.escape);
-						EM_error(a->pos, "For exp here alloc finish\n");
 		S_beginScope(venv);
 		S_enter(venv, a->u.forr.var, E_ROVarEntry(access, Ty_Int()));
 
 		A_exp body = a->u.forr.body;
 		struct expty bodyTy = transExp(venv, tenv, body, level, finish);
-						EM_error(a->pos, "For exp here body finish\n");
 		S_endScope(venv);
 		if(actual_ty(bodyTy.ty)->kind != Ty_void)
 		{
@@ -401,7 +392,6 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 		struct expty body = transExp(venv, tenv, a->u.let.body, level, label);
 		S_endScope(tenv);
 		S_endScope(venv);
-		EM_error(a->pos, "reach here let exp\n");
 		return body;
 	}
 	case A_arrayExp:

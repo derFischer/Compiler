@@ -83,11 +83,9 @@ patchList joinPatch(patchList first, patchList second)
 
 static Tr_exp Tr_Ex(T_exp ex)
 {
-	EM_error(0, "trexp here\n");
 	Tr_exp e = malloc(sizeof(*e));
 	e->kind = Tr_ex;
 	e->u.ex = ex;
-	EM_error(0, "trexp hereeee\n");
 	return e;
 }
 
@@ -111,13 +109,10 @@ static Tr_exp Tr_Cx(patchList trues, patchList falses, T_stm stm)
 
 static T_exp unEx(Tr_exp e)
 {
-	EM_error(0, "ex kind\n");
 	switch (e->kind)
 	{
 	case Tr_ex:
-		EM_error(0, "ex reach here\n");
 		T_exp tmp = e->u.ex;
-				EM_error(0, "ex reach here111\n");
 		return tmp;
 	case Tr_cx:
 	{
@@ -316,13 +311,9 @@ Tr_exp Tr_opExp(A_oper oper, Tr_exp left, Tr_exp right)
 		op = T_div;
 		break;
 	}
-	EM_error(0, "op exp here000\n");
 	T_exp leftt = unEx(left);
-	EM_error(0, "op exp here\n");
 	T_exp rightr = unEx(right);
-	EM_error(0, "op exp jere\n");
 	T_exp result = T_Binop(op, leftt, rightr);
-		EM_error(0, "op exp jeresdfasd\n");
 	return Tr_Ex(result);
 }
 
