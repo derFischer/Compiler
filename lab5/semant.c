@@ -38,7 +38,7 @@ Ty_ty actual_ty(Ty_ty t)
 	return t;
 }
 
-struct expty transSimpleVar(S_table venv, S_table tenv, A_var v, Tr_level)
+struct expty transSimpleVar(S_table venv, S_table tenv, A_var v, Tr_level level)
 {
 	E_enventry value = S_look(venv, v->u.simple);
 	if (value && value->kind == E_varEntry)
