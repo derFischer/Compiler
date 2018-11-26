@@ -496,12 +496,14 @@ struct expty transDec(S_table venv, S_table tenv, A_dec d, Tr_level level, Temp_
 			S_beginScope(venv);
 			A_fieldList fieldlist = tmp->params;
 			Tr_accessList accesses = Tr_formals(e->u.fun.level);
+			EM_error(d->pos, "fundec arrive here111\n");
 			for (; fieldlist && formals && accesses; fieldlist = fieldlist->tail, formals = formals->tail, accesses = accesses->tail)
 			{
 				S_enter(venv, fieldlist->head->name, E_VarEntry(accesses->head, formals->head));
 			}
-
+			EM_error(d->pos, "fundec arrive here222\n");	
 			struct expty returnType = transExp(venv, tenv, tmp->body, e->u.fun.level, label);
+			EM_error(d->pos, "fundec arrive here333\n");	
 			if (actual_ty(returnType.ty) != actual_ty(e->u.fun.result))
 			{
 				if (actual_ty(e->u.fun.result)->kind == Ty_void)
