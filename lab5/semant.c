@@ -38,12 +38,12 @@ Ty_ty actual_ty(Ty_ty t)
 	return t;
 }
 
-struct expty transSimpleVar(S_table venv, S_table tenv, A_var v)
+struct expty transSimpleVar(S_table venv, S_table tenv, A_var v, Tr_level)
 {
 	E_enventry value = S_look(venv, v->u.simple);
 	if (value && value->kind == E_varEntry)
 	{
-		return expTy(NULL, actual_ty(value->u.var.ty));
+		return expTy(Tr_simpleVar(value->u.var.access, level), actual_ty(value->u.var.ty));
 	}
 	else
 	{
@@ -58,7 +58,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v, Tr_level level, Temp_
 	{
 	case A_simpleVar:
 	{
-		return transSimpleVar(venv, tenv, v);
+		return transSimpleVar(venv, tenv, v, level);
 	}
 
 	case A_fieldVar:
