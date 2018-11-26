@@ -112,8 +112,7 @@ static T_exp unEx(Tr_exp e)
 	switch (e->kind)
 	{
 	case Tr_ex:
-		T_exp tmp = e->u.ex;
-		return tmp;
+		return e->u.ex;
 	case Tr_cx:
 	{
 		Temp_temp r = Temp_newtemp();
