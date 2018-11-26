@@ -66,12 +66,11 @@ T_stm T_Exp(T_exp exp)
 }
  
 T_exp T_Binop(T_binOp op, T_exp left, T_exp right)
-{ EM_error(0, "TBINOP start\n");T_exp p = (T_exp) checked_malloc(sizeof *p);
+{T_exp p = (T_exp) checked_malloc(sizeof *p);
  p->kind=T_BINOP;
  p->u.BINOP.op=op;
  p->u.BINOP.left=left;
  p->u.BINOP.right=right;
- EM_error(0, "TBINOP finish\n");
  return p;
 }
  
