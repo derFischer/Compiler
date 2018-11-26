@@ -281,18 +281,20 @@ Tr_exp Tr_stringExp(string stringg)
 
 Tr_exp Tr_callExp(Temp_label fname, Tr_expList params, Tr_level caller, Tr_level callee)
 {
+	EM_error(0, "tr call exp start\n");
 	T_expList args = NULL;
 	for (; params; params = params->tail)
 	{
 		args = T_ExpList(unEx(params->head), args);
 	}
-
+	EM_error(0, "tr call exp here111\n");
 	T_exp fp = T_Temp(F_FP());
 	while (callee != caller)
 	{
 		fp = T_Mem(T_Binop(T_plus, T_Const(WORDSIZE), fp));
 		caller = caller->parent;
 	}
+	EM_error(0, "tr call exp here222\n");
 	fp = T_Mem(T_Binop(T_plus, T_Const(WORDSIZE), fp));
 	args = T_ExpList(fp, args);
 	return Tr_Ex(T_Call(T_Name(fname), args));
