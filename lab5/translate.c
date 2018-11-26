@@ -292,7 +292,7 @@ Tr_exp Tr_callExp(Temp_label fname, Tr_expList params, Tr_level caller, Tr_level
 	callee = callee->parent;
 	while (callee != caller)
 	{
-		fp = T_Mem(T_Binop(T_plus, T_Const(WORDSIZE), fp));
+		fp = T_Mem(T_Binop(T_plus, T_Const(WORDSIZE * 2), fp));
 		caller = caller->parent;
 	}
 	EM_error(0, "tr call exp here222\n");
@@ -448,6 +448,7 @@ Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init)
 
 void Tr_procEntryExit1(Tr_level level, Tr_exp body, Tr_accessList formals)
 {
+	EM_error(0, "exit proc\n");
 	T_stm exitStm = T_Move(T_Temp(F_RV()), unEx(body));
 	F_frag frag = F_ProcFrag(exitStm, level->frame);
 	frags = F_FragList(frag, frags);
