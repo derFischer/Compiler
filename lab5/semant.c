@@ -498,6 +498,10 @@ struct expty transDec(S_table venv, S_table tenv, A_dec d, Tr_level level, Temp_
 			S_beginScope(venv);
 			A_fieldList fieldlist = tmp->params;
 			EM_error(d->pos, "fundec arrive here444\n");
+			if(!e)
+			{
+				EM_error(d->pos, "fundec empty pointer\n");
+			}
 			Tr_accessList accesses = Tr_formals(e->u.fun.level);
 			EM_error(d->pos, "fundec arrive here111\n");
 			for (; fieldlist && formals && accesses; fieldlist = fieldlist->tail, formals = formals->tail, accesses = accesses->tail)
