@@ -80,7 +80,7 @@ F_frame F_newFrame(Temp_label name, U_boolList formals)
 	frame->specialregs = NULL;
 
 	int argSize = 0;
-	int frame_offset = WORDSIZE * 2;
+	int frame_offset = WORDSIZE;
 
 	F_accessList list = malloc(sizeof(*list));
 	F_accessList tmp = list;
