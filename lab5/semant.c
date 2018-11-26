@@ -189,6 +189,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 	}
 	case A_callExp:
 	{
+		EM_error(0, "call exp start\n");
 		E_enventry func = S_look(venv, a->u.call.func);
 		if (!func || func->kind != E_funEntry)
 		{
@@ -199,8 +200,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 		Ty_tyList formals = func->u.fun.formals;
 		Ty_ty result = func->u.fun.result;
 		Tr_expList TrexpList = explistSame(venv, tenv, args, formals, a, level, label);
-
+		EM_error(0, "call exp here111\n");
 		Tr_exp Trexp = Tr_callExp(func->u.fun.label, TrexpList, level, func->u.fun.level);
+		EM_error(0, "call exp here222\n");
 		return expTy(Trexp, actual_ty(result));
 	}
 	case A_opExp:
