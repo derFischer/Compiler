@@ -262,7 +262,6 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 			for (; list; list = list->tail)
 			{
 				result = transExp(venv, tenv, list->head, level, label);
-				EM_error(a->pos, "seq command");
 			}
 			return result;
 		}
