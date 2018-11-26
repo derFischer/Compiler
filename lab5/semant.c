@@ -486,7 +486,7 @@ struct expty transDec(S_table venv, S_table tenv, A_dec d, Tr_level level, Temp_
 			U_boolList escapes = functionParamEscape(tmp->params);
 			S_enter(venv, tmp->name, E_FunEntry(Tr_newLevel(level, newLable, escapes), newLable, formals, result));
 		}
-		EM_error(a->pos, "fundec arrive here\n");
+		EM_error(d->pos, "fundec arrive here\n");
 		list = d->u.function;
 		for (; list; list = list->tail)
 		{
@@ -518,7 +518,7 @@ struct expty transDec(S_table venv, S_table tenv, A_dec d, Tr_level level, Temp_
 			}
 			S_endScope(venv);
 		}
-		EM_error(a->pos, "fundec finish\n");
+		EM_error(d->pos, "fundec finish\n");
 		return expTy(NULL, Ty_Int());
 	}
 	case A_varDec:
