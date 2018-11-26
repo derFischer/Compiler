@@ -222,7 +222,7 @@ Tr_accessList Tr_formals(Tr_level level)
 	F_accessList list = F_formals(level->frame);
 	Tr_accessList tlist = malloc(sizeof(*tlist));
 	Tr_accessList result = tlist;
-	while (list->head)
+	while (list)
 	{
 		Tr_access tmp = Tr_Access(level, list->head);
 		tlist->tail = Tr_AccessList(tmp, NULL);
