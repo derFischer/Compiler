@@ -214,6 +214,11 @@ Tr_level Tr_newLevel(Tr_level parent, Temp_label name, U_boolList formals)
 
 Tr_accessList Tr_formals(Tr_level level)
 {
+	if(!level)
+	{
+		EM_error(0, "formals faile!");
+		return;
+	}
 	F_accessList list = F_formals(level->frame);
 	Tr_accessList tlist = malloc(sizeof(*tlist));
 	Tr_accessList result = tlist;
