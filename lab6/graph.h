@@ -22,6 +22,10 @@ G_nodeList G_NodeList(G_node head, G_nodeList tail);
 /* Get the list of nodes belonging to "g" */
 G_nodeList G_nodes(G_graph g);
 
+G_nodeList setMinus(G_nodeList nl1, G_nodeList nl2);
+
+G_nodeList setUnion(G_nodeList nl1, G_nodeList nl2);
+
 /* Tell if "a" is in the list "l" */
 bool G_inNodeList(G_node a, G_nodeList l);
 

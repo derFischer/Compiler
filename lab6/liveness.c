@@ -31,4 +31,7 @@ struct Live_graph Live_liveness(G_graph flow) {
 	return lg;
 }
 
-
+bool L_inMoveList(G_node, Live_moveList moveList)
+{
+	
+}

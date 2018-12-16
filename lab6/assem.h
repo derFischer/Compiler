@@ -5,7 +5,6 @@
 
 #ifndef ASSEM_H
 #define ASSEM_H
-
 typedef struct {Temp_labelList labels;} *AS_targets;
 AS_targets AS_Targets(Temp_labelList labels);
 

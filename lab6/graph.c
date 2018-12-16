@@ -167,4 +167,34 @@ void *G_look(G_table t, G_node node)
   return TAB_look(t, node);
 }
 
+G_nodeList setMinus(G_nodeList nl1, G_nodeList nl2)
+{
+  G_nodeList result = NULL;
+  for(; nl1 != NULL; nl1 = nl1->tail)
+  {
+    if(G_inNodeList(nl1->head, nl2))
+    {
+      continue;
+    }
+    result = G_NodeList(nl1->head, result);
+  }
+  return result;
+}
 
+G_nodeList setUnion(G_nodeList nl1, G_nodeList nl2)
+{
+  G_nodeList result = NULL;
+  for(; nl1 != NULL; nl1 = nl1->tail)
+  {
+    result = G_NodeList(nl1->head, result);
+  }
+  for(; nl2 != NULL; nl2 = nl2->tail)
+  {
+    if(G_inNodeList(nl2->head, result))
+    {
+      continue;
+    }
+    result = G_NodeList(nl2->head, result);
+  }
+  return result;
+}
