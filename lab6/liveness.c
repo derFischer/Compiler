@@ -42,3 +42,17 @@ bool L_inMoveList(G_node src, G_node dst, Live_moveList moveList)
 	}
 	return FALSE;
 }
+
+Live_moveList L_setMinus(Live_moveList ml1, Live_moveList ml2)
+{
+	Live_moveList result;
+	for(; ml1! = NULL; ml1 = ml1->tail)
+	{
+		if(L_inMoveList(ml1->src, ml1->dst, ml2))
+		{
+			continue;
+		}
+		result = Live_MoveList(ml1->src, ml2->src, result);
+	}
+	return result;
+}
