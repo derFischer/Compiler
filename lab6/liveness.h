@@ -18,4 +18,6 @@ Temp_temp Live_gtemp(G_node n);
 struct Live_graph Live_liveness(G_graph flow);
 
 bool L_inMoveList(G_node src, G_node dst, Live_moveList moveList);
+Live_moveList L_setMinus(Live_moveList ml1, Live_moveList ml2);
+Live_moveList L_setUnion(Live_moveList ml1, Live_moveList ml2);
 #endif

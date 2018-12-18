@@ -38,7 +38,7 @@ static G_nodeList Adjacent(G_node node)
 	return G_setMinus(G_adj(node), G_setUnion(selectStack, coalescedNodes));
 }
 
-static Live_moveList G_NodeMoves(G_node node)
+static Live_moveList NodeMoves(G_node node)
 {
 	Live_moveList result = NULL;
 	for (; activeMoves != NULL; activeMoves = activeMoves->tail)
@@ -63,7 +63,7 @@ static Live_moveList G_NodeMoves(G_node node)
 
 static bool MoveRelated(G_node node)
 {
-	return !(G_NodeMoves(node));
+	return !(NodeMoves(node));
 }
 
 void MakeWorklist(G_graph ig)
@@ -108,7 +108,7 @@ void DecrementDegree(G_node node)
 {
 	nodeInfo info = G_nodeInfo(node);
 	info->degree--;
-	if (info->degree == K)
+	if (info->degree == regNum)
 	{
 		EnableMoves(G_setUnion(G_NodeList(node, NULL), G_adj(node)));
 		spillWorklist = G_setMinus(spillWorklist, G_NodeList(node, NULL));
@@ -176,10 +176,10 @@ bool adjOk(G_node center, G_node src)
 	{
 		if(!OK(nl->head, src))
 		{
-			return false;
+			return FALSE;
 		}
 	}
-	return true;
+	return TRUE;
 }
 
 bool Conservative(G_nodeList nodes)
@@ -207,8 +207,22 @@ void Combine(G_node node1, G_node node2)
 		spillWorklist = G_setMinus(spillWorklist, G_NodeList(node2, NULL));
 	}
 	coalescedNodes = G_setUnion(coalescedNodes, G_NodeList(node2, NULL));
-	G_nodeInfo(node2)->alias = u;
-	
+	nodeInfo info1 = G_nodeInfo(node1);
+	nodeInfo info2 = G_nodeInfo(node2);
+	info2->alias = node1;
+	info1->moves = L_setUnion(info1->moves, info2->moves);
+	EnableMoves(node2);
+	G_nodeList node2Adj = G_adj(node2);
+	for(; node2Adj != NULL; node2Adj = node2Adj->tail)
+	{
+		G_addEdge(node2Adj->head, node1);
+		DecrementDegree(node2Adj->head);
+	}
+	if(info1->degree >= regNum && G_inNodeList(node1, freezeWorklist))
+	{
+		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node1));
+		spillWorklist = G_setUnion(spilledNodes, node1);
+	}
 }
 
 void Coalesce()
@@ -245,13 +259,50 @@ void Coalesce()
 		else if(G_inNodeList(newSrc, precoloredList) && adjOK(newDst, newSrc) || !G_inNodeList(newSrc, precoloredList) && Conservative(G_setUnion(G_adj(newSrc), G_adj(newDst))))
 		{
 			coalescedMoves = Live_MoveList(rawSrc, rawDst, coalescedMoves);
-			Combine()
+			Combine(newSrc, newDst);
+			AddWorkList(newSrc);
+		}
+		else
+		{
+			activeMoves = Live_MoveList(rawSrc, rawDst, activeMoves);
+		}
+	}
+}
+
+void FreezeMoves(G_node node)
+{
+	Live_moveList ml;
+	while(ml = NodeMoves(node))
+	{
+		G_node tmp;
+		if(GetAlias(ml->dst) == GetAlias(node))
+		{
+			tmp = GetAlias(ml->src);
+		}
+		else
+		{
+			tmp = GetAlias(ml->dst);
+		}
+		activeMoves = L_setMinus(activeMoves, Live_MoveList(ml->src, ml->dst, NULL));
+		frozenMoves = Live_MoveList(ml->src, ml->dst, frozenMoves);
+		nodeInfo tmpInfo = G_nodeInfo(tmp);
+		if(NodeMoves(tmp) == NULL && tmpInfo->degree < regNum)
+		{
+			freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(tmp, NULL));
+			simplifyWorklist = G_setUnion(simplifyWorklist, G_NodeList(tmp, NULL));
 		}
 	}
 }
 
 void Freeze()
 {
+	while(freezeWorklist)
+	{
+		G_node node = freezeWorklist->head;
+		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node, NULL));
+		simplifyWorklist = G_setUnion(simplifyWorklist, G_NodeList(node, NULL));
+		FreezeMoves(node);
+	}
 }
 
 void SelectSpill()

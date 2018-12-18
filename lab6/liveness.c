@@ -35,7 +35,7 @@ bool L_inMoveList(G_node src, G_node dst, Live_moveList moveList)
 {
 	for(; moveList != NULL; moveList = moveList->tail)
 	{
-		if(src == moveList->src && dst == moveList->dst)
+		if(src == moveList->src && dst == moveList->dst || src == moveList->dst && dst == moveList->src)
 		{
 			return TRUE;
 		}
@@ -46,13 +46,30 @@ bool L_inMoveList(G_node src, G_node dst, Live_moveList moveList)
 Live_moveList L_setMinus(Live_moveList ml1, Live_moveList ml2)
 {
 	Live_moveList result;
-	for(; ml1! = NULL; ml1 = ml1->tail)
+	for(; ml1 != NULL; ml1 = ml1->tail)
 	{
 		if(L_inMoveList(ml1->src, ml1->dst, ml2))
 		{
 			continue;
 		}
-		result = Live_MoveList(ml1->src, ml2->src, result);
+		result = Live_MoveList(ml1->src, ml1->dst, result);
+	}
+	return result;
+}
+
+Live_moveList L_setUnion(Live_moveList ml1, Live_moveList ml2)
+{
+	Live_moveList result;
+	for(; ml1 != NULL; ml1 = ml1->tail)
+	{
+		result = Live_MoveList(ml1->src, ml1->dst, result);
+	}
+	for(; ml2 != NULL; ml2 = ml2->tail)
+	{
+		if(!L_inMoveList(ml2->src, ml2->dst, result))
+		{
+			result = Live_MoveList(ml2->src, ml2->dst, result);
+		}
 	}
 	return result;
 }
