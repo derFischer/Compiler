@@ -124,23 +124,20 @@ void DecrementDegree(G_node node)
 }
 void Simplify()
 {
-	while (simplifyWorklist)
+	G_node node = simplifyWorklist->head;
+	simplifyWorklist = simplifyWorklist->tail;
+	selectStack = G_NodeList(node, selectStack);
+	G_nodeList adj = G_adj(node);
+	for (; adj != NULL; adj = adj->tail)
 	{
-		G_node node = simplifyWorklist->head;
-		simplifyWorklist = simplifyWorklist->tail;
-		selectStack = G_NodeList(node, selectStack);
-		G_nodeList adj = G_adj(node);
-		for (; adj != NULL; adj = adj->tail)
-		{
-			DecrementDegree(adj->head);
-		}
+		DecrementDegree(adj->head);
 	}
 }
 
 void AddWorkList(G_node node)
 {
 	nodeInfo = G_nodeInfo(node);
-	if(!G_inNodeList(node, precoloredList) && !MoveRelated(node) && nodeInfo->degree < regNum)
+	if (!G_inNodeList(node, precoloredList) && !MoveRelated(node) && nodeInfo->degree < regNum)
 	{
 		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node, NULL));
 		simplifyWorklist = G_setUnion(simplifyWorklist, G_NodeList(node, NULL));
@@ -172,9 +169,9 @@ bool OK(G_node node1, G_node node2)
 bool adjOk(G_node center, G_node src)
 {
 	G_nodeList nl = G_adj(center);
-	for(; nl != NULL; nl = nl->tail)
+	for (; nl != NULL; nl = nl->tail)
 	{
-		if(!OK(nl->head, src))
+		if (!OK(nl->head, src))
 		{
 			return FALSE;
 		}
@@ -185,10 +182,10 @@ bool adjOk(G_node center, G_node src)
 bool Conservative(G_nodeList nodes)
 {
 	int highDegreeNum = 0;
-	for(; nodes != NULL; nodes = nodes->tail)
+	for (; nodes != NULL; nodes = nodes->tail)
 	{
 		nodeInfo = G_nodeInfo(nodes->head);
-		if(nodeInfo->degree >= regNum)
+		if (nodeInfo->degree >= regNum)
 		{
 			highDegreeNum++;
 		}
@@ -198,7 +195,7 @@ bool Conservative(G_nodeList nodes)
 
 void Combine(G_node node1, G_node node2)
 {
-	if(G_inNodeList(node2, freezeWorklist))
+	if (G_inNodeList(node2, freezeWorklist))
 	{
 		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node2, NULL));
 	}
@@ -213,12 +210,12 @@ void Combine(G_node node1, G_node node2)
 	info1->moves = L_setUnion(info1->moves, info2->moves);
 	EnableMoves(node2);
 	G_nodeList node2Adj = G_adj(node2);
-	for(; node2Adj != NULL; node2Adj = node2Adj->tail)
+	for (; node2Adj != NULL; node2Adj = node2Adj->tail)
 	{
 		G_addEdge(node2Adj->head, node1);
 		DecrementDegree(node2Adj->head);
 	}
-	if(info1->degree >= regNum && G_inNodeList(node1, freezeWorklist))
+	if (info1->degree >= regNum && G_inNodeList(node1, freezeWorklist))
 	{
 		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node1));
 		spillWorklist = G_setUnion(spilledNodes, node1);
@@ -245,18 +242,18 @@ void Coalesce()
 			newDst = dst;
 		}
 		worklistMoves = worklistMoves->tail;
-		if(newSrc = newDst)
+		if (newSrc = newDst)
 		{
 			coalescedMoves = Live_MoveList(rawSrc, rawDst, coalescedMoves);
 			AddWorkList(newSrc);
 		}
-		else if(G_inNodeList(newDst, precoloredList) || G_inNodeList(newDst, G_adj(newSrc)))
+		else if (G_inNodeList(newDst, precoloredList) || G_inNodeList(newDst, G_adj(newSrc)))
 		{
 			constrainedMoves = Live_MoveList(rawSrc, rawDst, constrainedMoves);
 			AddWorkList(newSrc);
 			AddWorkList(newDst);
 		}
-		else if(G_inNodeList(newSrc, precoloredList) && adjOK(newDst, newSrc) || !G_inNodeList(newSrc, precoloredList) && Conservative(G_setUnion(G_adj(newSrc), G_adj(newDst))))
+		else if (G_inNodeList(newSrc, precoloredList) && adjOK(newDst, newSrc) || !G_inNodeList(newSrc, precoloredList) && Conservative(G_setUnion(G_adj(newSrc), G_adj(newDst))))
 		{
 			coalescedMoves = Live_MoveList(rawSrc, rawDst, coalescedMoves);
 			Combine(newSrc, newDst);
@@ -272,10 +269,10 @@ void Coalesce()
 void FreezeMoves(G_node node)
 {
 	Live_moveList ml;
-	while(ml = NodeMoves(node))
+	while (ml = NodeMoves(node))
 	{
 		G_node tmp;
-		if(GetAlias(ml->dst) == GetAlias(node))
+		if (GetAlias(ml->dst) == GetAlias(node))
 		{
 			tmp = GetAlias(ml->src);
 		}
@@ -286,7 +283,7 @@ void FreezeMoves(G_node node)
 		activeMoves = L_setMinus(activeMoves, Live_MoveList(ml->src, ml->dst, NULL));
 		frozenMoves = Live_MoveList(ml->src, ml->dst, frozenMoves);
 		nodeInfo tmpInfo = G_nodeInfo(tmp);
-		if(NodeMoves(tmp) == NULL && tmpInfo->degree < regNum)
+		if (NodeMoves(tmp) == NULL && tmpInfo->degree < regNum)
 		{
 			freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(tmp, NULL));
 			simplifyWorklist = G_setUnion(simplifyWorklist, G_NodeList(tmp, NULL));
@@ -296,7 +293,7 @@ void FreezeMoves(G_node node)
 
 void Freeze()
 {
-	while(freezeWorklist)
+	while (freezeWorklist)
 	{
 		G_node node = freezeWorklist->head;
 		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node, NULL));
