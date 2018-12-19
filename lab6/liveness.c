@@ -136,7 +136,7 @@ Temp_temp Live_gtemp(G_node node) {
 	return info->reg;
 }
 
-Temp_tempList L_calSuccIn(G_node node)
+Temp_tempList L_calSuccIn(G_node node, TAB_table tempListIn)
 {
 	Temp_tempList result = NULL;
 	G_nodeList succ = G_succ(node);
@@ -144,7 +144,7 @@ Temp_tempList L_calSuccIn(G_node node)
 	{
 		G_node n = succ->head;
 		nodeInfo info = G_nodeInfo(n);
-		result = L_tempListUnion(info->in, result);
+		result = L_tempListUnion(TAB_look(tempListIn, n), result);
 	}
 	return result;
 }
@@ -155,26 +155,36 @@ struct Live_graph Live_liveness(G_graph flow) {
 
 	//analysis
 	G_nodeList nodes = G_nodes(flow);
+	TAB_table tempListIn = TAB_empty();
+	TAB_table tempListOut = TAB_empty();
 	bool fixPoint = FALSE
+
 	while(fixPoint)
 	{
 		fixPoint = TRUE;
 		while(nodes)
 		{
 			G_node node = nodes->head
-			nodeInfo info = G_nodeInfo(node);
-			Temp_tempList oldIn = info->in;
-			Temp_tempList oldOut = info->out;
-			info->in = L_tempListUnion(FG_use(node), L_tempListMinus(info->out, FG_def(node)));
-			info->out = L_calSuccIn(node);
+			Temp_tempList oldIn = TAB_look(tempListIn, node);
+			Temp_tempList oldOut = TAB_look(tempListOut, node);
+			Temp_tempList newIn = L_tempListUnion(FG_use(node), L_tempListMinus(oldOut, FG_def(node)));
+			Temp_tempLIst newOut = L_calSuccIn(node);
 
-			if(!sameTempList(oldIn, info->in) || !sameTempList(oldOut, info->out))
+			if(!sameTempList(oldIn, newIn) || !sameTempList(oldOut, newOut))
 			{
 				fixPoint = FALSE;
 			}
+			TAB_enter(tempListIn, node, newIn);
+			TAB_enter(tempListOut, node, newOut);
 		}
 	}
 	
-	
+	//interference graph
+	G_graph interference = G_empty();
+	while(nodes)
+	{
+		
+	}
+
 	return lg;
 }

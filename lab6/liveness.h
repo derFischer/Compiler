@@ -12,8 +12,6 @@ struct nodeInfo_ {
 	int degree;
 	G_node alias;
 	Live_moveList moves;
-	Temp_tempList in;
-	Temp_tempList out;
 }
 
 typedef nodeInfo_* nodeInfo;
