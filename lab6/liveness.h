@@ -7,6 +7,25 @@ struct Live_moveList_ {
 	Live_moveList tail;
 };
 
+struct nodeInfo_ {
+	Temp_temp reg;
+	int degree;
+	G_node alias;
+	Live_moveList moves;
+	Temp_tempList in;
+	Temp_tempList out;
+}
+
+typedef nodeInfo_* nodeInfo;
+nodeInfo NodeInfo(int degree, G_node alias, Live_moveList moves)
+{
+	nodeInfo info = malloc(sizeof(*info));
+	info->degree = degree;
+	info->alias = alias;
+	info->moves = moves;
+	return info;
+}
+
 Live_moveList Live_MoveList(G_node src, G_node dst, Live_moveList tail);
 
 struct Live_graph {

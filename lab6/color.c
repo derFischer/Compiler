@@ -136,7 +136,7 @@ void Simplify()
 
 void AddWorkList(G_node node)
 {
-	nodeInfo = G_nodeInfo(node);
+	nodeInfo info = G_nodeInfo(node);
 	if (!G_inNodeList(node, precoloredList) && !MoveRelated(node) && nodeInfo->degree < regNum)
 	{
 		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node, NULL));
