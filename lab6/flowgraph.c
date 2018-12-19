@@ -98,6 +98,12 @@ Temp_tempList FG_use(G_node n)
 	return NULL;
 }
 
+Temp_tempList FG_MoveSrc(G_node n)
+{
+	AS_instr inst = G_nodeInfo(n);
+	return inst->u.MOVE.src;
+}
+
 bool FG_isMove(G_node n)
 {
 	//your code here.

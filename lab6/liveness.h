@@ -13,8 +13,17 @@ struct nodeInfo_ {
 	G_node alias;
 	Live_moveList moves;
 }
-
 typedef nodeInfo_* nodeInfo;
+
+nodeInfo NodeInfo(Temp_temp reg)
+{
+	nodeInfo info = malloc(sizeof(*info));
+	info->reg = reg;
+	info->degree = 0;
+	info->alias = NULL;
+	info->moves = NULL;
+}
+
 nodeInfo NodeInfo(int degree, G_node alias, Live_moveList moves)
 {
 	nodeInfo info = malloc(sizeof(*info));
