@@ -178,11 +178,16 @@ struct Live_graph Live_liveness(G_graph flow)
 			}
 			TAB_enter(tempListIn, node, newIn);
 			TAB_enter(tempListOut, node, newOut);
+			/****************************************/
+			free(oldIn);
+			free(oldOut);
+			/****************************************/
 			nodes = nodes->tail;
 		}
 	}
 
 	//interference graph
+	//to do:判断重复
 	G_graph interference = G_empty();
 	TAB_table tempToNode = TAB_empty();
 	nodes = G_nodes(flow);

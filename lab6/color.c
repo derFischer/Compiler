@@ -300,22 +300,60 @@ void Freeze()
 		simplifyWorklist = G_setUnion(simplifyWorklist, G_NodeList(node, NULL));
 		FreezeMoves(node);
 	}
+
 }
 
 void SelectSpill()
 {
+	G_node node = spilledNodes->head;
+	spilledNodes = spilledNodes->tail;
+	simplifyWorklist = G_setUnion(simplifyWorklist, G_NodeList(node, NULL));
+	FreezeMoves(node);
 }
 
 void AssignColors()
 {
+	while(selectStack)
+	{
+		G_node node = selectStack->head;
+		selectStack = selectStack
+	}
 }
 
 void RewriteProgram(G_nodeList spilledNodes)
 {
 }
 
+Live_moveList calculateMoves(G_node node, Live_moveList moves)
+{
+	Live_moveList result;
+	while(moves)
+	{
+		if(moves->src == node || moves->dst == node)
+		{
+			result = Live_MoveList(moves->src, moves->dst, result);
+		}
+		moves = moves->tail;	
+	}
+	return result;
+}
+
+void Build(G_graph ig, Live_moveList moves)
+{
+	G_nodeList nodes = G_nodes(ig);
+	while(nodes)
+	{
+		G_node node = nodes->head;
+		nodeInfo info = G_nodeInfo(node);
+		info->degree = G_degree(node);
+		info->moves = calculateMoves(node, moves);
+		nodes = nodes->tail;
+	}
+}
+
 struct COL_result COL_color(G_graph ig, Temp_map initial, Temp_tempList regs, Live_moveList moves)
 {
+	Build(ig, moves);
 	MakeWorklist(ig);
 	//your code here.
 	while (simplifyWorklist != NULL && worklistMoves != NULL && freezeWorklist != NULL & spillWorklist != NULL)
