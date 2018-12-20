@@ -133,14 +133,22 @@ F_access F_allocLocal(F_frame frame, bool escape)
 	return access;
 }
 
-Temp_temp F_FP(void)
+Temp_temp F_RSP(void)
 {
-	return Temp_newtemp();
+	static Temp_temp rsp = Temp_newtemp();
+	return rsp;
 }
 
-Temp_temp F_RV(void)
+Temp_temp F_RBP(void)
 {
-	return Temp_newtemp();
+	static Temp_temp rbp = Temp_newtemp();
+	return rbp;
+}
+
+Temp_temp F_RAX(void)
+{
+	static Temp_temp rax = Temp_newtemp();
+	return rax;
 }
 
 T_exp F_exp(F_access acc, T_exp framePtr)
