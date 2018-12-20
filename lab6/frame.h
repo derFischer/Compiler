@@ -5,6 +5,7 @@
 #define FRAME_H
 
 #include "tree.h"
+#define WORDSIZE 8
 
 typedef struct F_frame_ *F_frame;
 
@@ -44,6 +45,7 @@ F_access F_allocLocal(F_frame f, bool escaple);
 
 Temp_temp F_FP(void);
 Temp_temp F_RV(void);
+Temp_temp F_argsReg(int index);
 T_exp F_exp(F_access acc, T_exp framePtr);
 T_exp F_externalCall(string s, T_expList args);
 T_stm F_procEntryExit1(F_frame frame, T_stm stm);

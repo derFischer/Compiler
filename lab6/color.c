@@ -38,7 +38,7 @@ static G_nodeList Adjacent(G_node node)
 	return G_setMinus(G_adj(node), G_setUnion(selectStack, coalescedNodes));
 }
 
-static Live_moveList NodeMoves(G_node node)
+/*static Live_moveList NodeMoves(G_node node)
 {
 	Live_moveList result = NULL;
 	for (; activeMoves != NULL; activeMoves = activeMoves->tail)
@@ -56,6 +56,22 @@ static Live_moveList NodeMoves(G_node node)
 			{
 				result = Live_MoveList(worklistMoves->src, worklistMoves->dst, result);
 			}
+		}
+	}
+	return result;
+}*/
+
+static Live_moveList NodeMoves(G_node node)
+{
+	Live_moveList result = NULL;
+	nodeInfo info = G_nodeInfo(node);
+	Live_moveList effectiveMoves = L_setUnion(activeMoves, worklistMoves);
+	Live_moveList nodeMoves = info->moves;
+	while(nodeMoves)
+	{
+		if(L_inMoveList(nodeMoves->src, nodeMoves->dst, effectiveMoves))
+		{
+			result = Live_MoveList(nodeMoves->src, nodeMoves->dst, result);
 		}
 	}
 	return result;
@@ -122,6 +138,7 @@ void DecrementDegree(G_node node)
 		}
 	}
 }
+
 void Simplify()
 {
 	G_node node = simplifyWorklist->head;
@@ -137,7 +154,7 @@ void Simplify()
 void AddWorkList(G_node node)
 {
 	nodeInfo info = G_nodeInfo(node);
-	if (!G_inNodeList(node, precoloredList) && !MoveRelated(node) && nodeInfo->degree < regNum)
+	if (!G_inNodeList(node, precoloredList) && !MoveRelated(node) && info->degree < regNum)
 	{
 		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node, NULL));
 		simplifyWorklist = G_setUnion(simplifyWorklist, G_NodeList(node, NULL));
@@ -184,8 +201,8 @@ bool Conservative(G_nodeList nodes)
 	int highDegreeNum = 0;
 	for (; nodes != NULL; nodes = nodes->tail)
 	{
-		nodeInfo = G_nodeInfo(nodes->head);
-		if (nodeInfo->degree >= regNum)
+		nodeInfo info = G_nodeInfo(nodes->head);
+		if (info->degree >= regNum)
 		{
 			highDegreeNum++;
 		}
@@ -217,7 +234,7 @@ void Combine(G_node node1, G_node node2)
 	}
 	if (info1->degree >= regNum && G_inNodeList(node1, freezeWorklist))
 	{
-		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node1));
+		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node1, NULL));
 		spillWorklist = G_setUnion(spilledNodes, node1);
 	}
 }
@@ -316,8 +333,27 @@ void AssignColors()
 	while(selectStack)
 	{
 		G_node node = selectStack->head;
-		selectStack = selectStack
+		selectStack = selectStack->tail;
+		G_nodeList adjNodes = G_adj(node);
+		while(adjNodes)
+		{
+			G_node adjNode = adjNodes->head;
+			if(G_inNodeList(GetAlias(adjNode), coloredNodes) || G_inNodeList(GetAlias(adjNode), precoloredList))
+			{
+				//modify okcolors
+			}
+		}
+		if(okcolor = {})
+		{
+			spilledNodes = G_NodeList(node, spilledNodes);
+		}
+		else
+		{
+			coloredNodes = G_NodeList(node, coloredNodes);
+			//select a color and def
+		}
 	}
+	
 }
 
 void RewriteProgram(G_nodeList spilledNodes)

@@ -34,7 +34,7 @@ bool G_inNodeList(G_node a, G_nodeList l);
 void G_addEdge(G_node from, G_node to);
 
 /* Make a new edge(no direction)*/
-void G_addEdgeNonDirection(G_node from, G_node to)
+void G_addEdgeNonDirection(G_node from, G_node to);
 
 /* Delete the edge joining "from" and "to" */
 void G_rmEdge(G_node from, G_node to);

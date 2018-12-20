@@ -101,7 +101,7 @@ Temp_tempList L_tempListUnion(Temp_tempList tmpl1, Temp_tempList tmpl2)
 	Temp_tempList result;
 	for (; tmpl1 != NULL; tmpl1 = tmpl1->tail)
 	{
-		result = Temp_TempList(tmpl->head, result);
+		result = Temp_TempList(tmpl1->head, result);
 	}
 	for (; tmpl2 != NULL; tmpl2 = tmpl2->tail)
 	{
@@ -116,9 +116,9 @@ Temp_tempList L_tempListUnion(Temp_tempList tmpl1, Temp_tempList tmpl2)
 
 bool sameTempList(Temp_tempList tmpl1, Temp_tempList tmpl2)
 {
-	for (; tmpl1 != NULL && tmp2 != NULL; tmpl1 = tmpl1->tail, tmpl2 = tmpl2->tail)
+	for (; tmpl1 != NULL && tmpl2 != NULL; tmpl1 = tmpl1->tail, tmpl2 = tmpl2->tail)
 	{
-		if (tmpl1->head != tmp2->head)
+		if (tmpl1->head != tmpl2->head)
 		{
 			return FALSE;
 		}
@@ -170,7 +170,7 @@ struct Live_graph Live_liveness(G_graph flow)
 			Temp_tempList oldIn = TAB_look(tempListIn, node);
 			Temp_tempList oldOut = TAB_look(tempListOut, node);
 			Temp_tempList newIn = L_tempListUnion(FG_use(node), L_tempListMinus(oldOut, FG_def(node)));
-			Temp_tempLIst newOut = L_calSuccIn(node);
+			Temp_tempList newOut = L_calSuccIn(node, tempListIn);
 
 			if (!sameTempList(oldIn, newIn) || !sameTempList(oldOut, newOut))
 			{
@@ -234,7 +234,7 @@ struct Live_graph Live_liveness(G_graph flow)
 			while (moveSrc)
 			{
 				Temp_temp movTemp = moveSrc->head;
-				if (framePointer(defTemp))
+				if (framePointer(movTemp))
 				{
 					moveSrc = moveSrc->tail;
 					continue;
@@ -242,7 +242,7 @@ struct Live_graph Live_liveness(G_graph flow)
 				if (TAB_look(tempToNode, movTemp) == NULL)
 				{
 					G_node movTempNode = G_Node(interference, NodeInfo(movTemp));
-					TAB_enter(tempToNode, movTemp, defTempNode);
+					TAB_enter(tempToNode, movTemp, movTempNode);
 				}
 				G_node movTempNode = TAB_look(tempToNode, movTemp);
 				while (outs)
@@ -290,7 +290,7 @@ struct Live_graph Live_liveness(G_graph flow)
 		}
 	}
 
-	lg->graph = interference;
-	lg->moves = moves;
+	lg.graph = interference;
+	lg.moves = moves;
 	return lg;
 }

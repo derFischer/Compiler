@@ -14,7 +14,7 @@
 #include "errormsg.h"
 #include "table.h"
 
-typedef waitStruct_* waitStruct;
+typedef struct waitStruct_* waitStruct;
 struct waitStruct_
 {
 	AS_targets waitsLabel;
@@ -27,12 +27,13 @@ waitStruct WaitStruct(AS_targets waitsLabel, G_node node)
 	tmp->node = node;
 }
 
-typedef waitStructList_* waitStructList;
 struct waitStructList_
 {
 	waitStruct head;
 	waitStructList tail;
-}
+};
+typedef struct waitStructList_* waitStructList;
+
 waitStructList WaitStructList(waitStruct head, waitStructList tail)
 {
 	waitStructList tmp = malloc(sizeof(*tmp));
@@ -77,7 +78,7 @@ Temp_tempList FG_use(G_node n)
 	{
 	case I_OPER:
 	{
-		return inst->u.OPEIR.src;
+		return inst->u.OPER.src;
 	}
 	case I_LABEL:
 	{
@@ -132,7 +133,7 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 	while(il)
 	{
 		AS_instr inst = il->head;
-		switch(il->kind)
+		switch(inst->kind)
 		{
 			case I_OPER:
 			{
