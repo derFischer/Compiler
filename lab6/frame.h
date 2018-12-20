@@ -15,6 +15,7 @@ struct F_accessList_ {F_access head; F_accessList tail;};
 
 
 /* declaration for fragments */
+Temp_map F_tempMap;
 typedef struct F_frag_ *F_frag;
 struct F_frag_ {enum {F_stringFrag, F_procFrag} kind;
 			union {
@@ -46,5 +47,7 @@ Temp_temp F_RV(void);
 T_exp F_exp(F_access acc, T_exp framePtr);
 T_exp F_externalCall(string s, T_expList args);
 T_stm F_procEntryExit1(F_frame frame, T_stm stm);
+Temp_tempList F_calleesaves();
+Temp_tempList F_callersaves();
 
 #endif

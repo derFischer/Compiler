@@ -195,7 +195,24 @@ static Temp_temp munchExp(T_exp e)
     }
     case T_CALL:
     {
+        T_exp fun = e->u.CALL.fun;
+        T_expList args = e->u.CALL.args;
+
     }
+    }
+}
+
+static void passArgs(T_expList args)
+{
+    T_exp staticLink = args->head;
+    Temp_temp slReg = munchExp(staticLink);
+    emit(AS_Oper("push `s0", Temp_TempList(F_RSP(), NULL), Temp_TempList(slReg, NULL), NULL));
+    int index = 1;
+    while(args && index <= 6)
+    {
+        T_exp arg = args->head;
+        Temp_temp argReg = munchExp(arg);
+        
     }
 }
 

@@ -221,7 +221,7 @@ struct Live_graph Live_liveness(G_graph flow)
 						TAB_enter(tempToNode, outTemp, outTempNode);
 					}
 					G_node outTempNode = TAB_look(tempToNode, outTemp);
-					G_addEdge(defTempNode, outTempNode);
+					G_addEdgeNonDirection(defTempNode, outTempNode);
 					outs = outs->tail;
 				}
 				defs = defs->tail;
@@ -254,7 +254,7 @@ struct Live_graph Live_liveness(G_graph flow)
 						TAB_enter(tempToNode, outTemp, outTempNode);
 					}
 					G_node outTempNode = TAB_look(tempToNode, outTemp);
-					G_addEdge(movTempNode, outTempNode);
+					G_addEdgeNonDirection(movTempNode, outTempNode);
 					outs = outs->tail;
 				}
 				moveSrc = moveSrc->tail;
@@ -282,7 +282,10 @@ struct Live_graph Live_liveness(G_graph flow)
 			{
 				G_node srcNode = TAB_look(tempToNode, src);
 				G_node dstNode = TAB_look(tempToNode, dst);
-				moves = Live_MoveList(srcNode, dstNode, moves);
+				if(!L_inMoveList(srcNode, dstNode, moves))
+				{
+					moves = Live_MoveList(srcNode, dstNode, moves);
+				}
 			}
 		}
 	}
