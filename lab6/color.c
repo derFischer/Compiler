@@ -13,8 +13,6 @@
 #include "color.h"
 #include "table.h"
 
-static Temp_map colored = NULL;
-
 static G_nodeList precoloredList = NULL;
 static G_nodeList initialList = NULL;
 static G_nodeList simplifyWorklist = NULL;
@@ -330,7 +328,7 @@ void SelectSpill()
 	FreezeMoves(node);
 }
 
-void AssignColors()
+void AssignColors(Temp_map colored)
 {
 	while(selectStack)
 	{
@@ -372,11 +370,6 @@ void AssignColors()
 	}
 }
 
-void RewriteProgram(G_nodeList spilledNodes)
-{
-	
-}
-
 Live_moveList calculateMoves(G_node node, Live_moveList moves)
 {
 	Live_moveList result;
@@ -406,6 +399,7 @@ void Build(G_graph ig, Live_moveList moves)
 
 struct COL_result COL_color(G_graph ig, Temp_map initial, Temp_tempList regs, Live_moveList moves)
 {
+	struct COL_result ret;
 	Build(ig, moves);
 	MakeWorklist(ig);
 	//your code here.
@@ -428,12 +422,14 @@ struct COL_result COL_color(G_graph ig, Temp_map initial, Temp_tempList regs, Li
 			SelectSpill();
 		}
 	}
-	AssignColors();
-	if (spilledNodes != NULL)
+	AssignColors(ret.coloring);
+	Temp_tempList spills = NULL;
+	while(spilledNodes)
 	{
-		RewriteProgram(spilledNodes);
-		COL_color(ig, initial, regs, moves);
+		nodeInfo info = G_nodeInfo(spilledNodes->head);
+		spills = Temp_TempList(info->reg, spills);
+		spilledNodes = spilledNodes->tail;
 	}
-	struct COL_result ret;
+	ret.spills = spills;
 	return ret;
 }

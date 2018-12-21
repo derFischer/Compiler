@@ -13,8 +13,108 @@
 #include "table.h"
 #include "flowgraph.h"
 
+Temp_TempList tempIntersection(Temp_tempList tmpl1, Temp_tempList tmpl2)
+{
+	Temp_tempList result = NULL;
+	for(; tmpl1 != NULL; tmpl1 = tmpl1->tail)
+	{
+		if(L_inTempList(tmpl1->head, tmpl2))
+		{
+			result = Temp_tempList(tmpl1->head, result);
+		}
+	}
+	return result;
+}
+
+AS_instrList RewriteProgram(F_frame f, AS_instrList il, Temp_tempList spills)
+{
+	TAB_table tempPos = TAB_empty();
+	AS_instrList result = il;
+	Temp_tempList spillAlloc = spills;
+
+	//assign stack space for each spill temp
+	while(spillAlloc)
+	{
+		TAB_enter(tempPos, spillAlloc->head, F_allocLocal(f, TRUE));
+		spillAlloc = spillAlloc->tail;
+	}
+
+	//modify the instrs
+	while(il)
+	{
+		AS_instr inst = il->head;
+		Temp_tempList src = NULL;
+		Temp_tempList dst = NULL;
+		if(inst->kind == I_OPER)
+		{
+			src = inst->u.OPER.src;
+			dst = inst->u.OPER.dst;
+		}
+		if(inst->kind == I_MOVE)
+		{
+			src = inst->u.MOVE.src;
+			src = inst->u.MOVE.dst;
+		}
+
+		//calculate the temps that need to load/store of each instr
+		Temp_tempList spilledSrc = tempIntersection(src, spills);
+		Temp_tempList spilledDst = tempIntersection(dst, spills);
+
+		while(spilledSrc)
+		{
+			Temp_temp temp = spilledSrc->head;
+			F_access access = TAB_look(tempPos, temp);
+			Temp_temp newTemp = Temp_newtemp();
+			char load[INSTLENGTH];
+			sprintf("movq %d(`s0), `d0", 0);
+			AS_instr loadInstr = AS_Move(String(load), Temp_TempList(newTemp, NULL), Temp_TempList(F_RSP(), NULL));
+
+		}
+		while(spilledDst)
+		{
+			Temp_temp temp = spilledDst->head;
+			F_access access = TAB_look(tempPos, temp);
+			Temp_temp newTemp = Temp_newtemp();
+			char store[INSTLENGTH];
+			sprintf("movq `s0, %d(`s1)", 0);
+			AS_inst storeInstr = AS_Move(String(store), NULL, Temp_TempList(newTemp, Temp_TempList(F_RSP(), NULL)));
+		}
+	}
+	return result;
+}
+
 struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
 	//your code here
 	struct RA_result ret;
+	G_graph fg = FG_AssemFlowGraph(il, f);
+	struct Live_graph liveness = Live_liveness(fg);
+	struct COL_result colorResult = COL_color(liveness.graph, F_tempMap, NULL, liveness.moves);
+	if(colorResult.spills != NULL)
+	{
+		AS_instrList newIl = RewriteProgram(f, il, colorResult.spills);
+		return RA_regAlloc(f, newIl);
+	}
+
+	Temp_map allRegsMap = Temp_layerMap(F_tempMap, colorResult.coloring);
+	AS_instrList *instPointer = &il;
+	while(*instPointer)
+	{
+		AS_instr inst = (*instPointer)->head;
+		if(inst->kind == I_MOVE && strstr(inst->u.MOVE.assem, "movq `s0, `d0"))
+		{
+			Temp_temp src = inst->u.MOVE.src->head;
+			Temp_temp dst = inst->u.MOVE.dst->head;
+
+			if(strcmp((char *)Temp_look(allRegsMap, src), (char *)Temp_look(allRegsMap, dst)) == 0)
+			{
+				*instPointer = (*instPointer)->tail;
+				continue;
+			}
+		}
+		instPointer = &((*instPointer)->tail);
+	}
+
+	ret.coloring = colorResult.coloring;
+	ret.il = il;
 	return ret;
 }
