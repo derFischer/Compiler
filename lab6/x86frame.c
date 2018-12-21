@@ -210,21 +210,21 @@ Temp_temp F_RV(void)
 
 Temp_temp F_argsReg(int index)
 {
-	switch(index)
+	switch (index)
 	{
-		case 1:
+	case 1:
 		return F_RDI();
-		case 2:
+	case 2:
 		return F_RSI();
-		case 3:
+	case 3:
 		return F_RDX();
-		case 4:
+	case 4:
 		return F_RCX();
-		case 5:
+	case 5:
 		return F_R8();
-		case 6:
+	case 6:
 		return F_R9();
-		default:
+	default:
 		printf("wrong index of a arg reg\n");
 		assert(0);
 	}
@@ -233,23 +233,34 @@ Temp_temp F_argsReg(int index)
 Temp_tempList F_callersaves()
 {
 	return Temp_TempList(F_R10(),
-							Temp_TempList(F_R11(), 
-								Temp_TempList(F_RDI(),
-									Temp_TempList(F_RSI(),
-										Temp_TempList(F_RDX(),
-											Temp_TempList(F_RCX(),
-												Temp_TempList(F_R8(),
-													Temp_TempList(F_R9(), NULL))))))));
+						 Temp_TempList(F_R11(),
+									   Temp_TempList(F_RDI(),
+													 Temp_TempList(F_RSI(),
+																   Temp_TempList(F_RDX(),
+																				 Temp_TempList(F_RCX(),
+																							   Temp_TempList(F_R8(),
+																											 Temp_TempList(F_R9(), NULL))))))));
 }
 
 Temp_tempList F_calleesaves()
 {
 	return Temp_TempList(F_RBX(),
-				Temp_TempList(F_RBP(),
-					Temp_TempList(F_R12(),
-						Temp_TempList(F_R13(),
-							Temp_TempList(F_R14(),
-								Temp_TempList(F_R15(), NULL))))));
+						 Temp_TempList(F_RBP(),
+									   Temp_TempList(F_R12(),
+													 Temp_TempList(F_R13(),
+																   Temp_TempList(F_R14(),
+																				 Temp_TempList(F_R15(), NULL))))));
+}
+
+Temp_tempList F_allRegisters()
+{
+	Temp_tempList calleesaves = F_calleesaves();
+	Temp_tempList callersaves = F_callersaves();
+	Temp_tempList allRegisters = L_tempListUnion(calleesaves, callersaves);
+	free(calleesaves);
+	free(callersaves);
+	Temp_tempList specialregs = Temp_TempList(F_RSP(), Temp_TempList(F_RBP(), NULL));
+	return L_tempListMinus(allRegisters, specialregs);
 }
 
 //registers

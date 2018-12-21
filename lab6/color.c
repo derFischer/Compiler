@@ -13,6 +13,8 @@
 #include "color.h"
 #include "table.h"
 
+static Temp_map colored = NULL;
+
 static G_nodeList precoloredList = NULL;
 static G_nodeList initialList = NULL;
 static G_nodeList simplifyWorklist = NULL;
@@ -334,30 +336,45 @@ void AssignColors()
 	{
 		G_node node = selectStack->head;
 		selectStack = selectStack->tail;
+		Temp_tempList colors = F_allRegisters();
 		G_nodeList adjNodes = G_adj(node);
 		while(adjNodes)
 		{
 			G_node adjNode = adjNodes->head;
 			if(G_inNodeList(GetAlias(adjNode), coloredNodes) || G_inNodeList(GetAlias(adjNode), precoloredList))
 			{
-				//modify okcolors
+				nodeInfo info = G_nodeInfo(GetAlias(adjNode));
+				string reg = Temp_look(colored, info->reg);
+				Temp_temp color = Temp_stringToTemp(reg);
+				colors = L_tempListMinus(colors, Temp_tempList(color, NULL));
 			}
 		}
-		if(okcolor = {})
+		if(colors == NULL)
 		{
 			spilledNodes = G_NodeList(node, spilledNodes);
 		}
 		else
 		{
+			nodeInfo info = G_nodeInfo(node);
 			coloredNodes = G_NodeList(node, coloredNodes);
-			//select a color and def
+			Temp_temp color = colors->head;
+			Temp_enter(colored, info->reg, Temp_look(F_tempMap, color));
 		}
 	}
-	
+	while(coalescedNodes)
+	{
+		G_node node = coalescedNodes->head;
+		G_node alias = GetAlias(node);
+		nodeInfo aliasInfo = G_nodeInfo(alias);
+		nodeInfo info = G_nodeInfo(node);
+		Temp_enter(colored, info->reg, Temp_look(colored, aliasInfo->reg));
+		coalescedNodes = coalescedNodes->tail;
+	}
 }
 
 void RewriteProgram(G_nodeList spilledNodes)
 {
+	
 }
 
 Live_moveList calculateMoves(G_node node, Live_moveList moves)

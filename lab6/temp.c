@@ -49,6 +49,21 @@ Temp_temp Temp_newtemp(void)
  return p;
 }
 
+Temp_temp Temp_stringToTemp(string name)
+{
+  Temp_tempList allregs = F_allRegisters();
+  while(allregs)
+  {
+    reg = allregs->head;
+    string n = Temp_look(F_tempMap, reg);
+    if(strncmp(n, name, 3) == 0)
+    {
+      return reg;
+    }
+    allregs = allregs->tail;
+  }
+  return NULL;
+}
 
 
 struct Temp_map_ {TAB_table tab; Temp_map under;};

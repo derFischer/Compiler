@@ -18,6 +18,7 @@ typedef S_symbol Temp_label;
 Temp_label Temp_newlabel(void);
 Temp_label Temp_namedlabel(string name);
 string Temp_labelstring(Temp_label s);
+Temp_temp Temp_stringToTemp(string name);
 
 typedef struct Temp_labelList_ *Temp_labelList;
 struct Temp_labelList_ { Temp_label head; Temp_labelList tail;};
