@@ -68,19 +68,20 @@ static Live_moveList NodeMoves(G_node node)
 	nodeInfo info = G_nodeInfo(node);
 	Live_moveList effectiveMoves = L_setUnion(activeMoves, worklistMoves);
 	Live_moveList nodeMoves = info->moves;
-	while(nodeMoves)
+	while (nodeMoves)
 	{
-		if(L_inMoveList(nodeMoves->src, nodeMoves->dst, effectiveMoves))
+		if (L_inMoveList(nodeMoves->src, nodeMoves->dst, effectiveMoves))
 		{
 			result = Live_MoveList(nodeMoves->src, nodeMoves->dst, result);
 		}
+		nodeMoves = nodeMoves->tail;
 	}
 	return result;
 }
 
 static bool MoveRelated(G_node node)
 {
-	return !(NodeMoves(node));
+	return (NodeMoves(node) != NULL);
 }
 
 void MakeWorklist(G_graph ig)
@@ -260,7 +261,7 @@ void Coalesce()
 			newDst = dst;
 		}
 		worklistMoves = worklistMoves->tail;
-		if (newSrc = newDst)
+		if (newSrc == newDst)
 		{
 			coalescedMoves = Live_MoveList(rawSrc, rawDst, coalescedMoves);
 			AddWorkList(newSrc);
@@ -271,7 +272,7 @@ void Coalesce()
 			AddWorkList(newSrc);
 			AddWorkList(newDst);
 		}
-		else if (G_inNodeList(newSrc, precoloredList) && adjOk(newDst, newSrc) || !G_inNodeList(newSrc, precoloredList) && Conservative(G_setUnion(G_adj(newSrc), G_adj(newDst))))
+		else if ((G_inNodeList(newSrc, precoloredList) && adjOk(newDst, newSrc)) || (!G_inNodeList(newSrc, precoloredList) && Conservative(G_setUnion(G_adj(newSrc), G_adj(newDst)))))
 		{
 			coalescedMoves = Live_MoveList(rawSrc, rawDst, coalescedMoves);
 			Combine(newSrc, newDst);
@@ -287,7 +288,7 @@ void Coalesce()
 void FreezeMoves(G_node node)
 {
 	Live_moveList ml;
-	while (ml = NodeMoves(node))
+	while (ml == NodeMoves(node))
 	{
 		G_node tmp;
 		if (GetAlias(ml->dst) == GetAlias(node))
@@ -318,7 +319,6 @@ void Freeze()
 		simplifyWorklist = G_setUnion(simplifyWorklist, G_NodeList(node, NULL));
 		FreezeMoves(node);
 	}
-
 }
 
 void SelectSpill()
@@ -331,24 +331,26 @@ void SelectSpill()
 
 void AssignColors(Temp_map colored)
 {
-	while(selectStack)
+	while (selectStack)
 	{
 		G_node node = selectStack->head;
 		selectStack = selectStack->tail;
 		Temp_tempList colors = F_allRegisters();
 		G_nodeList adjNodes = G_adj(node);
-		while(adjNodes)
+		while (adjNodes)
 		{
 			G_node adjNode = adjNodes->head;
-			if(G_inNodeList(GetAlias(adjNode), coloredNodes) || G_inNodeList(GetAlias(adjNode), precoloredList))
+			if (G_inNodeList(GetAlias(adjNode), coloredNodes) || G_inNodeList(GetAlias(adjNode), precoloredList))
 			{
 				nodeInfo info = G_nodeInfo(GetAlias(adjNode));
 				string reg = Temp_look(colored, info->reg);
+				assert(reg != NULL);
 				Temp_temp color = Temp_stringToTemp(reg);
 				colors = L_tempListMinus(colors, Temp_TempList(color, NULL));
 			}
+			adjNodes = adjNodes->tail;
 		}
-		if(colors == NULL)
+		if (colors == NULL)
 		{
 			spilledNodes = G_NodeList(node, spilledNodes);
 		}
@@ -357,10 +359,13 @@ void AssignColors(Temp_map colored)
 			nodeInfo info = G_nodeInfo(node);
 			coloredNodes = G_NodeList(node, coloredNodes);
 			Temp_temp color = colors->head;
+			assert(Temp_look(F_tempMap, color) != NULL);
+			assert(info != NULL);
+			assert(info->reg != NULL);
 			Temp_enter(colored, info->reg, Temp_look(F_tempMap, color));
 		}
 	}
-	while(coalescedNodes)
+	while (coalescedNodes)
 	{
 		G_node node = coalescedNodes->head;
 		G_node alias = GetAlias(node);
@@ -374,13 +379,13 @@ void AssignColors(Temp_map colored)
 Live_moveList calculateMoves(G_node node, Live_moveList moves)
 {
 	Live_moveList result;
-	while(moves)
+	while (moves)
 	{
-		if(moves->src == node || moves->dst == node)
+		if (moves->src == node || moves->dst == node)
 		{
 			result = Live_MoveList(moves->src, moves->dst, result);
 		}
-		moves = moves->tail;	
+		moves = moves->tail;
 	}
 	return result;
 }
@@ -388,7 +393,7 @@ Live_moveList calculateMoves(G_node node, Live_moveList moves)
 void Build(G_graph ig, Live_moveList moves)
 {
 	G_nodeList nodes = G_nodes(ig);
-	while(nodes)
+	while (nodes)
 	{
 		G_node node = nodes->head;
 		nodeInfo info = G_nodeInfo(node);
@@ -401,31 +406,46 @@ void Build(G_graph ig, Live_moveList moves)
 struct COL_result COL_color(G_graph ig, Temp_map initial, Temp_tempList regs, Live_moveList moves)
 {
 	struct COL_result ret;
+	printf("print build\n");
 	Build(ig, moves);
+	printf("end build\n");
+	printf("print MakeWorklist\n");
 	MakeWorklist(ig);
+	printf("end MakeWorklist\n");
 	//your code here.
-	while (simplifyWorklist != NULL && worklistMoves != NULL && freezeWorklist != NULL & spillWorklist != NULL)
+	while (simplifyWorklist != NULL || worklistMoves != NULL || freezeWorklist != NULL || spillWorklist != NULL)
 	{
 		if (simplifyWorklist != NULL)
 		{
+			printf("print simplify\n");
 			Simplify();
+			printf("end simplify\n");
 		}
 		else if (worklistMoves != NULL)
 		{
+			printf("print coalesce\n");
 			Coalesce();
+			printf("end coalesce\n");
 		}
 		else if (freezeWorklist != NULL)
 		{
+			printf("print freeze\n");
 			Freeze();
+			printf("end freeze\n");
 		}
 		else if (spillWorklist != NULL)
 		{
+			printf("print selecespill\n");
 			SelectSpill();
+			printf("end selectspill\n");
 		}
 	}
+	ret.coloring = Temp_empty();
+	printf("print AssignColors\n");
 	AssignColors(ret.coloring);
+	printf("end AssignColors\n");
 	Temp_tempList spills = NULL;
-	while(spilledNodes)
+	while (spilledNodes)
 	{
 		nodeInfo info = G_nodeInfo(spilledNodes->head);
 		spills = Temp_TempList(info->reg, spills);

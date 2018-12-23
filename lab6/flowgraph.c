@@ -15,6 +15,12 @@
 #include "table.h"
 
 typedef struct waitStruct_ *waitStruct;
+void printTemp2(Temp_temp temp)
+{
+	Temp_map map = Temp_layerMap(F_tempMap, Temp_name());
+	printf("temp %s\n", Temp_look(map, temp));
+	return;
+}
 struct waitStruct_
 {
 	AS_targets waitsLabel;
@@ -101,10 +107,10 @@ Temp_tempList FG_use(G_node n)
 	return NULL;
 }
 
-Temp_tempList FG_MoveSrc(G_node n)
+Temp_tempList FG_MoveDst(G_node n)
 {
 	AS_instr inst = G_nodeInfo(n);
-	return inst->u.MOVE.src;
+	return inst->u.MOVE.dst;
 }
 
 bool FG_isMove(G_node n)
@@ -145,8 +151,8 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 			if (prevNode)
 			{
 				G_addEdge(prevNode, node);
-				prevNode = node;
 			}
+			prevNode = node;
 			if (strncmp(inst->u.OPER.assem, "jmp", 3) == 0)
 			{
 				prevNode = NULL;
@@ -176,8 +182,8 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 			if (prevNode)
 			{
 				G_addEdge(prevNode, node);
-				prevNode = node;
 			}
+			prevNode = node;
 			break;
 		}
 		}

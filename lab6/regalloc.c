@@ -95,7 +95,9 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
 	printf("begin Live_liveness\n");
 	struct Live_graph liveness = Live_liveness(fg);
 	printf("end Live_liveness\n");
+	printf("start color reg\n");
 	struct COL_result colorResult = COL_color(liveness.graph, F_tempMap, NULL, liveness.moves);
+	printf("end color reg\n");
 	if(colorResult.spills != NULL)
 	{
 		AS_instrList newIl = RewriteProgram(f, il, colorResult.spills);

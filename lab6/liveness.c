@@ -11,6 +11,30 @@
 #include "liveness.h"
 #include "table.h"
 
+void printTemp(Temp_temp temp)
+{
+	Temp_map map = Temp_layerMap(F_tempMap, Temp_name());
+	printf("temp %s\n", Temp_look(map, temp));
+	return;
+}
+
+void printTemp3(Temp_temp temp)
+{
+	Temp_map map = Temp_layerMap(F_tempMap, Temp_name());
+	printf("temp %s\t", Temp_look(map, temp));
+	return;
+}
+
+void printTempList(Temp_tempList temp)
+{
+	while(temp)
+	{
+		printTemp3(temp->head);
+		temp = temp->tail;
+	}
+	printf("\n");
+}
+
 nodeInfo NodeInfo(Temp_temp reg)
 {
 	nodeInfo info = malloc(sizeof(*info));
@@ -126,16 +150,20 @@ Temp_tempList L_tempListUnion(Temp_tempList tmpl1, Temp_tempList tmpl2)
 
 bool sameTempList(Temp_tempList tmpl1, Temp_tempList tmpl2)
 {
-	for (; tmpl1 != NULL && tmpl2 != NULL; tmpl1 = tmpl1->tail, tmpl2 = tmpl2->tail)
+	Temp_tempList tmpl = tmpl1;
+	for (; tmpl != NULL; tmpl = tmpl->tail)
 	{
-		if (tmpl1->head != tmpl2->head)
+		if (!L_inTempList(tmpl->head, tmpl2))
 		{
 			return FALSE;
 		}
 	}
-	if (tmpl1 != NULL || tmpl2 != NULL)
+	for (; tmpl2 != NULL; tmpl2 = tmpl2->tail)
 	{
-		return FALSE;
+		if (!L_inTempList(tmpl2->head, tmpl1))
+		{
+			return FALSE;
+		}
 	}
 	return TRUE;
 }
@@ -154,8 +182,19 @@ Temp_tempList L_calSuccIn(G_node node, TAB_table tempListIn)
 	for (; succ != NULL; succ = succ->tail)
 	{
 		G_node n = succ->head;
-		nodeInfo info = G_nodeInfo(n);
+		AS_instr info = G_nodeInfo(n);
+		printf("calsuccin:%s\n", info->u.MOVE.assem);
 		result = L_tempListUnion(TAB_look(tempListIn, n), result);
+	}
+	Temp_tempList tmp = result;
+	if (tmp)
+	{
+		printf("L_calSuccIn:\n");
+		while (tmp)
+		{
+			printTemp(tmp->head);
+			tmp = tmp->tail;
+		}
 	}
 	return result;
 }
@@ -166,20 +205,26 @@ struct Live_graph Live_liveness(G_graph flow)
 	struct Live_graph lg;
 
 	//analysis
-	G_nodeList nodes = G_nodes(flow);
+	G_nodeList nodes;
 	TAB_table tempListIn = TAB_empty();
 	TAB_table tempListOut = TAB_empty();
 	bool fixPoint = FALSE;
 	printf("1\n");
-	while (fixPoint)
+	while (!fixPoint)
 	{
+		nodes = G_nodes(flow);
 		fixPoint = TRUE;
+		printf("hehe\n");
 		while (nodes)
 		{
 			G_node node = nodes->head;
 			Temp_tempList oldIn = TAB_look(tempListIn, node);
 			Temp_tempList oldOut = TAB_look(tempListOut, node);
 			Temp_tempList newIn = L_tempListUnion(FG_use(node), L_tempListMinus(oldOut, FG_def(node)));
+			printf("newIn:");
+			printTempList(newIn);
+			printf("use:");
+			printTempList(FG_use(node));
 			Temp_tempList newOut = L_calSuccIn(node, tempListIn);
 
 			if (!sameTempList(oldIn, newIn) || !sameTempList(oldOut, newOut))
@@ -189,8 +234,8 @@ struct Live_graph Live_liveness(G_graph flow)
 			TAB_enter(tempListIn, node, newIn);
 			TAB_enter(tempListOut, node, newOut);
 			/****************************************/
-			free(oldIn);
-			free(oldOut);
+			// free(oldIn);
+			// free(oldOut);
 			/****************************************/
 			nodes = nodes->tail;
 		}
@@ -204,11 +249,10 @@ struct Live_graph Live_liveness(G_graph flow)
 	while (nodes)
 	{
 		G_node node = nodes->head;
-		if (FG_isMove(node))
+		if (!FG_isMove(node))
 		{
 			Temp_tempList defs = FG_def(node);
 			Temp_tempList outs = TAB_look(tempListOut, node);
-
 			while (defs)
 			{
 				Temp_temp defTemp = defs->head;
@@ -220,6 +264,8 @@ struct Live_graph Live_liveness(G_graph flow)
 				if (TAB_look(tempToNode, defTemp) == NULL)
 				{
 					G_node defTempNode = G_Node(interference, NodeInfo(defTemp));
+					printf("def: ");
+					printTemp(defTemp);
 					TAB_enter(tempToNode, defTemp, defTempNode);
 				}
 				G_node defTempNode = TAB_look(tempToNode, defTemp);
@@ -229,6 +275,8 @@ struct Live_graph Live_liveness(G_graph flow)
 					if (TAB_look(tempToNode, outTemp) == NULL)
 					{
 						G_node outTempNode = G_Node(interference, NodeInfo(outTemp));
+						printf("defout: ");
+						printTemp(outTemp);
 						TAB_enter(tempToNode, outTemp, outTempNode);
 					}
 					G_node outTempNode = TAB_look(tempToNode, outTemp);
@@ -240,19 +288,21 @@ struct Live_graph Live_liveness(G_graph flow)
 		}
 		else
 		{
-			Temp_tempList moveSrc = FG_MoveSrc(node);
+			Temp_tempList moveDst = FG_MoveDst(node);
 			Temp_tempList outs = TAB_look(tempListOut, node);
-			while (moveSrc)
+			while (moveDst)
 			{
-				Temp_temp movTemp = moveSrc->head;
+				Temp_temp movTemp = moveDst->head;
 				if (framePointer(movTemp))
 				{
-					moveSrc = moveSrc->tail;
+					moveDst = moveDst->tail;
 					continue;
 				}
 				if (TAB_look(tempToNode, movTemp) == NULL)
 				{
 					G_node movTempNode = G_Node(interference, NodeInfo(movTemp));
+					printf("movsrc: ");
+					printTemp(movTemp);
 					TAB_enter(tempToNode, movTemp, movTempNode);
 				}
 				G_node movTempNode = TAB_look(tempToNode, movTemp);
@@ -262,13 +312,15 @@ struct Live_graph Live_liveness(G_graph flow)
 					if (TAB_look(tempToNode, outTemp) == NULL)
 					{
 						G_node outTempNode = G_Node(interference, NodeInfo(outTemp));
+						printf("defout: ");
+						printTemp(outTemp);
 						TAB_enter(tempToNode, outTemp, outTempNode);
 					}
 					G_node outTempNode = TAB_look(tempToNode, outTemp);
 					G_addEdgeNonDirection(movTempNode, outTempNode);
 					outs = outs->tail;
 				}
-				moveSrc = moveSrc->tail;
+				moveDst = moveDst->tail;
 			}
 		}
 		nodes = nodes->tail;
@@ -298,7 +350,17 @@ struct Live_graph Live_liveness(G_graph flow)
 			{
 				G_node srcNode = TAB_look(tempToNode, src);
 				G_node dstNode = TAB_look(tempToNode, dst);
+				if (srcNode == NULL)
+				{
+					printf("cant find src: ");
+					printTemp(src);
+				}
 				assert(srcNode != NULL);
+				if (dstNode == NULL)
+				{
+					printf("cant find src: ");
+					printTemp(dst);
+				}
 				assert(dstNode != NULL);
 				if (!L_inMoveList(srcNode, dstNode, moves))
 				{
