@@ -51,5 +51,25 @@ T_exp F_externalCall(string s, T_expList args);
 T_stm F_procEntryExit1(F_frame frame, T_stm stm);
 Temp_tempList F_calleesaves();
 Temp_tempList F_callersaves();
+Temp_tempList F_allRegisters();
+int F_accessOffset(F_access access);
+int F_frameLength(F_frame f);
 
+
+Temp_temp F_RSP(void);
+Temp_temp F_RBP(void);
+Temp_temp F_RAX(void);
+Temp_temp F_RDI(void);
+Temp_temp F_RSI(void);
+Temp_temp F_RDX(void);
+Temp_temp F_RCX(void);
+Temp_temp F_R8(void);
+Temp_temp F_R9(void);
+Temp_temp F_R10(void);
+Temp_temp F_R11(void);
+Temp_temp F_R12(void);
+Temp_temp F_R13(void);
+Temp_temp F_R14(void);
+Temp_temp F_R15(void);
+Temp_temp F_RBX(void);
 #endif

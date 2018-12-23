@@ -211,7 +211,7 @@ void *G_look(G_table t, G_node node)
   return TAB_look(t, node);
 }
 
-G_nodeList setMinus(G_nodeList nl1, G_nodeList nl2)
+G_nodeList G_setMinus(G_nodeList nl1, G_nodeList nl2)
 {
   G_nodeList result = NULL;
   for (; nl1 != NULL; nl1 = nl1->tail)
@@ -225,7 +225,7 @@ G_nodeList setMinus(G_nodeList nl1, G_nodeList nl2)
   return result;
 }
 
-G_nodeList setUnion(G_nodeList nl1, G_nodeList nl2)
+G_nodeList G_setUnion(G_nodeList nl1, G_nodeList nl2)
 {
   G_nodeList result = NULL;
   for (; nl1 != NULL; nl1 = nl1->tail)

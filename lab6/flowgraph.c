@@ -27,12 +27,12 @@ waitStruct WaitStruct(AS_targets waitsLabel, G_node node)
 	tmp->node = node;
 }
 
+typedef struct waitStructList_* waitStructList;
 struct waitStructList_
 {
 	waitStruct head;
 	waitStructList tail;
 };
-typedef struct waitStructList_* waitStructList;
 
 waitStructList WaitStructList(waitStruct head, waitStructList tail)
 {

@@ -11,6 +11,16 @@
 #include "liveness.h"
 #include "table.h"
 
+nodeInfo NodeInfo(Temp_temp reg)
+{
+	nodeInfo info = malloc(sizeof(*info));
+	info->reg = reg;
+	info->degree = 0;
+	info->alias = NULL;
+	info->moves = NULL;
+	return info;
+}
+
 Live_moveList Live_MoveList(G_node src, G_node dst, Live_moveList tail)
 {
 	Live_moveList lm = (Live_moveList)checked_malloc(sizeof(*lm));
@@ -188,7 +198,7 @@ struct Live_graph Live_liveness(G_graph flow)
 
 	//interference graph
 	//to do:判断重复
-	G_graph interference = G_empty();
+	G_graph interference = G_Graph();
 	TAB_table tempToNode = TAB_empty();
 	nodes = G_nodes(flow);
 	while (nodes)

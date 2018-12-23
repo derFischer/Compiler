@@ -276,18 +276,21 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 	case A_seqExp:
 	{
 		A_expList list = a->u.seq;
+		struct expty result = expTy(NULL, Ty_Void());
+		Tr_exp result_exp = Tr_nilExp();
+
 		if (!list)
 		{
 			return expTy(Tr_nilExp(), Ty_Void());
 		}
 		else
 		{
-			struct expty result;
 			for (; list; list = list->tail)
 			{
 				result = transExp(venv, tenv, list->head, level, label);
+				result_exp = Tr_seqExp(result_exp, result.exp);
 			}
-			return result;
+			return expTy(result_exp, result.ty);
 		}
 	}
 	case A_assignExp:
@@ -408,14 +411,16 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 		S_beginScope(venv);
 		S_beginScope(tenv);
 		A_decList tmp = a->u.let.decs;
+		Tr_exp dec_exp = Tr_nilExp();
 		for (; tmp; tmp = tmp->tail)
 		{
-			transDec(venv, tenv, tmp->head, level, label);
+			struct expty dec = transDec(venv, tenv, tmp->head, level, label);
+			dec_exp = Tr_seqExp(dec_exp, dec.exp);
 		}
 		struct expty body = transExp(venv, tenv, a->u.let.body, level, label);
 		S_endScope(tenv);
 		S_endScope(venv);
-		return body;
+		return expTy(Tr_seqExp(dec_exp, body.exp), body.ty);
 	}
 	case A_arrayExp:
 	{

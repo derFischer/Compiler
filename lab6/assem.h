@@ -46,24 +46,3 @@ AS_proc AS_Proc(string p, AS_instrList b, string e);
 //AS_instrList AS_rewriteSpill(F_frame f, AS_instrList il, Temp_tempList spills);
 
 #endif
-
-
-
-
-
-Temp_temp rsp = NULL;
-Temp_temp rbp = NULL;
-Temp_temp rax = NULL;
-Temp_temp rdi = NULL;
-Temp_temp rsi = NULL;
-Temp_temp rdx = NULL;
-Temp_temp rcx = NULL;
-Temp_temp r8 = NULL;
-Temp_temp r9 = NULL;
-Temp_temp rbx = NULL;
-Temp_temp r12 = NULL;
-Temp_temp r13 = NULL;
-Temp_temp r14 = NULL;
-Temp_temp r15 = NULL;
-Temp_temp r10 = NULL;
-Temp_temp r11 = NULL;

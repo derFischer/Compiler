@@ -13,6 +13,7 @@
 #include "color.h"
 #include "table.h"
 
+bool adjOk(G_node center, G_node src);
 static G_nodeList precoloredList = NULL;
 static G_nodeList initialList = NULL;
 static G_nodeList simplifyWorklist = NULL;
@@ -31,7 +32,7 @@ static Live_moveList frozenMoves = NULL;
 static Live_moveList worklistMoves = NULL;
 static Live_moveList activeMoves = NULL;
 
-const regNum = 16;
+const int regNum = 14;
 
 static G_nodeList Adjacent(G_node node)
 {
@@ -108,7 +109,7 @@ void EnableMoves(G_nodeList nodes)
 {
 	for (; nodes != NULL; nodes = nodes->tail)
 	{
-		Live_moveList nodemoves = G_NodeMoves(nodes->head);
+		Live_moveList nodemoves = NodeMoves(nodes->head);
 		for (; nodemoves != NULL; nodemoves = nodemoves->tail)
 		{
 			if (L_inMoveList(nodemoves->src, nodemoves->dst, activeMoves))
@@ -225,7 +226,7 @@ void Combine(G_node node1, G_node node2)
 	nodeInfo info2 = G_nodeInfo(node2);
 	info2->alias = node1;
 	info1->moves = L_setUnion(info1->moves, info2->moves);
-	EnableMoves(node2);
+	EnableMoves(G_NodeList(node2, NULL));
 	G_nodeList node2Adj = G_adj(node2);
 	for (; node2Adj != NULL; node2Adj = node2Adj->tail)
 	{
@@ -235,7 +236,7 @@ void Combine(G_node node1, G_node node2)
 	if (info1->degree >= regNum && G_inNodeList(node1, freezeWorklist))
 	{
 		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node1, NULL));
-		spillWorklist = G_setUnion(spilledNodes, node1);
+		spillWorklist = G_setUnion(spilledNodes, G_NodeList(node1, NULL));
 	}
 }
 
@@ -270,7 +271,7 @@ void Coalesce()
 			AddWorkList(newSrc);
 			AddWorkList(newDst);
 		}
-		else if (G_inNodeList(newSrc, precoloredList) && adjOK(newDst, newSrc) || !G_inNodeList(newSrc, precoloredList) && Conservative(G_setUnion(G_adj(newSrc), G_adj(newDst))))
+		else if (G_inNodeList(newSrc, precoloredList) && adjOk(newDst, newSrc) || !G_inNodeList(newSrc, precoloredList) && Conservative(G_setUnion(G_adj(newSrc), G_adj(newDst))))
 		{
 			coalescedMoves = Live_MoveList(rawSrc, rawDst, coalescedMoves);
 			Combine(newSrc, newDst);
@@ -344,7 +345,7 @@ void AssignColors(Temp_map colored)
 				nodeInfo info = G_nodeInfo(GetAlias(adjNode));
 				string reg = Temp_look(colored, info->reg);
 				Temp_temp color = Temp_stringToTemp(reg);
-				colors = L_tempListMinus(colors, Temp_tempList(color, NULL));
+				colors = L_tempListMinus(colors, Temp_TempList(color, NULL));
 			}
 		}
 		if(colors == NULL)

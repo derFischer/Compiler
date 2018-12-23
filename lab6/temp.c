@@ -12,6 +12,7 @@
 #include "symbol.h"
 #include "temp.h"
 #include "table.h"
+#include "frame.h"
 
 struct Temp_temp_ {int num;};
 
@@ -54,7 +55,7 @@ Temp_temp Temp_stringToTemp(string name)
   Temp_tempList allregs = F_allRegisters();
   while(allregs)
   {
-    reg = allregs->head;
+    Temp_temp reg = allregs->head;
     string n = Temp_look(F_tempMap, reg);
     if(strncmp(n, name, 3) == 0)
     {

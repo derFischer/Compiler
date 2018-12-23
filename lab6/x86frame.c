@@ -8,6 +8,7 @@
 #include "table.h"
 #include "tree.h"
 #include "frame.h"
+#include "liveness.h"
 
 /*Lab5: Your implementation here.*/
 #define WORDSIZE 8
@@ -28,6 +29,23 @@ Temp_temp r14 = NULL;
 Temp_temp r15 = NULL;
 Temp_temp r10 = NULL;
 Temp_temp r11 = NULL;
+
+Temp_temp F_RSP(void);
+Temp_temp F_RBP(void);
+Temp_temp F_RAX(void);
+Temp_temp F_RDI(void);
+Temp_temp F_RSI(void);
+Temp_temp F_RDX(void);
+Temp_temp F_RCX(void);
+Temp_temp F_R8(void);
+Temp_temp F_R9(void);
+Temp_temp F_R10(void);
+Temp_temp F_R11(void);
+Temp_temp F_R12(void);
+Temp_temp F_R13(void);
+Temp_temp F_R14(void);
+Temp_temp F_R15(void);
+Temp_temp F_RBX(void);
 
 //varibales
 struct F_frame_
@@ -422,4 +440,22 @@ Temp_temp F_R11(void)
 		Temp_enter(F_tempMap, r11, "%r11");
 	}
 	return r11;
+}
+
+int F_accessOffset(F_access access)
+{
+	if(access->kind == inFrame)
+	{
+		return access->u.offset;
+	}
+	else
+	{
+		printf("temp access doesnt have an offset\n");
+		assert(0);
+	}
+}
+
+int F_frameLength(F_frame f)
+{
+	return f->length;
 }

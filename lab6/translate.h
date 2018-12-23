@@ -77,6 +77,7 @@ Tr_exp Tr_subscriptVar(Tr_exp address, int offset);
 Tr_exp Tr_nilExp();
 Tr_exp Tr_intExp(int intt);
 Tr_exp Tr_stringExp(string stringg);
+Tr_exp Tr_seqExp(Tr_exp first, Tr_exp second);
 Tr_exp Tr_callExp(Temp_label fname, Tr_expList params, Tr_level caller, Tr_level callee);
 Tr_exp Tr_opExp(A_oper oper, Tr_exp left, Tr_exp right);
 Tr_exp Tr_intCompExp(A_oper op, Tr_exp left, Tr_exp right);

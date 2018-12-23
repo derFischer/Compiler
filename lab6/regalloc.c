@@ -12,15 +12,18 @@
 #include "regalloc.h"
 #include "table.h"
 #include "flowgraph.h"
+#include <string.h>
 
-Temp_TempList tempIntersection(Temp_tempList tmpl1, Temp_tempList tmpl2)
+#define INSTLENGTH 200
+
+Temp_tempList tempIntersection(Temp_tempList tmpl1, Temp_tempList tmpl2)
 {
 	Temp_tempList result = NULL;
 	for(; tmpl1 != NULL; tmpl1 = tmpl1->tail)
 	{
 		if(L_inTempList(tmpl1->head, tmpl2))
 		{
-			result = Temp_tempList(tmpl1->head, result);
+			result = Temp_TempList(tmpl1->head, result);
 		}
 	}
 	return result;
@@ -66,7 +69,7 @@ AS_instrList RewriteProgram(F_frame f, AS_instrList il, Temp_tempList spills)
 			F_access access = TAB_look(tempPos, temp);
 			Temp_temp newTemp = Temp_newtemp();
 			char load[INSTLENGTH];
-			sprintf("movq %d(`s0), `d0", 0);
+			sprintf(load, "movq %d(`s0), `d0", F_frameLength(f) * WORDSIZE + F_accessOffset(access));
 			AS_instr loadInstr = AS_Move(String(load), Temp_TempList(newTemp, NULL), Temp_TempList(F_RSP(), NULL));
 
 		}
@@ -76,8 +79,8 @@ AS_instrList RewriteProgram(F_frame f, AS_instrList il, Temp_tempList spills)
 			F_access access = TAB_look(tempPos, temp);
 			Temp_temp newTemp = Temp_newtemp();
 			char store[INSTLENGTH];
-			sprintf("movq `s0, %d(`s1)", 0);
-			AS_inst storeInstr = AS_Move(String(store), NULL, Temp_TempList(newTemp, Temp_TempList(F_RSP(), NULL)));
+			sprintf(store, "movq `s0, %d(`s1)", F_frameLength(f) * WORDSIZE + F_accessOffset(access));
+			AS_instr storeInstr = AS_Move(String(store), NULL, Temp_TempList(newTemp, Temp_TempList(F_RSP(), NULL)));
 		}
 	}
 	return result;

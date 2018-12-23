@@ -1,5 +1,6 @@
 #ifndef LIVENESS_H
 #define LIVENESS_H
+#include "graph.h"
 
 typedef struct Live_moveList_ *Live_moveList;
 struct Live_moveList_ {
@@ -7,31 +8,24 @@ struct Live_moveList_ {
 	Live_moveList tail;
 };
 
+typedef struct nodeInfo_* nodeInfo;
 struct nodeInfo_ {
 	Temp_temp reg;
 	int degree;
 	G_node alias;
 	Live_moveList moves;
 };
-typedef struct nodeInfo_* nodeInfo;
 
-nodeInfo NodeInfo(Temp_temp reg)
-{
-	nodeInfo info = malloc(sizeof(*info));
-	info->reg = reg;
-	info->degree = 0;
-	info->alias = NULL;
-	info->moves = NULL;
-}
+nodeInfo NodeInfo(Temp_temp reg);
 
-nodeInfo NodeInfo(int degree, G_node alias, Live_moveList moves)
+/*nodeInfo NodeInfo(int degree, G_node alias, Live_moveList moves)
 {
 	nodeInfo info = malloc(sizeof(*info));
 	info->degree = degree;
 	info->alias = alias;
 	info->moves = moves;
 	return info;
-}
+}*/
 
 Live_moveList Live_MoveList(G_node src, G_node dst, Live_moveList tail);
 
@@ -48,4 +42,5 @@ Live_moveList L_setMinus(Live_moveList ml1, Live_moveList ml2);
 Live_moveList L_setUnion(Live_moveList ml1, Live_moveList ml2);
 Temp_tempList L_tempListUnion(Temp_tempList tmpl1, Temp_tempList tmpl2);
 Temp_tempList L_tempListMinus(Temp_tempList tmpl1, Temp_tempList tmpl2);
+bool L_inTempList(Temp_temp tmp, Temp_tempList tmpl);
 #endif

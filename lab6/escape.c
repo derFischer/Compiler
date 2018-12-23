@@ -8,9 +8,14 @@
 #include "types.h"
 #include "env.h"
 #include "escape.h"
+#include "helper.h"
 
 #define TRUE 1
 #define FALSE 0
+static void traverseExp(S_table env, int depth, A_exp e);
+static void traverseDec(S_table env, int depth, A_dec d);
+static void traverseVar(S_table env, int depth, A_var v);
+
 
 //constructor
 escapeEntry EscapeEntry(int depth, bool *escape)
@@ -36,7 +41,7 @@ static void traverseExp(S_table env, int depth, A_exp e)
         return;
         case A_callExp:
         {
-            A_explist args = get_callexp_args(e);
+            A_expList args = get_callexp_args(e);
             for(; args; args = args->tail)
             {
                 traverseExp(env, depth, args->head);
@@ -91,8 +96,8 @@ static void traverseExp(S_table env, int depth, A_exp e)
             traverseExp(env, depth, get_forexp_lo(e));
             traverseExp(env, depth, get_forexp_hi(e));
             S_beginScope(env);
-            S_enter(env, get_forexp_var(e), EscapeEntry(depth, &(a->u.forr.escape));
-            a->u.forr->ecape = FALSE;
+            S_enter(env, get_forexp_var(e), EscapeEntry(depth, &(e->u.forr.escape)));
+            e->u.forr.escape = FALSE;
             traverseExp(env, depth, get_forexp_body(e));
             S_endScope(env);
             return;
@@ -103,7 +108,7 @@ static void traverseExp(S_table env, int depth, A_exp e)
             A_decList decs = get_letexp_decs(e);
             for(; decs; decs = decs->tail)
             {
-                traverseDec(decs->head);
+                traverseDec(env, depth, decs->head);
             }
             traverseExp(env, depth, get_letexp_body(e));
             S_endScope(env);
@@ -131,7 +136,7 @@ static void traverseDec(S_table env, int depth, A_dec d)
                 A_fieldList params = function->head->params;
                 for(; params; params = params->tail)
                 {
-                    S_enter(env, params->head->name, EscapeEntry(depth + 1, &(param->escape)));
+                    S_enter(env, params->head->name, EscapeEntry(depth + 1, &(params->head->escape)));
                     params->head->escape = FALSE;
                 }
                 traverseExp(env, depth + 1, function->head->body);
@@ -156,7 +161,7 @@ static void traverseVar(S_table env, int depth, A_var v)
         case A_simpleVar:
         {
             escapeEntry ee = S_look(env, get_simplevar_sym(v));
-            if(ee && e->depth < depth)
+            if(ee && ee->depth < depth)
             {
                 *(ee->escape) = 1;
             }
@@ -164,13 +169,13 @@ static void traverseVar(S_table env, int depth, A_var v)
         }
         case A_fieldVar:
         {
-            traverseVar(get_fieldvar_var(v));
+            traverseVar(env, depth, get_fieldvar_var(v));
             return;
         }
         case A_subscriptVar:
         {
-            traverseVar(get_subvar_var(v));
-            traverseExp(get_subvar_exp(v));
+            traverseVar(env, depth, get_subvar_var(v));
+            traverseExp(env, depth, get_subvar_exp(v));
             return;
         }
     }
