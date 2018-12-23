@@ -26,15 +26,15 @@ Temp_tempList L(Temp_temp head, Temp_tempList tail)
 
 static void emit(AS_instr inst)
 {
-  if (last != NULL)
-  {
-    last->tail = AS_InstrList(inst, NULL);
-    last = last->tail;
-  }
-  else
-  {
-    iList = last = AS_InstrList(inst, NULL);
-  }
+    if (last != NULL)
+    {
+        last->tail = AS_InstrList(inst, NULL);
+        last = last->tail;
+    }
+    else
+    {
+        iList = last = AS_InstrList(inst, NULL);
+    }
 }
 
 AS_instr moveReg(Temp_temp src, Temp_temp dst)
@@ -154,7 +154,7 @@ static Temp_temp munchExp(T_exp e)
         {
             char inst[INSTLENGTH];
             sprintf(inst, "movq %d, `d0", addr->u.CONST);
-            emit(AS_Move(String(inst), L(dst, NULL), NULL));
+            emit(AS_Oper(String(inst), L(dst, NULL), NULL, NULL));
             break;
         }
         case T_BINOP:
@@ -165,31 +165,31 @@ static Temp_temp munchExp(T_exp e)
             {
                 char inst[INSTLENGTH];
                 sprintf(inst, "movq %d(`s0), `d0", left->u.CONST);
-                emit(AS_Move(String(inst), L(dst, NULL), L(munchExp(right), NULL)));
+                emit(AS_Oper(String(inst), L(dst, NULL), L(munchExp(right), NULL), NULL));
             }
             else if (right->kind == T_CONST && left->kind == T_TEMP)
             {
                 char inst[INSTLENGTH];
                 sprintf(inst, "movq %d(`s0), `d0", right->u.CONST);
-                emit(AS_Move(String(inst), L(dst, NULL), L(munchExp(left), NULL)));
+                emit(AS_Oper(String(inst), L(dst, NULL), L(munchExp(left), NULL), NULL));
             }
             else if (left->kind == T_TEMP && right->kind == T_TEMP)
             {
                 char inst[INSTLENGTH];
                 sprintf(inst, "movq (`s0,`s1), `d0");
-                emit(AS_Move(String(inst), L(dst, NULL), L(munchExp(left), L(munchExp(right), NULL))));
+                emit(AS_Oper(String(inst), L(dst, NULL), L(munchExp(left), L(munchExp(right), NULL)), NULL));
             }
             else
             {
                 Temp_temp src = munchExp(addr);
-                emit(AS_Move("movq (`s0), `d0", L(dst, NULL), L(src, NULL)));
+                emit(AS_Oper("movq (`s0), `d0", L(dst, NULL), L(src, NULL), NULL));
             }
             break;
         }
         default:
         {
             Temp_temp src = munchExp(addr);
-            emit(AS_Move("movq (`s0), `d0", L(dst, NULL), L(src, NULL)));
+            emit(AS_Oper("movq (`s0), `d0", L(dst, NULL), L(src, NULL), NULL));
         }
         }
         return dst;
@@ -216,7 +216,7 @@ static Temp_temp munchExp(T_exp e)
         Temp_temp dst = Temp_newtemp();
         char inst[INSTLENGTH];
         sprintf(inst, "movq $%d, `d0", e->u.CONST);
-        emit(AS_Move(String(inst), L(dst, NULL), NULL));
+        emit(AS_Oper(String(inst), L(dst, NULL), NULL, NULL));
         return dst;
     }
     case T_CALL:
@@ -234,7 +234,7 @@ static Temp_temp munchExp(T_exp e)
         emit(AS_Oper(String(inst), Temp_TempList(F_RAX(), NULL), argsRegs, NULL));
         char inst2[INSTLENGTH];
         sprintf(inst2, "addq $%d, `d0", calArgsStackSpace(args) * WORDSIZE);
-        emit(AS_Oper(String(inst2), Temp_TempList(F_RSP(), NULL), Temp_TempList(F_RSP(),NULL), NULL));
+        emit(AS_Oper(String(inst2), Temp_TempList(F_RSP(), NULL), Temp_TempList(F_RSP(), NULL), NULL));
         return F_RV();
     }
     }
@@ -243,12 +243,12 @@ static Temp_temp munchExp(T_exp e)
 int calArgsStackSpace(T_expList args)
 {
     int num = 0;
-    while(args)
+    while (args)
     {
         num++;
         args = args->tail;
     }
-    if(num > 7)
+    if (num > 7)
     {
         num -= 6;
     }
@@ -294,7 +294,7 @@ static Temp_tempList passArgs(T_expList args)
         Temp_temp argReg = munchExp(arg);
         char inst[INSTLENGTH];
         sprintf(inst, "movq `s0, %d(`s1)", (index - 6) * WORDSIZE);
-        emit(AS_Move(String(inst), NULL, Temp_TempList(argReg, Temp_TempList(F_RSP(), NULL))));
+        emit(AS_Oper(String(inst), NULL, Temp_TempList(argReg, Temp_TempList(F_RSP(), NULL)), NULL));
         args = args->tail;
         index++;
     }
@@ -329,42 +329,52 @@ static void munchStm(T_stm s)
         case T_eq:
         {
             emit(AS_Oper("je `j0", NULL, NULL, AS_Targets(Temp_LabelList(s->u.CJUMP.true, NULL))));
+            break;
         }
         case T_ne:
         {
             emit(AS_Oper("jne `j0", NULL, NULL, AS_Targets(Temp_LabelList(s->u.CJUMP.true, NULL))));
+            break;
         }
         case T_lt:
         {
             emit(AS_Oper("jlt `j0", NULL, NULL, AS_Targets(Temp_LabelList(s->u.CJUMP.true, NULL))));
+            break;
         }
         case T_gt:
         {
             emit(AS_Oper("jgt `j0", NULL, NULL, AS_Targets(Temp_LabelList(s->u.CJUMP.true, NULL))));
+            break;
         }
         case T_le:
         {
             emit(AS_Oper("jle `j0", NULL, NULL, AS_Targets(Temp_LabelList(s->u.CJUMP.true, NULL))));
+            break;
         }
         case T_ge:
         {
             emit(AS_Oper("jge `j0", NULL, NULL, AS_Targets(Temp_LabelList(s->u.CJUMP.true, NULL))));
+            break;
         }
         case T_ult:
         {
             emit(AS_Oper("jb `j0", NULL, NULL, AS_Targets(Temp_LabelList(s->u.CJUMP.true, NULL))));
+            break;
         }
         case T_ule:
         {
             emit(AS_Oper("jbe `j0", NULL, NULL, AS_Targets(Temp_LabelList(s->u.CJUMP.true, NULL))));
+            break;
         }
         case T_ugt:
         {
             emit(AS_Oper("ja `j0", NULL, NULL, AS_Targets(Temp_LabelList(s->u.CJUMP.true, NULL))));
+            break;
         }
         case T_uge:
         {
             emit(AS_Oper("jae `j0", NULL, NULL, AS_Targets(Temp_LabelList(s->u.CJUMP.true, NULL))));
+            break;
         }
         }
         return;
@@ -382,7 +392,7 @@ static void munchStm(T_stm s)
             {
                 char inst[INSTLENGTH];
                 sprintf(inst, "movq `s0, %d", addr->u.CONST);
-                emit(AS_Move(String(inst), NULL, L(src, NULL)));
+                emit(AS_Oper(String(inst), NULL, L(src, NULL), NULL));
                 break;
             }
             case T_BINOP:
@@ -393,31 +403,31 @@ static void munchStm(T_stm s)
                 {
                     char inst[INSTLENGTH];
                     sprintf(inst, "movq `s0, %d(`s1)", left->u.CONST);
-                    emit(AS_Move(String(inst), NULL, L(src, L(munchExp(right), NULL))));
+                    emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(right), NULL)), NULL));
                 }
                 else if (right->kind == T_CONST && left->kind == T_TEMP)
                 {
                     char inst[INSTLENGTH];
                     sprintf(inst, "movq `s0, %d(`s1)", right->u.CONST);
-                    emit(AS_Move(String(inst), NULL, L(src, L(munchExp(left), NULL))));
+                    emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(left), NULL)), NULL));
                 }
                 else if (left->kind == T_TEMP && right->kind == T_TEMP)
                 {
                     char inst[INSTLENGTH];
                     sprintf(inst, "movq `s0, (`s1,`s2)");
-                    emit(AS_Move(String(inst), NULL, L(src, L(munchExp(left), L(munchExp(right), NULL)))));
+                    emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(left), L(munchExp(right), NULL))), NULL));
                 }
                 else
                 {
                     Temp_temp address = munchExp(addr);
-                    emit(AS_Move("movq `s0, (`s1)", NULL, L(src, L(address, NULL))));
+                    emit(AS_Oper("movq `s0, (`s1)", NULL, L(src, L(address, NULL)), NULL));
                 }
                 break;
             }
             default:
             {
                 Temp_temp address = munchExp(addr);
-                emit(AS_Move("movq `s0, (`s1)", NULL, L(src, L(address, NULL))));
+                emit(AS_Oper("movq `s0, (`s1)", NULL, L(src, L(address, NULL)), NULL));
             }
             }
         }
@@ -448,13 +458,15 @@ static void munchStm(T_stm s)
 //Lab 6: put your code here
 AS_instrList F_codegen(F_frame f, T_stmList stmList)
 {
+    iList = NULL;
+    last = NULL;
     char rbpConvert[INSTLENGTH];
     sprintf(rbpConvert, "%s_framesize", Temp_labelstring(F_name(f)));
 
     char frameSpace[INSTLENGTH];
     sprintf(frameSpace, "subq $%s, `d0", String(rbpConvert));
     emit(AS_Oper(String(frameSpace), Temp_TempList(F_RSP(), NULL), Temp_TempList(F_RSP(), NULL), NULL));
-    while(stmList)
+    while (stmList)
     {
         munchStm(stmList->head);
         stmList = stmList->tail;
@@ -462,4 +474,6 @@ AS_instrList F_codegen(F_frame f, T_stmList stmList)
     char endFrame[INSTLENGTH];
     sprintf(endFrame, "addq $%s, `d0", String(rbpConvert));
     emit(AS_Oper(String(endFrame), Temp_TempList(F_RSP(), NULL), Temp_TempList(F_RSP(), NULL), NULL));
+
+    return iList;
 }
