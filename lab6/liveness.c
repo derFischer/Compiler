@@ -187,8 +187,31 @@ Temp_tempList L_calSuccIn(G_node node, TAB_table tempListIn)
 	return result;
 }
 
+void printFlowgraph(G_graph flow)
+{
+	G_nodeList nodes = G_nodes(flow);
+	while(nodes)
+	{
+		G_node node = nodes->head;
+		AS_instr inst = G_nodeInfo(node);
+		printf("inst:");
+		printf("%s\n", inst->u.MOVE.assem);
+		G_nodeList succ = G_succ(node);
+		printf("succ:");
+		while(succ)
+		{
+			AS_instr inst = G_nodeInfo(succ->head);
+			printf("%s\n", inst->u.MOVE.assem);
+			succ = succ->tail;
+		}
+		nodes = nodes->tail;
+	}
+}
+
 struct Live_graph Live_liveness(G_graph flow)
 {
+	printf("flow graph:");
+	printFlowgraph(flow);
 	//your code here.
 	struct Live_graph lg;
 

@@ -13,7 +13,7 @@ typedef struct T_stmList_ *T_stmList;
 struct T_stmList_ {T_stm head; T_stmList tail;};
 
 typedef enum {T_plus, T_minus, T_mul, T_div,
-	      T_and, T_or, T_lshift, T_rshift, T_arshift, T_xor} T_binOp ;
+	      T_and, T_or, T_lshift, T_rshift, T_arshift, T_xor, T_forPlus} T_binOp ;
 
 typedef enum  {T_eq, T_ne, T_lt, T_gt, T_le, T_ge,
 		T_ult, T_ule, T_ugt, T_uge} T_relOp;

@@ -45,28 +45,28 @@ AS_instr moveReg(Temp_temp src, Temp_temp dst)
 static Temp_temp opCode(string op, T_exp left, T_exp right)
 {
     Temp_temp result = Temp_newtemp();
-    AS_instr prepareResult;
     AS_instr calOper;
+    AS_instr prepareResult;
     if (left->kind == T_CONST)
     {
         prepareResult = moveReg(munchExp(right), result);
         char inst[INSTLENGTH];
         sprintf(inst, "%s $%d, `d0", op, left->u.CONST);
-        calOper = AS_Oper(String(inst), L(result, NULL), NULL, NULL);
+        calOper = AS_Oper(String(inst), L(result, NULL), L(result, NULL), NULL);
     }
     else if (right->kind == T_CONST)
     {
         prepareResult = moveReg(munchExp(left), result);
         char inst[INSTLENGTH];
         sprintf(inst, "%s $%d, `d0", op, right->u.CONST);
-        calOper = AS_Oper(String(inst), L(result, NULL), NULL, NULL);
+        calOper = AS_Oper(String(inst), L(result, NULL), L(result, NULL), NULL);
     }
     else
     {
         prepareResult = moveReg(munchExp(left), result);
         char inst[INSTLENGTH];
         sprintf(inst, "%s `s0, `d0", op);
-        calOper = AS_Oper(String(inst), L(munchExp(right), NULL), L(result, NULL), NULL);
+        calOper = AS_Oper(String(inst), L(result, NULL), L(result, L(munchExp(right), NULL)), NULL);
     }
     emit(prepareResult);
     emit(calOper);
@@ -147,6 +147,22 @@ static Temp_temp munchExp(T_exp e)
             emit(movRes);
             return result;
         }
+        /*else
+        {
+            if(e->u.BINOP.right->kind != T_CONST)
+            {
+                printf("v of for loop should add const 1 each time\n");
+                assert(0);
+            }
+            else
+            {
+                Temp_temp left = munchExp(e->u.BINOP.left);
+                char inst[INSTLENGTH];
+                sprintf(inst, "addq $%d, `s0", e->u.BINOP.right->u.CONST);
+                emit(AS_Oper(String(inst), Temp_TempList(left, NULL), Temp_TempList(left, NULL), NULL));
+                return left;
+            }
+        }*/
     }
     case T_MEM:
     {

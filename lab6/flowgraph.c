@@ -126,12 +126,12 @@ bool FG_isMove(G_node n)
 	return inst->kind == I_MOVE;
 }
 
-void fillLabelNode(TAB_table nodeLabel, Temp_labelList labelList, G_node node)
+void fillLabelNode(TAB_table nodeLabel, Temp_labelList *labelList, G_node node)
 {
-	while (labelList)
+	while (*labelList)
 	{
-		TAB_enter(nodeLabel, labelList->head, node);
-		labelList = labelList->tail;
+		TAB_enter(nodeLabel, (*labelList)->head, node);
+		*labelList = (*labelList)->tail;
 	}
 	return;
 }
@@ -144,16 +144,17 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 	G_node prevNode = NULL;
 	Temp_labelList labelList = NULL;
 	waitStructList waitToFill = NULL;
-
+	printf("build flow graph\n");
 	while (il)
 	{
-		AS_instr inst = il->head;
+		AS_instr inst = il->head;		
+		printf("%s\n", inst->u.MOVE.assem);
 		switch (inst->kind)
 		{
 		case I_OPER:
 		{
 			G_node node = G_Node(graph, inst);
-			fillLabelNode(nodeLabel, labelList, node);
+			fillLabelNode(nodeLabel, &labelList, node);
 			if (prevNode)
 			{
 				G_addEdge(prevNode, node);
@@ -165,13 +166,14 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 			}
 			if (inst->u.OPER.jumps)
 			{
+				printf("YESSSSSSSSSSSSS");
 				waitToFill = WaitStructList(WaitStruct(inst->u.OPER.jumps, node), waitToFill);
 			}
 			break;
 		}
 		case I_LABEL:
 		{
-			labelList = Temp_LabelList(inst->u.LABEL.label, NULL);
+			labelList = Temp_LabelList(inst->u.LABEL.label, labelList);
 			break;
 		}
 		case I_MOVE:
@@ -184,7 +186,7 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 				}
 			}
 			G_node node = G_Node(graph, inst);
-			fillLabelNode(nodeLabel, labelList, node);
+			fillLabelNode(nodeLabel, &labelList, node);
 			if (prevNode)
 			{
 				G_addEdge(prevNode, node);
@@ -195,14 +197,18 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 		}
 		il = il->tail;
 	}
-
+	printf("fill the wait list\n");
 	while (waitToFill)
 	{
 		waitStruct tmp = waitToFill->head;
 		G_node node = tmp->node;
+		printf("inst:%s\n", G_getInstr(node)->u.MOVE.assem);
 		Temp_labelList labels = tmp->waitsLabel->labels;
+		printf("jump to:");
 		while (labels)
 		{
+			G_node dst = TAB_look(nodeLabel, labels->head);
+			printf("%s\n", G_getInstr(dst)->u.MOVE.assem);
 			G_addEdge(node, TAB_look(nodeLabel, labels->head));
 			labels = labels->tail;
 		}

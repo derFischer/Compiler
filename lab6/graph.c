@@ -14,6 +14,7 @@
 #include "graph.h"
 #include "errormsg.h"
 #include "table.h"
+#include "liveness.h"
 
 struct G_graph_
 {
@@ -241,4 +242,15 @@ G_nodeList G_setUnion(G_nodeList nl1, G_nodeList nl2)
     result = G_NodeList(nl2->head, result);
   }
   return result;
+}
+
+AS_instr G_getInstr(G_node node)
+{
+  return G_nodeInfo(node);
+}
+
+Temp_temp G_getReg(G_node node)
+{
+  nodeInfo info = G_nodeInfo(node);
+  return info->reg;
 }

@@ -18,20 +18,18 @@ movq %r9, %rdi
 push %rbp
 call printi
 addq $8, %rsp
-movq $3, %r8
-cmpq %r8, %r9
+movq $3, %r12
+cmpq %r12, %r9
 je L2
 L3:
-movq $0, %r8
+movq $0, %r12
 L4:
-movq %r9, %rbx
-addq $1, %rbx
-movq %rbx, %r9
+addq $1, %r9
 jmp L6
 L2:
 jmp L1
 L9:
-movq $0, %r8
+movq $0, %r12
 jmp L4
 L7:
 addq $L0_framesize, %rsp

@@ -445,6 +445,8 @@ Tr_exp Tr_forExp(Tr_access access, Tr_exp lo, Tr_exp hi, Tr_exp body, Temp_label
 	T_stm loopStm = T_Cjump(T_le, loop, highest, loopBody, finish);
 	T_stm bodyStm = T_Seq(unNx(body), T_Seq(T_Move(loop, T_Binop(T_plus, loop, T_Const(1))),
 											T_Jump(T_Name(looptest), Temp_LabelList(looptest, NULL))));
+	/*T_stm bodyStm = T_Seq(unNx(body), T_Seq(unNx(Tr_Ex(T_Binop(T_forPlus, loop, T_Const(1)))),
+											T_Jump(T_Name(looptest), Temp_LabelList(looptest, NULL))));*/
 	T_stm forStm = T_Seq(T_Label(looptest),
 						 T_Seq(loopStm,
 							   T_Seq(T_Label(loopBody),
