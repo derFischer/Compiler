@@ -182,19 +182,7 @@ Temp_tempList L_calSuccIn(G_node node, TAB_table tempListIn)
 	for (; succ != NULL; succ = succ->tail)
 	{
 		G_node n = succ->head;
-		AS_instr info = G_nodeInfo(n);
-		printf("calsuccin:%s\n", info->u.MOVE.assem);
 		result = L_tempListUnion(TAB_look(tempListIn, n), result);
-	}
-	Temp_tempList tmp = result;
-	if (tmp)
-	{
-		printf("L_calSuccIn:\n");
-		while (tmp)
-		{
-			printTemp(tmp->head);
-			tmp = tmp->tail;
-		}
 	}
 	return result;
 }
@@ -209,22 +197,16 @@ struct Live_graph Live_liveness(G_graph flow)
 	TAB_table tempListIn = TAB_empty();
 	TAB_table tempListOut = TAB_empty();
 	bool fixPoint = FALSE;
-	printf("1\n");
 	while (!fixPoint)
 	{
 		nodes = G_nodes(flow);
 		fixPoint = TRUE;
-		printf("hehe\n");
 		while (nodes)
 		{
 			G_node node = nodes->head;
 			Temp_tempList oldIn = TAB_look(tempListIn, node);
 			Temp_tempList oldOut = TAB_look(tempListOut, node);
 			Temp_tempList newIn = L_tempListUnion(FG_use(node), L_tempListMinus(oldOut, FG_def(node)));
-			printf("newIn:");
-			printTempList(newIn);
-			printf("use:");
-			printTempList(FG_use(node));
 			Temp_tempList newOut = L_calSuccIn(node, tempListIn);
 
 			if (!sameTempList(oldIn, newIn) || !sameTempList(oldOut, newOut))
@@ -264,19 +246,20 @@ struct Live_graph Live_liveness(G_graph flow)
 				if (TAB_look(tempToNode, defTemp) == NULL)
 				{
 					G_node defTempNode = G_Node(interference, NodeInfo(defTemp));
-					printf("def: ");
-					printTemp(defTemp);
 					TAB_enter(tempToNode, defTemp, defTempNode);
 				}
 				G_node defTempNode = TAB_look(tempToNode, defTemp);
 				while (outs)
 				{
 					Temp_temp outTemp = outs->head;
+					if(framePointer(outTemp))
+					{
+						outs = outs->tail;
+						continue;
+					}
 					if (TAB_look(tempToNode, outTemp) == NULL)
 					{
 						G_node outTempNode = G_Node(interference, NodeInfo(outTemp));
-						printf("defout: ");
-						printTemp(outTemp);
 						TAB_enter(tempToNode, outTemp, outTempNode);
 					}
 					G_node outTempNode = TAB_look(tempToNode, outTemp);
@@ -289,6 +272,7 @@ struct Live_graph Live_liveness(G_graph flow)
 		else
 		{
 			Temp_tempList moveDst = FG_MoveDst(node);
+			Temp_tempList moveSrc = FG_MoveSrc(node);
 			Temp_tempList outs = TAB_look(tempListOut, node);
 			while (moveDst)
 			{
@@ -301,19 +285,25 @@ struct Live_graph Live_liveness(G_graph flow)
 				if (TAB_look(tempToNode, movTemp) == NULL)
 				{
 					G_node movTempNode = G_Node(interference, NodeInfo(movTemp));
-					printf("movsrc: ");
-					printTemp(movTemp);
 					TAB_enter(tempToNode, movTemp, movTempNode);
 				}
 				G_node movTempNode = TAB_look(tempToNode, movTemp);
 				while (outs)
 				{
 					Temp_temp outTemp = outs->head;
+					if(framePointer(outTemp))
+					{
+						outs = outs->tail;
+						continue;
+					}
+					if(L_inTempList(outTemp, moveSrc))
+					{
+						outs = outs->tail;
+						continue;
+					}
 					if (TAB_look(tempToNode, outTemp) == NULL)
 					{
 						G_node outTempNode = G_Node(interference, NodeInfo(outTemp));
-						printf("defout: ");
-						printTemp(outTemp);
 						TAB_enter(tempToNode, outTemp, outTempNode);
 					}
 					G_node outTempNode = TAB_look(tempToNode, outTemp);
@@ -325,7 +315,6 @@ struct Live_graph Live_liveness(G_graph flow)
 		}
 		nodes = nodes->tail;
 	}
-	printf("2\n");
 	//movelist
 	Live_moveList moves = NULL;
 	nodes = G_nodes(flow);
@@ -335,10 +324,8 @@ struct Live_graph Live_liveness(G_graph flow)
 		if (FG_isMove(node))
 		{
 			AS_instr inst = G_nodeInfo(node);
-			printf("in!\n");
 			Temp_temp src = (inst->u.MOVE.src)->head;
 			Temp_temp dst = (inst->u.MOVE.dst)->head;
-			printf("out!\n");
 			if (framePointer(src) || framePointer(dst))
 			{
 				nodes = nodes->tail;
@@ -350,18 +337,6 @@ struct Live_graph Live_liveness(G_graph flow)
 			{
 				G_node srcNode = TAB_look(tempToNode, src);
 				G_node dstNode = TAB_look(tempToNode, dst);
-				if (srcNode == NULL)
-				{
-					printf("cant find src: ");
-					printTemp(src);
-				}
-				assert(srcNode != NULL);
-				if (dstNode == NULL)
-				{
-					printf("cant find src: ");
-					printTemp(dst);
-				}
-				assert(dstNode != NULL);
 				if (!L_inMoveList(srcNode, dstNode, moves))
 				{
 					moves = Live_MoveList(srcNode, dstNode, moves);

@@ -328,6 +328,13 @@ Tr_exp Tr_opExp(A_oper oper, Tr_exp left, Tr_exp right)
 	case A_divideOp:
 		op = T_div;
 		break;
+	case A_eqOp:
+	case A_neqOp:
+	case A_ltOp:
+	case A_leOp:
+	case A_gtOp:
+	case A_geOp:
+		return Tr_intCompExp(oper, left, right);
 	}
 	T_exp leftt = unEx(left);
 	T_exp rightr = unEx(right);

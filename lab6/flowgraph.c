@@ -113,6 +113,12 @@ Temp_tempList FG_MoveDst(G_node n)
 	return inst->u.MOVE.dst;
 }
 
+Temp_tempList FG_MoveSrc(G_node n)
+{
+	AS_instr inst = G_nodeInfo(n);
+	return inst->u.MOVE.src;
+}
+
 bool FG_isMove(G_node n)
 {
 	//your code here.

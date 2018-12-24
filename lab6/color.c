@@ -34,6 +34,8 @@ static Live_moveList activeMoves = NULL;
 
 const int regNum = 14;
 
+void printTemp233(Temp_temp temp);
+void printGnodeList(G_nodeList nodelist);
 static G_nodeList Adjacent(G_node node)
 {
 	return G_setMinus(G_adj(node), G_setUnion(selectStack, coalescedNodes));
@@ -287,9 +289,11 @@ void Coalesce()
 
 void FreezeMoves(G_node node)
 {
+	printf("enter freezmoves\n");
 	Live_moveList ml;
-	while (ml == NodeMoves(node))
+	while (ml = NodeMoves(node))
 	{
+		printf("enter here\n");
 		G_node tmp;
 		if (GetAlias(ml->dst) == GetAlias(node))
 		{
@@ -299,6 +303,7 @@ void FreezeMoves(G_node node)
 		{
 			tmp = GetAlias(ml->dst);
 		}
+		printf("enter hereeeeee\n");
 		activeMoves = L_setMinus(activeMoves, Live_MoveList(ml->src, ml->dst, NULL));
 		frozenMoves = Live_MoveList(ml->src, ml->dst, frozenMoves);
 		nodeInfo tmpInfo = G_nodeInfo(tmp);
@@ -308,6 +313,7 @@ void FreezeMoves(G_node node)
 			simplifyWorklist = G_setUnion(simplifyWorklist, G_NodeList(tmp, NULL));
 		}
 	}
+	printf("end freezmoves\n");
 }
 
 void Freeze()
@@ -323,8 +329,8 @@ void Freeze()
 
 void SelectSpill()
 {
-	G_node node = spilledNodes->head;
-	spilledNodes = spilledNodes->tail;
+	G_node node = spillWorklist->head;
+	spilledNodes = spillWorklist->tail;
 	simplifyWorklist = G_setUnion(simplifyWorklist, G_NodeList(node, NULL));
 	FreezeMoves(node);
 }
@@ -392,17 +398,39 @@ Live_moveList calculateMoves(G_node node, Live_moveList moves)
 
 void Build(G_graph ig, Live_moveList moves)
 {
+	printf("enter build\n");
 	G_nodeList nodes = G_nodes(ig);
+	printf("build nodes:");
+	printGnodeList(nodes);
 	while (nodes)
 	{
 		G_node node = nodes->head;
 		nodeInfo info = G_nodeInfo(node);
 		info->degree = G_degree(node);
 		info->moves = calculateMoves(node, moves);
+		printTemp233(info->reg);
 		nodes = nodes->tail;
 	}
+	printf("end build");
 }
 
+void printTemp233(Temp_temp temp)
+{
+	Temp_map map = Temp_layerMap(F_tempMap, Temp_name());
+	printf("temp %s\t", Temp_look(map, temp));
+	return;
+}
+
+void printGnodeList(G_nodeList nodelist)
+{
+	while (nodelist)
+	{
+		nodeInfo info = G_nodeInfo(nodelist->head);
+		printTemp233(info->reg);
+		nodelist = nodelist->tail;
+	}
+	printf("\n");
+}
 struct COL_result COL_color(G_graph ig, Temp_map initial, Temp_tempList regs, Live_moveList moves)
 {
 	struct COL_result ret;
@@ -420,6 +448,8 @@ struct COL_result COL_color(G_graph ig, Temp_map initial, Temp_tempList regs, Li
 			printf("print simplify\n");
 			Simplify();
 			printf("end simplify\n");
+			//printf("simplify node list:");
+			//printGnodeList(simplifyWorklist);
 		}
 		else if (worklistMoves != NULL)
 		{
@@ -432,13 +462,18 @@ struct COL_result COL_color(G_graph ig, Temp_map initial, Temp_tempList regs, Li
 			printf("print freeze\n");
 			Freeze();
 			printf("end freeze\n");
+			//printf("freeze node list:");
+			//printGnodeList(freezeWorklist);
 		}
 		else if (spillWorklist != NULL)
 		{
 			printf("print selecespill\n");
 			SelectSpill();
 			printf("end selectspill\n");
+			//printf("spillworklist node list:");
+			//printGnodeList(spillWorklist);
 		}
+		//sleep(1);
 	}
 	ret.coloring = Temp_empty();
 	printf("print AssignColors\n");

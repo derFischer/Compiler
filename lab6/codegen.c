@@ -45,27 +45,31 @@ AS_instr moveReg(Temp_temp src, Temp_temp dst)
 static Temp_temp opCode(string op, T_exp left, T_exp right)
 {
     Temp_temp result = Temp_newtemp();
+    AS_instr prepareResult;
+    AS_instr calOper;
     if (left->kind == T_CONST)
     {
-        AS_instr prepareResult = moveReg(munchExp(right), result);
+        prepareResult = moveReg(munchExp(right), result);
         char inst[INSTLENGTH];
         sprintf(inst, "%s $%d, `d0", op, left->u.CONST);
-        AS_instr calOper = AS_Oper(String(inst), L(result, NULL), NULL, NULL);
+        calOper = AS_Oper(String(inst), L(result, NULL), NULL, NULL);
     }
     else if (right->kind == T_CONST)
     {
-        AS_instr prepareResult = moveReg(munchExp(left), result);
+        prepareResult = moveReg(munchExp(left), result);
         char inst[INSTLENGTH];
         sprintf(inst, "%s $%d, `d0", op, right->u.CONST);
-        AS_instr calOper = AS_Oper(String(inst), L(result, NULL), NULL, NULL);
+        calOper = AS_Oper(String(inst), L(result, NULL), NULL, NULL);
     }
     else
     {
-        AS_instr prepareResult = moveReg(munchExp(left), result);
+        prepareResult = moveReg(munchExp(left), result);
         char inst[INSTLENGTH];
         sprintf(inst, "%s `s0, `d0", op);
-        AS_instr calOper = AS_Oper(String(inst), L(munchExp(right), NULL), L(result, NULL), NULL);
+        calOper = AS_Oper(String(inst), L(munchExp(right), NULL), L(result, NULL), NULL);
     }
+    emit(prepareResult);
+    emit(calOper);
     return result;
 }
 
