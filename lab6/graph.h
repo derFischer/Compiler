@@ -4,7 +4,7 @@
 
 #ifndef GRAPH_H
 #define GRAPH_H
-
+#include "assem.h"
 typedef struct G_graph_ *G_graph;  /* The "graph" type */
 typedef struct G_node_ *G_node;    /* The "node" type */
 

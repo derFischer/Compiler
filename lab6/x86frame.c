@@ -126,11 +126,12 @@ F_frame F_newFrame(Temp_label name, U_boolList formals)
 
 	F_accessList list = malloc(sizeof(*list));
 	F_accessList tmp = list;
+	int index = 1;
 	while (formals)
 	{
-		if (formals->head)
+		if (!formals->head)
 		{
-			F_access access = inRegg(Temp_newtemp());
+			F_access access = inRegg(F_argsReg(index));
 			tmp->tail = F_AccessList(access, NULL);
 		}
 		else
@@ -142,6 +143,7 @@ F_frame F_newFrame(Temp_label name, U_boolList formals)
 		tmp = tmp->tail;
 		formals = formals->tail;
 		++argSize;
+		++index;
 	}
 	frame->formals = list->tail;
 	frame->argSize = argSize;

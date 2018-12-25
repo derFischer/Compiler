@@ -1,0 +1,535 @@
+doProc for function L0:
+-------====IR tree=====-----
+ MOVE(
+  TEMP t104,
+  ESEQ(
+   EXP(
+    ESEQ(
+     EXP(
+      CONST 0),
+     CONST 0)),
+   ESEQ(
+    EXP(
+     CONST 0),
+    CALL(
+     NAME printi,
+      TEMP t102,
+      CALL(
+       NAME L1,
+        TEMP t102,
+        CONST 4,
+        CONST 9)))))
+-------====Linearlized=====-----
+ MOVE(
+  TEMP t106,
+  TEMP t102)
+ MOVE(
+  TEMP t105,
+  CALL(
+   NAME L1,
+    TEMP t102,
+    CONST 4,
+    CONST 9))
+ MOVE(
+  TEMP t104,
+  CALL(
+   NAME printi,
+    TEMP t106,
+    TEMP t105))
+-------====trace=====-----
+ LABEL L6
+ MOVE(
+  TEMP t106,
+  TEMP t102)
+ MOVE(
+  TEMP t105,
+  CALL(
+   NAME L1,
+    TEMP t102,
+    CONST 4,
+    CONST 9))
+ MOVE(
+  TEMP t104,
+  CALL(
+   NAME printi,
+    TEMP t106,
+    TEMP t105))
+ JUMP(
+  NAME L5)
+ LABEL L5
+arg kind 5
+arg kind 5
+arg kind 2
+----======before RA=======-----
+subq $L0_framesize, %rsp
+L6:
+movq %rbp, 106
+movq $4, 108
+movq $4, %rdi
+movq 108, %rdi
+movq $9, 109
+movq $9, %rsi
+movq 109, %rsi
+push %rbp
+call L1
+addq $8, %rsp
+movq %rax, 105
+movq 105, %rdi
+push 106
+call printi
+addq $8, %rsp
+movq %rax, %rax
+jmp L5
+L5:
+addq $L0_framesize, %rsp
+
+enter FG_AssemFlowGraph
+build flow graph
+subq $L0_framesize, `d0
+L6
+movq `s0, `d0
+movq $4, `d0
+movq $4, `d0
+movq `s0, `d0
+movq $9, `d0
+movq $9, `d0
+movq `s0, `d0
+push `s0
+call L1
+addq $8, `d0
+movq `s0, `d0
+movq `s0, `d0
+push `s0
+call printi
+addq $8, `d0
+movq `s0, `d0
+jmp `j0
+YESSSSSSSSSSSSSL5
+addq $L0_framesize, `d0
+fill the wait list
+inst:jmp `j0
+jump to:addq $L0_framesize, `d0
+end FG_AssemFlowGraph
+begin Live_liveness
+flow graph:inst:subq $L0_framesize, `d0
+succ:movq `s0, `d0
+inst:movq `s0, `d0
+succ:movq $4, `d0
+inst:movq $4, `d0
+succ:movq $4, `d0
+inst:movq $4, `d0
+succ:movq `s0, `d0
+inst:movq `s0, `d0
+succ:movq $9, `d0
+inst:movq $9, `d0
+succ:movq $9, `d0
+inst:movq $9, `d0
+succ:movq `s0, `d0
+inst:movq `s0, `d0
+succ:push `s0
+inst:push `s0
+succ:call L1
+inst:call L1
+succ:addq $8, `d0
+inst:addq $8, `d0
+succ:movq `s0, `d0
+inst:movq `s0, `d0
+succ:movq `s0, `d0
+inst:movq `s0, `d0
+succ:push `s0
+inst:push `s0
+succ:call printi
+inst:call printi
+succ:addq $8, `d0
+inst:addq $8, `d0
+succ:jmp `j0
+inst:jmp `j0
+succ:addq $L0_framesize, `d0
+inst:addq $L0_framesize, `d0
+succ:start build interference
+inst: subq $L0_framesize, `d0
+inst: movq `s0, `d0
+enter move use temp:temp 106
+inst: movq $4, `d0
+enter nonmove def temp:temp 108
+inst: movq $4, `d0
+enter nonmove def temp:temp %rdi
+inst: movq `s0, `d0
+inst: movq $9, `d0
+enter nonmove def temp:temp 109
+inst: movq $9, `d0
+enter nonmove def temp:temp %rsi
+inst: movq `s0, `d0
+inst: push `s0
+enter nonmove def temp:temp %r10
+enter nonmove out temp:temp %rdx
+enter nonmove def temp:temp %r11
+enter nonmove def temp:temp %rcx
+enter nonmove def temp:temp %r8
+enter nonmove def temp:temp %r9
+inst: call L1
+enter nonmove def temp:temp %rax
+inst: addq $8, `d0
+inst: movq `s0, `d0
+enter move use temp:temp 105
+inst: movq `s0, `d0
+inst: push `s0
+inst: call printi
+inst: addq $8, `d0
+inst: jmp `j0
+inst: addq $L0_framesize, `d0
+end Live_liveness
+start color reg
+print build
+enter build
+build nodes:temp 106	temp 108	temp %rdi	temp 109	temp %rsi	temp %r10	temp %rdx	temp %r11	temp %rcx	temp %r8	temp %r9	temp %rax	temp 105	
+temp 106	temp 108	temp %rdi	temp 109	temp %rsi	temp %r10	temp %rdx	temp %r11	temp %rcx	temp %r8	temp %r9	temp %rax	temp 105	end buildend build
+print MakeWorklist
+end MakeWorklist
+print simplify
+end simplify
+print simplify
+end simplify
+print simplify
+end simplify
+print simplify
+end simplify
+print simplify
+end simplify
+print simplify
+end simplify
+print simplify
+end simplify
+print simplify
+end simplify
+print simplify
+end simplify
+print simplify
+end simplify
+print simplify
+end simplify
+print simplify
+end simplify
+print simplify
+end simplify
+print AssignColors
+end AssignColors
+end color reg
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+22222222222dfsdfsf
+22222222222dfsdfssdfasdfdf
+src reg:%rbp, dst reg:%rbx
+src reg:102, dst reg:106
+sdfjkalskjdf
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+22222222222dfsdfsf
+22222222222dfsdfssdfasdfdf
+src reg:%r9, dst reg:%rdi
+src reg:108, dst reg:100
+sdfjkalskjdf
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+22222222222dfsdfsf
+22222222222dfsdfssdfasdfdf
+src reg:%r9, dst reg:%rsi
+src reg:109, dst reg:101
+sdfjkalskjdf
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+22222222222dfsdfsf
+22222222222dfsdfssdfasdfdf
+src reg:%rax, dst reg:%r9
+src reg:104, dst reg:105
+sdfjkalskjdf
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+22222222222dfsdfsf
+22222222222dfsdfssdfasdfdf
+src reg:%r9, dst reg:%rdi
+src reg:105, dst reg:100
+sdfjkalskjdf
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+22222222222dfsdfsf
+22222222222dfsdfssdfasdfdf
+src reg:%rax, dst reg:%rax
+src reg:104, dst reg:104
+sdfjkalskjdf
+sdfssssssssssssssssddddddddddddddddddddd
+22222222222
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+arrive hereeeeee
+----======after RA=======-----
+BEGIN write
+END write
+doProc for function L1:
+-------====IR tree=====-----
+ MOVE(
+  TEMP t104,
+  ESEQ(
+   CJUMP(GT,
+    TEMP t100,
+    TEMP t101,
+    L2,L3),
+   ESEQ(
+    SEQ(
+     LABEL L2,
+     SEQ(
+      MOVE(
+       TEMP t103,
+       TEMP t100),
+      JUMP(
+       NAME L4))),
+    ESEQ(
+     SEQ(
+      LABEL L3,
+      SEQ(
+       MOVE(
+        TEMP t103,
+        TEMP t101),
+       JUMP(
+        NAME L4))),
+     ESEQ(
+      LABEL L4,
+      TEMP t103)))))
+-------====Linearlized=====-----
+ CJUMP(GT,
+  TEMP t100,
+  TEMP t101,
+  L2,L3)
+ LABEL L2
+ MOVE(
+  TEMP t103,
+  TEMP t100)
+ JUMP(
+  NAME L4)
+ LABEL L3
+ MOVE(
+  TEMP t103,
+  TEMP t101)
+ JUMP(
+  NAME L4)
+ LABEL L4
+ MOVE(
+  TEMP t104,
+  TEMP t103)
+-------====trace=====-----
+ LABEL L8
+ CJUMP(GT,
+  TEMP t100,
+  TEMP t101,
+  L2,L3)
+ LABEL L3
+ MOVE(
+  TEMP t103,
+  TEMP t101)
+ LABEL L4
+ MOVE(
+  TEMP t104,
+  TEMP t103)
+ JUMP(
+  NAME L7)
+ LABEL L2
+ MOVE(
+  TEMP t103,
+  TEMP t100)
+ JUMP(
+  NAME L4)
+ LABEL L7
+----======before RA=======-----
+subq $L1_framesize, %rsp
+L8:
+cmpq %rsi, %rdi
+jg L2
+L3:
+movq %rsi, 103
+L4:
+movq 103, %rax
+jmp L7
+L2:
+movq %rdi, 103
+jmp L4
+L7:
+addq $L1_framesize, %rsp
+
+enter FG_AssemFlowGraph
+build flow graph
+subq $L1_framesize, `d0
+L8
+cmpq `s0, `s1
+jg `j0
+YESSSSSSSSSSSSSL3
+movq `s0, `d0
+L4
+movq `s0, `d0
+jmp `j0
+YESSSSSSSSSSSSSL2
+movq `s0, `d0
+jmp `j0
+YESSSSSSSSSSSSSL7
+addq $L1_framesize, `d0
+fill the wait list
+inst:jmp `j0
+jump to:movq `s0, `d0
+inst:jmp `j0
+jump to:addq $L1_framesize, `d0
+inst:jg `j0
+jump to:movq `s0, `d0
+end FG_AssemFlowGraph
+begin Live_liveness
+flow graph:inst:subq $L1_framesize, `d0
+succ:cmpq `s0, `s1
+inst:cmpq `s0, `s1
+succ:jg `j0
+inst:jg `j0
+succ:movq `s0, `d0
+movq `s0, `d0
+inst:movq `s0, `d0
+succ:movq `s0, `d0
+inst:movq `s0, `d0
+succ:jmp `j0
+inst:jmp `j0
+succ:addq $L1_framesize, `d0
+inst:movq `s0, `d0
+succ:jmp `j0
+inst:jmp `j0
+succ:movq `s0, `d0
+inst:addq $L1_framesize, `d0
+succ:start build interference
+inst: subq $L1_framesize, `d0
+inst: cmpq `s0, `s1
+inst: jg `j0
+inst: movq `s0, `d0
+enter move use temp:temp 103
+inst: movq `s0, `d0
+enter move use temp:temp %rax
+inst: jmp `j0
+inst: movq `s0, `d0
+inst: jmp `j0
+inst: addq $L1_framesize, `d0
+end Live_liveness
+start color reg
+print build
+enter build
+build nodes:temp 103	temp %rax	
+temp 103	temp %rax	end buildend build
+print MakeWorklist
+end MakeWorklist
+print simplify
+end simplify
+print simplify
+end simplify
+print AssignColors
+end AssignColors
+end color reg
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+22222222222dfsdfsf
+22222222222dfsdfssdfasdfdf
+src reg:%rsi, dst reg:%rbx
+src reg:101, dst reg:103
+sdfjkalskjdf
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+22222222222dfsdfsf
+22222222222dfsdfssdfasdfdf
+src reg:%rbx, dst reg:%rax
+src reg:103, dst reg:104
+sdfjkalskjdf
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+22222222222dfsdfsf
+22222222222dfsdfssdfasdfdf
+src reg:%rdi, dst reg:%rbx
+src reg:100, dst reg:103
+sdfjkalskjdf
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+111111111
+asdfljkkkkkkkkkkkkkkkkkkkkkkkk
+333333333333
+arrive hereeeeee
+----======after RA=======-----
+BEGIN write
+END write

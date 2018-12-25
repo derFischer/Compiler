@@ -208,7 +208,7 @@ Tr_level Tr_newLevel(Tr_level parent, Temp_label name, U_boolList formals)
 	Tr_level level = malloc(sizeof(*level));
 
 	//add static link to formals
-	level->frame = F_newFrame(name, U_BoolList(TRUE, formals));
+	level->frame = F_newFrame(name, formals);
 	level->parent = parent;
 	return level;
 }
@@ -230,7 +230,6 @@ Tr_accessList Tr_formals(Tr_level level)
 		list = list->tail;
 		result = result->tail;
 	}
-	//EM_error(0, "formals failelkasdjfljewofjoiawerf!");
 	return tlist->tail;
 }
 

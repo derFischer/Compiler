@@ -6,8 +6,10 @@ subq $L0_framesize, %rsp
 L6:
 movq %rbp, %rbx
 movq $4, %r9
+movq $4, %rdi
 movq %r9, %rdi
 movq $9, %r9
+movq $9, %rsi
 movq %r9, %rsi
 push %rbp
 call L1
@@ -27,16 +29,15 @@ addq $L0_framesize, %rsp
 L1:
 subq $L1_framesize, %rsp
 L8:
-movq 8(%rbp), %rbx
-cmpq %rbx, %r9
-jgt L2
+cmpq %rsi, %rdi
+jg L2
 L3:
-movq 8(%rbp), %rbx
+movq %rsi, %rbx
 L4:
 movq %rbx, %rax
 jmp L7
 L2:
-movq %r9, %rbx
+movq %rdi, %rbx
 jmp L4
 L7:
 addq $L1_framesize, %rsp
