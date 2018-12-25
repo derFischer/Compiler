@@ -564,7 +564,7 @@ struct expty transDec(S_table venv, S_table tenv, A_dec d, Tr_level level, Temp_
 			S_endScope(venv);
 			Tr_procEntryExit1(e->u.fun.level, returnType.exp, accesses);
 		}
-		return expTy(NULL, Ty_Int());
+		return expTy(Tr_nilExp(), Ty_Int());
 	}
 	case A_varDec:
 	{
@@ -644,7 +644,7 @@ struct expty transDec(S_table venv, S_table tenv, A_dec d, Tr_level level, Temp_
 				}
 			}
 		}
-		return expTy(NULL, Ty_Int());
+		return expTy(Tr_nilExp(), Ty_Int());
 	}
 	}
 }
