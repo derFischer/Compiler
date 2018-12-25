@@ -6,10 +6,8 @@ subq $L0_framesize, %rsp
 L6:
 movq %rbp, %rbx
 movq $4, %r9
-movq $4, %rdi
 movq %r9, %rdi
 movq $9, %r9
-movq $9, %rsi
 movq %r9, %rsi
 push %rbp
 call L1

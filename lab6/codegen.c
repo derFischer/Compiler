@@ -31,19 +31,9 @@ void printTempff(Temp_temp temp)
 	return;
 }
 
-void printInstrList()
-{
-    printf("print inst lists\n");
-    AS_instrList il = iList;
-    while (il)
-    {
-        printf("%s\n", il->head->u.MOVE.assem);
-        il = il->tail;
-    }
-}
-
 static void emit(AS_instr inst)
 {
+    printf("emit:%s\n", inst->u.MOVE.assem);
     if (last != NULL)
     {
         last->tail = AS_InstrList(inst, NULL);
@@ -53,7 +43,6 @@ static void emit(AS_instr inst)
     {
         iList = last = AS_InstrList(inst, NULL);
     }
-    printInstrList();
 }
 
 AS_instr moveReg(Temp_temp src, Temp_temp dst)
@@ -301,18 +290,20 @@ int calArgsStackSpace(T_expList args)
 
 static Temp_tempList passArgs(T_expList args)
 {
+    printf("enter passargs\n");
     T_exp staticLink = args->head;
     Temp_tempList result = NULL;
     Temp_temp slReg = munchExp(staticLink);
+    printTempff(slReg);
     args = args->tail;
     int index = 1;
     while (args && index <= 6)
     {
         T_exp arg = args->head;
-        T_stm stm = T_Move(T_Temp(F_argsReg(index)), arg);
-        munchStm(stm);
-        /*Temp_temp argReg = munchExp(arg);
-        emit(AS_Move("movq `s0, `d0", Temp_TempList(F_argsReg(index), NULL), Temp_TempList(argReg, NULL)));*/
+        /*T_stm stm = T_Move(T_Temp(F_argsReg(index)), arg);
+        munchStm(stm);*/
+        Temp_temp argReg = munchExp(arg);
+        emit(AS_Move("movq `s0, `d0", Temp_TempList(F_argsReg(index), NULL), Temp_TempList(argReg, NULL)));
         args = args->tail;
         index++;
         result = Temp_TempList(F_argsReg(index), result);

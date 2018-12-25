@@ -57,304 +57,57 @@ doProc for function L0:
  JUMP(
   NAME L5)
  LABEL L5
-print inst lists
-subq $L0_framesize, `d0
+emit:subq $L0_framesize, `d0
 stm kind 1
-print inst lists
-subq $L0_framesize, `d0
-L6
+emit:L6
 stm kind 4
 exp kind:2
 exp kind:2
 move src:temp %rbp
 move dst:temp 106
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
+emit:movq `s0, `d0
 stm kind 4
 exp kind:6
+enter passargs
 exp kind:2
-stm kind 4
 exp kind:5
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-exp kind:2
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-exp kind:2
-move src:temp 108
-move dst:temp %rdi
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-stm kind 4
+emit:movq $4, `d0
+emit:movq `s0, `d0
 exp kind:5
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-exp kind:2
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-exp kind:2
-move src:temp 109
-move dst:temp %rsi
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-call L1
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-call L1
-addq $8, `d0
+emit:movq $9, `d0
+emit:movq `s0, `d0
+emit:push `s0
+emit:call L1
+emit:addq $8, `d0
 exp kind:2
 move src:temp %rax
 move dst:temp 105
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-call L1
-addq $8, `d0
-movq `s0, `d0
+emit:movq `s0, `d0
 stm kind 4
 exp kind:6
+enter passargs
 exp kind:2
-stm kind 4
 exp kind:2
-exp kind:2
-move src:temp 105
-move dst:temp %rdi
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-call L1
-addq $8, `d0
-movq `s0, `d0
-movq `s0, `d0
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-call L1
-addq $8, `d0
-movq `s0, `d0
-movq `s0, `d0
-push `s0
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-call L1
-addq $8, `d0
-movq `s0, `d0
-movq `s0, `d0
-push `s0
-call printi
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-call L1
-addq $8, `d0
-movq `s0, `d0
-movq `s0, `d0
-push `s0
-call printi
-addq $8, `d0
+emit:movq `s0, `d0
+emit:push `s0
+emit:call printi
+emit:addq $8, `d0
 exp kind:2
 move src:temp %rax
 move dst:temp %rax
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-call L1
-addq $8, `d0
-movq `s0, `d0
-movq `s0, `d0
-push `s0
-call printi
-addq $8, `d0
-movq `s0, `d0
+emit:movq `s0, `d0
 stm kind 2
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-call L1
-addq $8, `d0
-movq `s0, `d0
-movq `s0, `d0
-push `s0
-call printi
-addq $8, `d0
-movq `s0, `d0
-jmp `j0
+emit:jmp `j0
 stm kind 1
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-call L1
-addq $8, `d0
-movq `s0, `d0
-movq `s0, `d0
-push `s0
-call printi
-addq $8, `d0
-movq `s0, `d0
-jmp `j0
-L5
-print inst lists
-subq $L0_framesize, `d0
-L6
-movq `s0, `d0
-movq $4, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
-movq $9, `d0
-movq `s0, `d0
-push `s0
-call L1
-addq $8, `d0
-movq `s0, `d0
-movq `s0, `d0
-push `s0
-call printi
-addq $8, `d0
-movq `s0, `d0
-jmp `j0
-L5
-addq $L0_framesize, `d0
+emit:L5
+emit:addq $L0_framesize, `d0
 ----======before RA=======-----
 subq $L0_framesize, %rsp
 L6:
 movq %rbp, 106
 movq $4, 108
-movq $4, %rdi
 movq 108, %rdi
 movq $9, 109
-movq $9, %rsi
 movq 109, %rsi
 push %rbp
 call L1
@@ -375,9 +128,7 @@ subq $L0_framesize, `d0
 L6
 movq `s0, `d0
 movq $4, `d0
-movq $4, `d0
 movq `s0, `d0
-movq $9, `d0
 movq $9, `d0
 movq `s0, `d0
 push `s0
@@ -402,12 +153,8 @@ succ:movq `s0, `d0
 inst:movq `s0, `d0
 succ:movq $4, `d0
 inst:movq $4, `d0
-succ:movq $4, `d0
-inst:movq $4, `d0
 succ:movq `s0, `d0
 inst:movq `s0, `d0
-succ:movq $9, `d0
-inst:movq $9, `d0
 succ:movq $9, `d0
 inst:movq $9, `d0
 succ:movq `s0, `d0
@@ -438,14 +185,12 @@ inst: movq `s0, `d0
 enter move use temp:temp 106
 inst: movq $4, `d0
 enter nonmove def temp:temp 108
-inst: movq $4, `d0
-enter nonmove def temp:temp %rdi
 inst: movq `s0, `d0
+enter move use temp:temp %rdi
 inst: movq $9, `d0
 enter nonmove def temp:temp 109
-inst: movq $9, `d0
-enter nonmove def temp:temp %rsi
 inst: movq `s0, `d0
+enter move use temp:temp %rsi
 inst: push `s0
 enter nonmove def temp:temp %r10
 enter nonmove out temp:temp %rdx
@@ -519,17 +264,11 @@ asdfljkkkkkkkkkkkkkkkkkkkkkkkk
 asdfljkkkkkkkkkkkkkkkkkkkkkkkk
 333333333333
 111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
 22222222222dfsdfsf
 22222222222dfsdfssdfasdfdf
 src reg:%r9, dst reg:%rdi
 src reg:108, dst reg:100
 sdfjkalskjdf
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
 asdfljkkkkkkkkkkkkkkkkkkkkkkkk
 333333333333
 111111111
@@ -672,150 +411,45 @@ doProc for function L1:
  JUMP(
   NAME L4)
  LABEL L7
-print inst lists
-subq $L1_framesize, `d0
+emit:subq $L1_framesize, `d0
 stm kind 1
-print inst lists
-subq $L1_framesize, `d0
-L8
+emit:L8
 stm kind 3
 exp kind:2
 exp kind:2
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-jg `j0
+emit:cmpq `s0, `s1
+emit:jg `j0
 stm kind 1
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-jg `j0
-L3
+emit:L3
 stm kind 4
 exp kind:2
 exp kind:2
 move src:temp %rsi
 move dst:temp 103
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-jg `j0
-L3
-movq `s0, `d0
+emit:movq `s0, `d0
 stm kind 1
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-jg `j0
-L3
-movq `s0, `d0
-L4
+emit:L4
 stm kind 4
 exp kind:2
 exp kind:2
 move src:temp 103
 move dst:temp %rax
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-jg `j0
-L3
-movq `s0, `d0
-L4
-movq `s0, `d0
+emit:movq `s0, `d0
 stm kind 2
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-jg `j0
-L3
-movq `s0, `d0
-L4
-movq `s0, `d0
-jmp `j0
+emit:jmp `j0
 stm kind 1
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-jg `j0
-L3
-movq `s0, `d0
-L4
-movq `s0, `d0
-jmp `j0
-L2
+emit:L2
 stm kind 4
 exp kind:2
 exp kind:2
 move src:temp %rdi
 move dst:temp 103
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-jg `j0
-L3
-movq `s0, `d0
-L4
-movq `s0, `d0
-jmp `j0
-L2
-movq `s0, `d0
+emit:movq `s0, `d0
 stm kind 2
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-jg `j0
-L3
-movq `s0, `d0
-L4
-movq `s0, `d0
-jmp `j0
-L2
-movq `s0, `d0
-jmp `j0
+emit:jmp `j0
 stm kind 1
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-jg `j0
-L3
-movq `s0, `d0
-L4
-movq `s0, `d0
-jmp `j0
-L2
-movq `s0, `d0
-jmp `j0
-L7
-print inst lists
-subq $L1_framesize, `d0
-L8
-cmpq `s0, `s1
-jg `j0
-L3
-movq `s0, `d0
-L4
-movq `s0, `d0
-jmp `j0
-L2
-movq `s0, `d0
-jmp `j0
-L7
-addq $L1_framesize, `d0
+emit:L7
+emit:addq $L1_framesize, `d0
 ----======before RA=======-----
 subq $L1_framesize, %rsp
 L8:
