@@ -24,6 +24,24 @@ Temp_tempList L(Temp_temp head, Temp_tempList tail)
     return Temp_TempList(head, tail);
 }
 
+void printTempff(Temp_temp temp)
+{
+	Temp_map map = Temp_layerMap(F_tempMap, Temp_name());
+	printf("temp %s\n", Temp_look(map, temp));
+	return;
+}
+
+void printInstrList()
+{
+    printf("print inst lists\n");
+    AS_instrList il = iList;
+    while (il)
+    {
+        printf("%s\n", il->head->u.MOVE.assem);
+        il = il->tail;
+    }
+}
+
 static void emit(AS_instr inst)
 {
     if (last != NULL)
@@ -35,6 +53,7 @@ static void emit(AS_instr inst)
     {
         iList = last = AS_InstrList(inst, NULL);
     }
+    printInstrList();
 }
 
 AS_instr moveReg(Temp_temp src, Temp_temp dst)
@@ -75,6 +94,7 @@ static Temp_temp opCode(string op, T_exp left, T_exp right)
 
 static Temp_temp munchExp(T_exp e)
 {
+    printf("exp kind:%d\n", e->kind);
     switch (e->kind)
     {
     case T_BINOP:
@@ -326,6 +346,7 @@ static Temp_tempList passArgs(T_expList args)
 
 static void munchStm(T_stm s)
 {
+    printf("stm kind %d\n", s->kind);
     switch (s->kind)
     {
     case T_SEQ:
@@ -514,13 +535,21 @@ static void munchStm(T_stm s)
         }
         else if (dst->kind == T_TEMP)
         {
-            if(srcConst)
+            if (srcConst)
             {
                 char inst[INSTLENGTH];
                 sprintf(inst, "movq $%d, `d0", srcConstNum);
+                Temp_temp dstt = munchExp(dst);
+                printf("mov dst reg:");
+                printTempff(dstt);
                 emit(AS_Oper(String(inst), L(munchExp(dst), NULL), NULL, NULL));
             }
-            emit(AS_Move("movq `s0, `d0", L(munchExp(dst), NULL), L(src, NULL)));
+            Temp_temp dstt = munchExp(dst);
+            printf("move src:");
+            printTempff(src);
+            printf("move dst:");
+            printTempff(dstt);
+            emit(AS_Move("movq `s0, `d0", L(dstt, NULL), L(src, NULL)));
         }
         else
         {
