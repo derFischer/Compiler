@@ -256,7 +256,45 @@ struct Live_graph Live_liveness(G_graph flow)
 	//to do:判断重复
 	printf("start build interference\n");
 	G_graph interference = G_Graph();
+	//construct the temp to node table
 	TAB_table tempToNode = TAB_empty();
+	G_nodeList allInstr = G_nodes(flow);
+
+	while (allInstr)
+	{
+		Temp_tempList defs = FG_def(allInstr->head);
+		Temp_tempList uses = FG_use(allInstr->head);
+		while (defs)
+		{
+			/*if(framePointer(defs->head))
+			{
+				defs = defs->tail;
+				continue;
+			}*/
+			if (TAB_look(tempToNode, defs->head) == NULL)
+			{
+				G_node tempNode = G_Node(interference, NodeInfo(defs->head));
+				TAB_enter(tempToNode, defs->head, tempNode);
+			}
+			defs = defs->tail;
+		}
+		while (uses)
+		{
+			/*if(framePointer(uses->head))
+			{
+				uses = uses->tail;
+				continue;
+			}*/
+			if (TAB_look(tempToNode, uses->head) == NULL)
+			{
+				G_node tempNode = G_Node(interference, NodeInfo(uses->head));
+				TAB_enter(tempToNode, uses->head, tempNode);
+			}
+			uses = uses->tail;
+		}
+		allInstr = allInstr->tail;
+	}
+
 	nodes = G_nodes(flow);
 	while (nodes)
 	{
@@ -269,34 +307,34 @@ struct Live_graph Live_liveness(G_graph flow)
 			while (defs)
 			{
 				Temp_temp defTemp = defs->head;
-				if (framePointer(defTemp))
+				/*if (framePointer(defTemp))
 				{
 					defs = defs->tail;
 					continue;
 				}
-				if (TAB_look(tempToNode, defTemp) == NULL)
+				/*if (TAB_look(tempToNode, defTemp) == NULL)
 				{
 					G_node defTempNode = G_Node(interference, NodeInfo(defTemp));
 					printf("enter nonmove def temp:");
 					printTemp(defTemp);
 					TAB_enter(tempToNode, defTemp, defTempNode);
-				}
+				}*/
 				G_node defTempNode = TAB_look(tempToNode, defTemp);
 				while (outs)
 				{
 					Temp_temp outTemp = outs->head;
-					if (framePointer(outTemp))
+					/*if (framePointer(outTemp))
 					{
 						outs = outs->tail;
 						continue;
 					}
-					if (TAB_look(tempToNode, outTemp) == NULL)
+					/*if (TAB_look(tempToNode, outTemp) == NULL)
 					{
 						G_node outTempNode = G_Node(interference, NodeInfo(outTemp));
 						printf("enter nonmove out temp:");
 						printTemp(outTemp);
 						TAB_enter(tempToNode, outTemp, outTempNode);
-					}
+					}*/
 					G_node outTempNode = TAB_look(tempToNode, outTemp);
 					G_addEdgeNonDirection(defTempNode, outTempNode);
 					outs = outs->tail;
@@ -312,39 +350,39 @@ struct Live_graph Live_liveness(G_graph flow)
 			while (moveDst)
 			{
 				Temp_temp movTemp = moveDst->head;
-				if (framePointer(movTemp))
+				/*if (framePointer(movTemp))
 				{
 					moveDst = moveDst->tail;
 					continue;
 				}
-				if (TAB_look(tempToNode, movTemp) == NULL)
+				/*if (TAB_look(tempToNode, movTemp) == NULL)
 				{
 					G_node movTempNode = G_Node(interference, NodeInfo(movTemp));
 					printf("enter move use temp:");
 					printTemp(movTemp);
 					TAB_enter(tempToNode, movTemp, movTempNode);
-				}
+				}*/
 				G_node movTempNode = TAB_look(tempToNode, movTemp);
 				while (outs)
 				{
 					Temp_temp outTemp = outs->head;
-					if (framePointer(outTemp))
+					/*if (framePointer(outTemp))
 					{
 						outs = outs->tail;
 						continue;
-					}
+					}*/
 					if (L_inTempList(outTemp, moveSrc))
 					{
 						outs = outs->tail;
 						continue;
 					}
-					if (TAB_look(tempToNode, outTemp) == NULL)
+					/*if (TAB_look(tempToNode, outTemp) == NULL)
 					{
 						G_node outTempNode = G_Node(interference, NodeInfo(outTemp));
 						printf("enter move out temp:");
 						printTemp(outTemp);
 						TAB_enter(tempToNode, outTemp, outTempNode);
-					}
+					}*/
 					G_node outTempNode = TAB_look(tempToNode, outTemp);
 					G_addEdgeNonDirection(movTempNode, outTempNode);
 					outs = outs->tail;
@@ -357,13 +395,13 @@ struct Live_graph Live_liveness(G_graph flow)
 
 	printf("-------===========interference===========-------------\n");
 	G_nodeList inodes = G_nodes(interference);
-	while(inodes)
+	while (inodes)
 	{
 		G_node node = inodes->head;
 		printTemp3(G_getReg(node));
 		printf("interference with:");
 		G_nodeList ajdNodes = G_adj(node);
-		while(ajdNodes)
+		while (ajdNodes)
 		{
 			G_node node = ajdNodes->head;
 			printTemp3(G_getReg(node));
@@ -372,7 +410,7 @@ struct Live_graph Live_liveness(G_graph flow)
 		printf("\n");
 		inodes = inodes->tail;
 	}
-	
+
 	//movelist
 	Live_moveList moves = NULL;
 	nodes = G_nodes(flow);
@@ -384,11 +422,11 @@ struct Live_graph Live_liveness(G_graph flow)
 			AS_instr inst = G_nodeInfo(node);
 			Temp_temp src = (inst->u.MOVE.src)->head;
 			Temp_temp dst = (inst->u.MOVE.dst)->head;
-			if (framePointer(src) || framePointer(dst))
+			/*if (framePointer(src) || framePointer(dst))
 			{
 				nodes = nodes->tail;
 				continue;
-			}
+			}*/
 			assert(src != NULL);
 			assert(dst != NULL);
 			if (dst != src)
@@ -397,6 +435,8 @@ struct Live_graph Live_liveness(G_graph flow)
 				G_node dstNode = TAB_look(tempToNode, dst);
 				if (!L_inMoveList(srcNode, dstNode, moves))
 				{
+					assert(srcNode);
+					assert(dstNode);
 					moves = Live_MoveList(srcNode, dstNode, moves);
 				}
 			}

@@ -1,7 +1,7 @@
 doProc for function L0:
 -------====IR tree=====-----
  MOVE(
-  TEMP t104,
+  TEMP t103,
   ESEQ(
    EXP(
     ESEQ(
@@ -13,47 +13,44 @@ doProc for function L0:
      CONST 0),
     CALL(
      NAME printi,
-      TEMP t102,
+      TEMP t101,
       CALL(
        NAME L1,
-        TEMP t102,
-        CONST 4,
-        CONST 9)))))
+        TEMP t101,
+        CONST 10)))))
 -------====Linearlized=====-----
  MOVE(
-  TEMP t106,
-  TEMP t102)
- MOVE(
   TEMP t105,
-  CALL(
-   NAME L1,
-    TEMP t102,
-    CONST 4,
-    CONST 9))
+  TEMP t101)
  MOVE(
   TEMP t104,
   CALL(
+   NAME L1,
+    TEMP t101,
+    CONST 10))
+ MOVE(
+  TEMP t103,
+  CALL(
    NAME printi,
-    TEMP t106,
-    TEMP t105))
+    TEMP t105,
+    TEMP t104))
 -------====trace=====-----
  LABEL L6
  MOVE(
-  TEMP t106,
-  TEMP t102)
- MOVE(
   TEMP t105,
-  CALL(
-   NAME L1,
-    TEMP t102,
-    CONST 4,
-    CONST 9))
+  TEMP t101)
  MOVE(
   TEMP t104,
   CALL(
+   NAME L1,
+    TEMP t101,
+    CONST 10))
+ MOVE(
+  TEMP t103,
+  CALL(
    NAME printi,
-    TEMP t106,
-    TEMP t105))
+    TEMP t105,
+    TEMP t104))
  JUMP(
   NAME L5)
  LABEL L5
@@ -63,74 +60,53 @@ emit:L6
 stm kind 4
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 102
-
+temp 101	
 ------------------------move src-------------------
-
-temp 102
+temp 101	
 -----------------move to a temp-----------------
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 106
-
-move src:temp 102
-move dst:temp 106
-emit:movq `s0, `d0
+temp 105	
+move src:temp 101	move dst:temp 105	emit:movq `s0, `d0
 stm kind 4
 exp kind:6
 enter passargs
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 102
-
-temp 102
-exp kind:5
-emit:movq $4, `d0
-emit:movq `s0, `d0
-exp kind:5
-emit:movq $9, `d0
+temp 101	
+temp 101	exp kind:5
+emit:movq $10, `d0
 emit:movq `s0, `d0
 emit:push `s0
 emit:call L1
 emit:addq $8, `d0
 ------------------------move src-------------------
-
-temp 104
+temp 103	
 -----------------move to a temp-----------------
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 105
-
-move src:temp 104
-move dst:temp 105
-emit:movq `s0, `d0
+temp 104	
+move src:temp 103	move dst:temp 104	emit:movq `s0, `d0
 stm kind 4
 exp kind:6
 enter passargs
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 106
-
-temp 106
-exp kind:2
+temp 105	
+temp 105	exp kind:2
 -----------------munch exp a temp-------------------
-temp 105
-
+temp 104	
 emit:movq `s0, `d0
 emit:push `s0
 emit:call printi
 emit:addq $8, `d0
 ------------------------move src-------------------
-
-temp 104
+temp 103	
 -----------------move to a temp-----------------
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 104
-
-move src:temp 104
-move dst:temp 104
-emit:movq `s0, `d0
+temp 103	
+move src:temp 103	move dst:temp 103	emit:movq `s0, `d0
 stm kind 2
 emit:jmp `j0
 stm kind 1
@@ -139,17 +115,15 @@ emit:addq $L0_framesize, `d0
 ----======before RA=======-----
 subq $L0_framesize, %rsp
 L6:
-movq %rbp, 106
-movq $4, 108
-movq 108, %rdi
-movq $9, 109
-movq 109, %rsi
+movq %rbp, 105
+movq $10, 107
+movq 107, %rdi
 push %rbp
 call L1
 addq $8, %rsp
-movq %rax, 105
-movq 105, %rdi
-push 106
+movq %rax, 104
+movq 104, %rdi
+push 105
 call printi
 addq $8, %rsp
 movq %rax, %rax
@@ -162,9 +136,7 @@ build flow graph
 subq $L0_framesize, `d0
 L6
 movq `s0, `d0
-movq $4, `d0
-movq `s0, `d0
-movq $9, `d0
+movq $10, `d0
 movq `s0, `d0
 push `s0
 call L1
@@ -186,12 +158,8 @@ begin Live_liveness
 flow graph:inst:subq $L0_framesize, `d0
 succ:movq `s0, `d0
 inst:movq `s0, `d0
-succ:movq $4, `d0
-inst:movq $4, `d0
-succ:movq `s0, `d0
-inst:movq `s0, `d0
-succ:movq $9, `d0
-inst:movq $9, `d0
+succ:movq $10, `d0
+inst:movq $10, `d0
 succ:movq `s0, `d0
 inst:movq `s0, `d0
 succ:push `s0
@@ -217,27 +185,12 @@ inst:addq $L0_framesize, `d0
 succ:start build interference
 inst: subq $L0_framesize, `d0
 inst: movq `s0, `d0
-enter move use temp:temp 106
-inst: movq $4, `d0
-enter nonmove def temp:temp 108
+inst: movq $10, `d0
 inst: movq `s0, `d0
-enter move use temp:temp %rdi
-inst: movq $9, `d0
-enter nonmove def temp:temp 109
-inst: movq `s0, `d0
-enter move use temp:temp %rsi
 inst: push `s0
-enter nonmove def temp:temp %r10
-enter nonmove out temp:temp %rdx
-enter nonmove def temp:temp %r11
-enter nonmove def temp:temp %rcx
-enter nonmove def temp:temp %r8
-enter nonmove def temp:temp %r9
 inst: call L1
-enter nonmove def temp:temp %rax
 inst: addq $8, `d0
 inst: movq `s0, `d0
-enter move use temp:temp 105
 inst: movq `s0, `d0
 inst: push `s0
 inst: call printi
@@ -245,41 +198,38 @@ inst: addq $8, `d0
 inst: jmp `j0
 inst: addq $L0_framesize, `d0
 -------===========interference===========-------------
-temp 106	interference with:temp 106	temp 105	temp %rax	temp %r10	temp %rsi	temp 109	temp %rdi	temp 108	temp 106	
-temp 108	interference with:temp 106	temp 108	temp 108	
-temp %rdi	interference with:temp 106	
-temp 109	interference with:temp 106	temp 109	temp 109	
-temp %rsi	interference with:temp 106	temp %r10	
-temp %r10	interference with:temp 106	temp %rsi	temp %rdx	
-temp %rdx	interference with:temp %r10	
+temp %rsp	interference with:temp %rsp	temp 105	temp %rsi	temp %rbp	temp %rax	temp %rsp	
+temp 105	interference with:temp 105	temp 104	temp %rax	temp %rsp	temp %rdi	temp 107	temp 105	
+temp %rbp	interference with:temp %rdi	temp 107	temp %rsp	
+temp 107	interference with:temp %rbp	temp 105	temp 107	temp 107	
+temp %rdi	interference with:temp 105	temp %rbp	
+temp %r10	interference with:
 temp %r11	interference with:
+temp %rsi	interference with:temp %rsp	
+temp %rdx	interference with:
 temp %rcx	interference with:
 temp %r8	interference with:
 temp %r9	interference with:
-temp %rax	interference with:temp %rax	temp 106	temp %rax	
-temp 105	interference with:temp 106	temp 105	temp 105	
+temp %rax	interference with:temp %rax	temp 105	temp %rsp	temp %rax	
+temp 104	interference with:temp 105	temp 104	temp 104	
 end Live_liveness
 start color reg
 print build
 enter build
-build nodes:temp 106	temp 108	temp %rdi	temp 109	temp %rsi	temp %r10	temp %rdx	temp %r11	temp %rcx	temp %r8	temp %r9	temp %rax	temp 105	
-temp 106	temp 108	temp %rdi	temp 109	temp %rsi	temp %r10	temp %rdx	temp %r11	temp %rcx	temp %r8	temp %r9	temp %rax	temp 105	end buildend build
+build nodes:temp %rsp	temp 105	temp %rbp	temp 107	temp %rdi	temp %r10	temp %r11	temp %rsi	temp %rdx	temp %rcx	temp %r8	temp %r9	temp %rax	temp 104	
+temp %rsp	temp 105	temp %rbp	temp 107	temp %rdi	temp %r10	temp %r11	temp %rsi	temp %rdx	temp %rcx	temp %r8	temp %r9	temp %rax	temp 104	end buildend build
 print MakeWorklist
 -------------============move related nodex============------------
-temp 108	
--------------============move related nodex============------------
-temp 109	
--------------============move related nodex============------------
 temp 105	
+-------------============move related nodex============------------
+temp 107	
+-------------============move related nodex============------------
+temp 104	
 end MakeWorklist
-print simplify
----------------------------simplify--------------------------
-temp 106	
-end simplify
 print coalesce
 -------------------coalesce------------------
 --------------================Combine=========------------
-temp %rdi	temp 105	
+temp %rdi	temp 104	
 ------------------==============end combine==============--------------
 --------------------add worklist-----------------
 -------------------end add worklist--------------------
@@ -288,53 +238,45 @@ temp %rdi	temp 105
 --------------------add worklist-----------------
 -------------------end add worklist--------------------
 --------------================Combine=========------------
-temp %rsi	temp 109	
+temp %rdi	temp 107	
 ------------------==============end combine==============--------------
 --------------------add worklist-----------------
 -------------------end add worklist--------------------
 --------------================Combine=========------------
-temp %rdi	temp 108	
+temp %rbp	temp 105	
 ------------------==============end combine==============--------------
 --------------------add worklist-----------------
 -------------------end add worklist--------------------
 ---------------------end coalesce-------------------
 end coalesce
 print AssignColors
------------------assign color--------------
-assign:temp 106	with color:temp %r9	
+-----------------assign color in colesces nodes--------------
+assign:temp 105	with color:temp %rbp	
+-----------------assign color in colesces nodes--------------
+assign:temp 104	with color:temp %rdi	
+-----------------assign color in colesces nodes--------------
+assign:temp 107	with color:temp %rdi	
 end AssignColors
 end color reg
-src reg:%rbp, dst reg:%r9
-src reg:102, dst reg:106
-src reg:%rdi, dst reg:%rdi
-src reg:108, dst reg:100
-src reg:%rsi, dst reg:%rsi
-src reg:109, dst reg:101
-src reg:%rax, dst reg:%rdi
-src reg:104, dst reg:105
-src reg:%rdi, dst reg:%rdi
-src reg:105, dst reg:100
-src reg:%rax, dst reg:%rax
-src reg:104, dst reg:104
 ----======after RA=======-----
 BEGIN write
 END write
 doProc for function L1:
 -------====IR tree=====-----
  MOVE(
-  TEMP t104,
+  TEMP t103,
   ESEQ(
-   CJUMP(GT,
+   CJUMP(EQ,
     TEMP t100,
-    TEMP t101,
+    CONST 0,
     L2,L3),
    ESEQ(
     SEQ(
      LABEL L2,
      SEQ(
       MOVE(
-       TEMP t103,
-       TEMP t100),
+       TEMP t102,
+       CONST 1),
       JUMP(
        NAME L4))),
     ESEQ(
@@ -342,54 +284,96 @@ doProc for function L1:
       LABEL L3,
       SEQ(
        MOVE(
-        TEMP t103,
-        TEMP t101),
+        TEMP t102,
+        BINOP(TIMES,
+         TEMP t100,
+         CALL(
+          NAME L1,
+           MEM(
+            BINOP(PLUS,
+             CONST 8,
+             TEMP t101)),
+           BINOP(MINUS,
+            TEMP t100,
+            CONST 1)))),
        JUMP(
         NAME L4))),
      ESEQ(
       LABEL L4,
-      TEMP t103)))))
+      TEMP t102)))))
 -------====Linearlized=====-----
- CJUMP(GT,
+ CJUMP(EQ,
   TEMP t100,
-  TEMP t101,
+  CONST 0,
   L2,L3)
  LABEL L2
  MOVE(
-  TEMP t103,
-  TEMP t100)
+  TEMP t102,
+  CONST 1)
  JUMP(
   NAME L4)
  LABEL L3
  MOVE(
-  TEMP t103,
-  TEMP t101)
+  TEMP t116,
+  TEMP t100)
+ MOVE(
+  TEMP t115,
+  CALL(
+   NAME L1,
+    MEM(
+     BINOP(PLUS,
+      CONST 8,
+      TEMP t101)),
+    BINOP(MINUS,
+     TEMP t100,
+     CONST 1)))
+ MOVE(
+  TEMP t102,
+  BINOP(TIMES,
+   TEMP t116,
+   TEMP t115))
  JUMP(
   NAME L4)
  LABEL L4
  MOVE(
-  TEMP t104,
-  TEMP t103)
+  TEMP t103,
+  TEMP t102)
 -------====trace=====-----
  LABEL L8
- CJUMP(GT,
+ CJUMP(EQ,
   TEMP t100,
-  TEMP t101,
+  CONST 0,
   L2,L3)
  LABEL L3
  MOVE(
-  TEMP t103,
-  TEMP t101)
+  TEMP t116,
+  TEMP t100)
+ MOVE(
+  TEMP t115,
+  CALL(
+   NAME L1,
+    MEM(
+     BINOP(PLUS,
+      CONST 8,
+      TEMP t101)),
+    BINOP(MINUS,
+     TEMP t100,
+     CONST 1)))
+ MOVE(
+  TEMP t102,
+  BINOP(TIMES,
+   TEMP t116,
+   TEMP t115))
  LABEL L4
  MOVE(
-  TEMP t104,
-  TEMP t103)
+  TEMP t103,
+  TEMP t102)
  JUMP(
   NAME L7)
  LABEL L2
  MOVE(
-  TEMP t103,
-  TEMP t100)
+  TEMP t102,
+  CONST 1)
  JUMP(
   NAME L4)
  LABEL L7
@@ -399,70 +383,102 @@ emit:L8
 stm kind 3
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 100
-
-exp kind:2
------------------munch exp a temp-------------------
-temp 101
-
+temp 100	
+exp kind:5
+emit:movq $0, `d0
 emit:cmpq `s0, `s1
-emit:jg `j0
+emit:je `j0
 stm kind 1
 emit:L3
 stm kind 4
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 101
-
+temp 100	
 ------------------------move src-------------------
-
-temp 101
+temp 100	
 -----------------move to a temp-----------------
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 103
-
-move src:temp 101
-move dst:temp 103
+temp 116	
+move src:temp 100	move dst:temp 116	emit:movq `s0, `d0
+stm kind 4
+exp kind:6
+enter passargs
+exp kind:1
+exp kind:2
+-----------------munch exp a temp-------------------
+temp 101	
+emit:movq 8(`s0), `d0
+temp 118	exp kind:0
+opcode right kind const
+result:temp 119	
+exp kind:2
+-----------------munch exp a temp-------------------
+temp 100	
+--------------------move reg-----------------
+src:temp 100	dst:temp 119	
 emit:movq `s0, `d0
+emit:subq $1, `d0
+emit:movq `s0, `d0
+emit:push `s0
+emit:call L1
+emit:addq $8, `d0
+------------------------move src-------------------
+temp 103	
+-----------------move to a temp-----------------
+exp kind:2
+-----------------munch exp a temp-------------------
+temp 115	
+move src:temp 103	move dst:temp 115	emit:movq `s0, `d0
+stm kind 4
+exp kind:0
+--------------munch a multi exp---------------
+exp kind:2
+-----------------munch exp a temp-------------------
+temp 116	
+--------------------move reg-----------------
+src:temp 116	dst:temp 120	
+exp kind:2
+-----------------munch exp a temp-------------------
+temp 115	
+emit:movq `s0, `d0
+emit:imulq `s0, `d0
+------------------------move src-------------------
+temp 120	
+-----------------move to a temp-----------------
+exp kind:2
+-----------------munch exp a temp-------------------
+temp 102	
+move src:temp 120	move dst:temp 102	emit:movq `s0, `d0
 stm kind 1
 emit:L4
 stm kind 4
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 103
-
+temp 102	
 ------------------------move src-------------------
-
-temp 103
+temp 102	
 -----------------move to a temp-----------------
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 104
-
-move src:temp 103
-move dst:temp 104
-emit:movq `s0, `d0
+temp 103	
+move src:temp 102	move dst:temp 103	emit:movq `s0, `d0
 stm kind 2
 emit:jmp `j0
 stm kind 1
 emit:L2
 stm kind 4
-exp kind:2
------------------munch exp a temp-------------------
-temp 100
-
 ------------------------move src-------------------
-
-temp 100
+temp 102	
 -----------------move to a temp-----------------
+---------------move to a temp src const--------------
 exp kind:2
 -----------------munch exp a temp-------------------
-temp 103
-
-move src:temp 100
-move dst:temp 103
-emit:movq `s0, `d0
+temp 102	
+mov dst reg:temp 102	exp kind:2
+-----------------munch exp a temp-------------------
+temp 102	
+emit:movq $1, `d0
 stm kind 2
 emit:jmp `j0
 stm kind 1
@@ -471,15 +487,27 @@ emit:addq $L1_framesize, `d0
 ----======before RA=======-----
 subq $L1_framesize, %rsp
 L8:
-cmpq %rsi, %rdi
-jg L2
+movq $0, 117
+cmpq 117, %rdi
+je L2
 L3:
-movq %rsi, 103
+movq %rdi, 116
+movq 8(%rbp), 118
+movq %rdi, 119
+subq $1, 119
+movq 119, %rdi
+push 118
+call L1
+addq $8, %rsp
+movq %rax, 115
+movq 116, 120
+imulq 115, 120
+movq 120, 102
 L4:
-movq 103, %rax
+movq 102, %rax
 jmp L7
 L2:
-movq %rdi, 103
+movq $1, 102
 jmp L4
 L7:
 addq $L1_framesize, %rsp
@@ -488,15 +516,27 @@ enter FG_AssemFlowGraph
 build flow graph
 subq $L1_framesize, `d0
 L8
+movq $0, `d0
 cmpq `s0, `s1
-jg `j0
+je `j0
 YESSSSSSSSSSSSSL3
+movq `s0, `d0
+movq 8(`s0), `d0
+movq `s0, `d0
+subq $1, `d0
+movq `s0, `d0
+push `s0
+call L1
+addq $8, `d0
+movq `s0, `d0
+movq `s0, `d0
+imulq `s0, `d0
 movq `s0, `d0
 L4
 movq `s0, `d0
 jmp `j0
 YESSSSSSSSSSSSSL2
-movq `s0, `d0
+movq $1, `d0
 jmp `j0
 YESSSSSSSSSSSSSL7
 addq $L1_framesize, `d0
@@ -505,56 +545,175 @@ inst:jmp `j0
 jump to:movq `s0, `d0
 inst:jmp `j0
 jump to:addq $L1_framesize, `d0
-inst:jg `j0
-jump to:movq `s0, `d0
+inst:je `j0
+jump to:movq $1, `d0
 end FG_AssemFlowGraph
 begin Live_liveness
 flow graph:inst:subq $L1_framesize, `d0
+succ:movq $0, `d0
+inst:movq $0, `d0
 succ:cmpq `s0, `s1
 inst:cmpq `s0, `s1
-succ:jg `j0
-inst:jg `j0
-succ:movq `s0, `d0
+succ:je `j0
+inst:je `j0
+succ:movq $1, `d0
 movq `s0, `d0
+inst:movq `s0, `d0
+succ:movq 8(`s0), `d0
+inst:movq 8(`s0), `d0
+succ:movq `s0, `d0
+inst:movq `s0, `d0
+succ:subq $1, `d0
+inst:subq $1, `d0
+succ:movq `s0, `d0
+inst:movq `s0, `d0
+succ:push `s0
+inst:push `s0
+succ:call L1
+inst:call L1
+succ:addq $8, `d0
+inst:addq $8, `d0
+succ:movq `s0, `d0
+inst:movq `s0, `d0
+succ:movq `s0, `d0
+inst:movq `s0, `d0
+succ:imulq `s0, `d0
+inst:imulq `s0, `d0
+succ:movq `s0, `d0
 inst:movq `s0, `d0
 succ:movq `s0, `d0
 inst:movq `s0, `d0
 succ:jmp `j0
 inst:jmp `j0
 succ:addq $L1_framesize, `d0
-inst:movq `s0, `d0
+inst:movq $1, `d0
 succ:jmp `j0
 inst:jmp `j0
 succ:movq `s0, `d0
 inst:addq $L1_framesize, `d0
 succ:start build interference
 inst: subq $L1_framesize, `d0
+inst: movq $0, `d0
 inst: cmpq `s0, `s1
-inst: jg `j0
+inst: je `j0
 inst: movq `s0, `d0
-enter move use temp:temp 103
+inst: movq 8(`s0), `d0
 inst: movq `s0, `d0
-enter move use temp:temp %rax
+inst: subq $1, `d0
+inst: movq `s0, `d0
+inst: push `s0
+inst: call L1
+inst: addq $8, `d0
+inst: movq `s0, `d0
+inst: movq `s0, `d0
+inst: imulq `s0, `d0
+inst: movq `s0, `d0
+inst: movq `s0, `d0
 inst: jmp `j0
-inst: movq `s0, `d0
+inst: movq $1, `d0
 inst: jmp `j0
 inst: addq $L1_framesize, `d0
 -------===========interference===========-------------
-temp 103	interference with:temp 103	temp 103	
-temp %rax	interference with:
+temp %rsp	interference with:temp 116	temp %rsi	temp %rdi	temp %rsp	temp %rbp	temp 102	temp 120	temp 115	temp %rax	temp 117	temp %rsp	
+temp 117	interference with:temp %rbp	temp %rsp	temp %rdi	temp 117	temp 117	
+temp %rdi	interference with:temp 116	temp 118	temp 117	temp %rsp	
+temp 116	interference with:temp 116	temp %rbp	temp 115	temp %rax	temp %rsp	temp %rdi	temp 119	temp 118	temp 116	
+temp 118	interference with:temp 118	temp 116	temp %rdi	temp 119	temp 118	
+temp %rbp	interference with:temp 116	temp 117	temp %rsp	
+temp 119	interference with:temp 116	temp 118	temp 119	temp 119	
+temp %r10	interference with:
+temp %r11	interference with:
+temp %rsi	interference with:temp %rsp	
+temp %rdx	interference with:
+temp %rcx	interference with:
+temp %r8	interference with:
+temp %r9	interference with:
+temp %rax	interference with:temp %rax	temp 116	temp %rsp	temp %rax	
+temp 115	interference with:temp 115	temp %rsp	temp 116	temp 120	temp 115	
+temp 120	interference with:temp %rsp	temp 120	temp 115	temp 120	
+temp 102	interference with:temp %rsp	temp 102	temp 102	
 end Live_liveness
 start color reg
 print build
 enter build
-build nodes:temp 103	temp %rax	
-temp 103	temp %rax	end buildend build
+build nodes:temp %rsp	temp 117	temp %rdi	temp 116	temp 118	temp %rbp	temp 119	temp %r10	temp %r11	temp %rsi	temp %rdx	temp %rcx	temp %r8	temp %r9	temp %rax	temp 115	temp 120	temp 102	
+temp %rsp	temp 117	temp %rdi	temp 116	temp 118	temp %rbp	temp 119	temp %r10	temp %r11	temp %rsi	temp %rdx	temp %rcx	temp %r8	temp %r9	temp %rax	temp 115	temp 120	temp 102	end buildend build
 print MakeWorklist
 -------------============move related nodex============------------
-temp 103	
+temp 116	
+-------------============move related nodex============------------
+temp 119	
+-------------============move related nodex============------------
+temp 115	
+-------------============move related nodex============------------
+temp 120	
+-------------============move related nodex============------------
+temp 102	
 end MakeWorklist
+print simplify
+---------------------------simplify--------------------------
+temp 118	
+end simplify
+print simplify
+---------------------------simplify--------------------------
+temp 117	
+end simplify
 print coalesce
 -------------------coalesce------------------
 --------------================Combine=========------------
-temp %rax	temp 103	
+temp %rax	temp 102	
 ------------------==============end combine==============--------------
---------------------add worklist
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------================Combine=========------------
+temp %rax	temp 120	
+------------------==============end combine==============--------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------================Combine=========------------
+temp %rdi	temp 119	
+------------------==============end combine==============--------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+---------------------end coalesce-------------------
+end coalesce
+print simplify
+---------------------------simplify--------------------------
+temp 116	
+end simplify
+print simplify
+---------------------------simplify--------------------------
+temp 115	
+end simplify
+print AssignColors
+-----------------assign color in selected stack--------------
+assign:temp 115	with color:temp %r9	
+-----------------assign color in selected stack--------------
+assign:temp 116	with color:temp %r8	
+-----------------assign color in selected stack--------------
+assign:temp 117	with color:temp %r9	
+-----------------assign color in selected stack--------------
+assign:temp 118	with color:temp %r9	
+-----------------assign color in colesces nodes--------------
+assign:temp 119	with color:temp %rdi	
+-----------------assign color in colesces nodes--------------
+assign:temp 102	with color:temp %rax	
+-----------------assign color in colesces nodes--------------
+assign:temp 120	with color:temp %rax	
+end AssignColors
+end color reg
+----======after RA=======-----
+BEGIN write
+END write

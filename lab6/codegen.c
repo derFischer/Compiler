@@ -26,9 +26,9 @@ Temp_tempList L(Temp_temp head, Temp_tempList tail)
 
 void printTempff(Temp_temp temp)
 {
-	Temp_map map = Temp_layerMap(F_tempMap, Temp_name());
-	printf("temp %s\n", Temp_look(Temp_name(), temp));
-	return;
+    Temp_map map = Temp_layerMap(F_tempMap, Temp_name());
+    printf("temp %s\t", Temp_look(Temp_name(), temp));
+    return;
 }
 
 static void emit(AS_instr inst)
@@ -47,6 +47,12 @@ static void emit(AS_instr inst)
 
 AS_instr moveReg(Temp_temp src, Temp_temp dst)
 {
+    printf("--------------------move reg-----------------\n");
+    printf("src:");
+    printTempff(src);
+    printf("dst:");
+    printTempff(dst);
+    printf("\n");
     return AS_Move("movq `s0, `d0", L(dst, NULL), L(src, NULL));
 }
 
@@ -57,6 +63,10 @@ static Temp_temp opCode(string op, T_exp left, T_exp right)
     AS_instr prepareResult;
     if (left->kind == T_CONST)
     {
+        printf("opcode left kind const\n");
+        printf("result:");
+        printTempff(result);
+        printf("\n");
         prepareResult = moveReg(munchExp(right), result);
         char inst[INSTLENGTH];
         sprintf(inst, "%s $%d, `d0", op, left->u.CONST);
@@ -64,6 +74,10 @@ static Temp_temp opCode(string op, T_exp left, T_exp right)
     }
     else if (right->kind == T_CONST)
     {
+        printf("opcode right kind const\n");
+        printf("result:");
+        printTempff(result);
+        printf("\n");
         prepareResult = moveReg(munchExp(left), result);
         char inst[INSTLENGTH];
         sprintf(inst, "%s $%d, `d0", op, right->u.CONST);
@@ -74,7 +88,7 @@ static Temp_temp opCode(string op, T_exp left, T_exp right)
         prepareResult = moveReg(munchExp(left), result);
         char inst[INSTLENGTH];
         sprintf(inst, "%s `s0, `d0", op);
-        calOper = AS_Oper(String(inst), L(result, NULL), L(result, L(munchExp(right), NULL)), NULL);
+        calOper = AS_Oper(String(inst), L(result, NULL), L(munchExp(right), L(result, NULL)), NULL);
     }
     emit(prepareResult);
     emit(calOper);
@@ -103,6 +117,7 @@ static Temp_temp munchExp(T_exp e)
         }
         case T_mul:
         {
+            printf("--------------munch a multi exp---------------\n");
             oper = "imulq";
             break;
         }
@@ -421,15 +436,19 @@ static void munchStm(T_stm s)
         bool srcConst = FALSE;
         int srcConstNum = 0;
         T_exp srcExp = s->u.MOVE.src;
+        Temp_temp src;
         if (srcExp->kind == T_CONST)
         {
             srcConst = TRUE;
             srcConstNum = srcExp->u.CONST;
         }
-        Temp_temp src = munchExp(s->u.MOVE.src);
+        else
+        {
+            src = munchExp(s->u.MOVE.src);
+        }
         printf("------------------------move src-------------------\n");
-        printf("\n");
         printTempff(src);
+        printf("\n");
         T_exp dst = s->u.MOVE.dst;
         if (dst->kind == T_MEM)
         {
@@ -536,6 +555,7 @@ static void munchStm(T_stm s)
             printf("-----------------move to a temp-----------------\n");
             if (srcConst)
             {
+                printf("---------------move to a temp src const--------------\n");
                 char inst[INSTLENGTH];
                 sprintf(inst, "movq $%d, `d0", srcConstNum);
                 Temp_temp dstt = munchExp(dst);
@@ -543,12 +563,15 @@ static void munchStm(T_stm s)
                 printTempff(dstt);
                 emit(AS_Oper(String(inst), L(munchExp(dst), NULL), NULL, NULL));
             }
-            Temp_temp dstt = munchExp(dst);
-            printf("move src:");
-            printTempff(src);
-            printf("move dst:");
-            printTempff(dstt);
-            emit(AS_Move("movq `s0, `d0", L(dstt, NULL), L(src, NULL)));
+            else
+            {
+                Temp_temp dstt = munchExp(dst);
+                printf("move src:");
+                printTempff(src);
+                printf("move dst:");
+                printTempff(dstt);
+                emit(AS_Move("movq `s0, `d0", L(dstt, NULL), L(src, NULL)));
+            }
         }
         else
         {

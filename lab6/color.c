@@ -403,7 +403,7 @@ void AssignColors(Temp_map colored)
 			assert(Temp_look(F_tempMap, color) != NULL);
 			assert(info != NULL);
 			assert(info->reg != NULL);
-			printf("-----------------assign color--------------\n");
+			printf("-----------------assign color in selected stack--------------\n");
 			printf("assign:");
 			printTemp233(info->reg);
 			printf("with color:");
@@ -418,11 +418,11 @@ void AssignColors(Temp_map colored)
 		G_node alias = GetAlias(node);
 		nodeInfo aliasInfo = G_nodeInfo(alias);
 		nodeInfo info = G_nodeInfo(node);
-		printf("-----------------assign color--------------\n");
+		printf("-----------------assign color in colesces nodes--------------\n");
 		printf("assign:");
 		printTemp233(info->reg);
 		printf("with color:");
-		printTemp233(color);
+		printTemp233(aliasInfo->reg);
 		printf("\n");
 		Temp_enter(colored, info->reg, Temp_look(colored, aliasInfo->reg));
 		coalescedNodes = coalescedNodes->tail;
@@ -464,6 +464,18 @@ void Build(G_graph ig, Live_moveList moves)
 		}
 		nodes = nodes->tail;
 	}
+
+	while(moves)
+	{
+		G_node src = moves->src;
+		G_node dst = moves->dst;
+		nodeInfo srcInfo = G_nodeInfo(src);
+		nodeInfo dstInfo = G_nodeInfo(dst);
+		srcInfo->moves = L_setUnion(srcInfo->moves, Live_MoveList(moves->src, moves->dst, NULL));
+		dstInfo->moves = L_setUnion(dstInfo->moves, Live_MoveList(moves->src, moves->dst, NULL));
+		moves = moves->tail;
+	}
+	
 	printf("end build");
 }
 
@@ -472,6 +484,7 @@ void printTemp233(Temp_temp temp)
 	Temp_map map = Temp_layerMap(F_tempMap, Temp_name());
 	assert(Temp_look(map, temp));
 	printf("temp %s\t", Temp_look(map, temp));
+	//printf("temp %s\t", Temp_look(F_tempMap, temp));
 	return;
 }
 
@@ -485,6 +498,7 @@ void printGnodeList(G_nodeList nodelist)
 	}
 	printf("\n");
 }
+
 struct COL_result COL_color(G_graph ig, Temp_map initial, Temp_tempList regs, Live_moveList moves)
 {
 	struct COL_result ret;
