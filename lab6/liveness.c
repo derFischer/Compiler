@@ -355,6 +355,24 @@ struct Live_graph Live_liveness(G_graph flow)
 		nodes = nodes->tail;
 	}
 
+	printf("-------===========interference===========-------------\n");
+	G_nodeList inodes = G_nodes(interference);
+	while(inodes)
+	{
+		G_node node = inodes->head;
+		printTemp3(G_getReg(node));
+		printf("interference with:");
+		G_nodeList ajdNodes = G_adj(node);
+		while(ajdNodes)
+		{
+			G_node node = ajdNodes->head;
+			printTemp3(G_getReg(node));
+			ajdNodes = ajdNodes->tail;
+		}
+		printf("\n");
+		inodes = inodes->tail;
+	}
+	
 	//movelist
 	Live_moveList moves = NULL;
 	nodes = G_nodes(flow);

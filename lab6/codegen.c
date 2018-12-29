@@ -27,7 +27,7 @@ Temp_tempList L(Temp_temp head, Temp_tempList tail)
 void printTempff(Temp_temp temp)
 {
 	Temp_map map = Temp_layerMap(F_tempMap, Temp_name());
-	printf("temp %s\n", Temp_look(map, temp));
+	printf("temp %s\n", Temp_look(Temp_name(), temp));
 	return;
 }
 
@@ -225,6 +225,9 @@ static Temp_temp munchExp(T_exp e)
     }
     case T_TEMP:
     {
+        printf("-----------------munch exp a temp-------------------\n");
+        printTempff(e->u.TEMP);
+        printf("\n");
         return e->u.TEMP;
     }
     case T_ESEQ:
@@ -260,7 +263,7 @@ static Temp_temp munchExp(T_exp e)
         }
         char inst[INSTLENGTH];
         sprintf(inst, "call %s", Temp_labelstring(fun->u.NAME));
-        emit(AS_Oper(String(inst), Temp_TempList(F_RAX(), NULL), argsRegs, NULL));
+        emit(AS_Oper(String(inst), Temp_TempList(F_RAX(), F_callersaves()), argsRegs, NULL));
         char inst2[INSTLENGTH];
         sprintf(inst2, "addq $%d, `d0", calArgsStackSpace(args) * WORDSIZE);
         emit(AS_Oper(String(inst2), Temp_TempList(F_RSP(), NULL), Temp_TempList(F_RSP(), NULL), NULL));
@@ -424,9 +427,13 @@ static void munchStm(T_stm s)
             srcConstNum = srcExp->u.CONST;
         }
         Temp_temp src = munchExp(s->u.MOVE.src);
+        printf("------------------------move src-------------------\n");
+        printf("\n");
+        printTempff(src);
         T_exp dst = s->u.MOVE.dst;
         if (dst->kind == T_MEM)
         {
+            printf("---------------move to a mem-----------\n");
             T_exp addr = dst->u.MEM;
             switch (addr->kind)
             {
@@ -526,6 +533,7 @@ static void munchStm(T_stm s)
         }
         else if (dst->kind == T_TEMP)
         {
+            printf("-----------------move to a temp-----------------\n");
             if (srcConst)
             {
                 char inst[INSTLENGTH];

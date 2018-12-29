@@ -109,33 +109,24 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
 	AS_instrList *instPointer = &il;
 	while(*instPointer)
 	{
-		printf("111111111\n");
 		AS_instr inst = (*instPointer)->head;
 		if(inst->kind == I_MOVE && strstr(inst->u.MOVE.assem, "movq `s0, `d0"))
 		{
-			printf("22222222222dfsdfsf\n");
 			Temp_temp src = inst->u.MOVE.src->head;
 			Temp_temp dst = inst->u.MOVE.dst->head;
-			printf("22222222222dfsdfssdfasdfdf\n");
-			printf("src reg:%s, dst reg:%s\n", (char *)Temp_look(allRegsMap, src), (char *)Temp_look(allRegsMap, dst));
-			printf("src reg:%s, dst reg:%s\n", (char *)Temp_look(Temp_name(), src), (char *)Temp_look(Temp_name(), dst));
+			//printf("src reg:%s, dst reg:%s\n", (char *)Temp_look(allRegsMap, src), (char *)Temp_look(allRegsMap, dst));
+			//printf("src reg:%s, dst reg:%s\n", (char *)Temp_look(Temp_name(), src), (char *)Temp_look(Temp_name(), dst));
 			strcmp((char *)Temp_look(allRegsMap, src), (char *)Temp_look(allRegsMap, dst));
-			printf("sdfjkalskjdf\n");
 			if(strcmp((char *)Temp_look(allRegsMap, src), (char *)Temp_look(allRegsMap, dst)) == 0)
 			{
-				printf("sdfssssssssssssssssddddddddddddddddddddd\n");
 				*instPointer = (*instPointer)->tail;
-				printf("22222222222\n");
 				continue;
 			}
 		}
-		printf("asdfljkkkkkkkkkkkkkkkkkkkkkkkk\n");
 		instPointer = &((*instPointer)->tail);
-		printf("333333333333\n");
 	}
 
 	ret.coloring = colorResult.coloring;
 	ret.il = il;
-	printf("arrive hereeeeee\n");
 	return ret;
 }

@@ -62,14 +62,28 @@ stm kind 1
 emit:L6
 stm kind 4
 exp kind:2
+-----------------munch exp a temp-------------------
+temp 102
+
+------------------------move src-------------------
+
+temp 102
+-----------------move to a temp-----------------
 exp kind:2
-move src:temp %rbp
+-----------------munch exp a temp-------------------
+temp 106
+
+move src:temp 102
 move dst:temp 106
 emit:movq `s0, `d0
 stm kind 4
 exp kind:6
 enter passargs
 exp kind:2
+-----------------munch exp a temp-------------------
+temp 102
+
+temp 102
 exp kind:5
 emit:movq $4, `d0
 emit:movq `s0, `d0
@@ -79,22 +93,43 @@ emit:movq `s0, `d0
 emit:push `s0
 emit:call L1
 emit:addq $8, `d0
+------------------------move src-------------------
+
+temp 104
+-----------------move to a temp-----------------
 exp kind:2
-move src:temp %rax
+-----------------munch exp a temp-------------------
+temp 105
+
+move src:temp 104
 move dst:temp 105
 emit:movq `s0, `d0
 stm kind 4
 exp kind:6
 enter passargs
 exp kind:2
+-----------------munch exp a temp-------------------
+temp 106
+
+temp 106
 exp kind:2
+-----------------munch exp a temp-------------------
+temp 105
+
 emit:movq `s0, `d0
 emit:push `s0
 emit:call printi
 emit:addq $8, `d0
+------------------------move src-------------------
+
+temp 104
+-----------------move to a temp-----------------
 exp kind:2
-move src:temp %rax
-move dst:temp %rax
+-----------------munch exp a temp-------------------
+temp 104
+
+move src:temp 104
+move dst:temp 104
 emit:movq `s0, `d0
 stm kind 2
 emit:jmp `j0
@@ -209,6 +244,20 @@ inst: call printi
 inst: addq $8, `d0
 inst: jmp `j0
 inst: addq $L0_framesize, `d0
+-------===========interference===========-------------
+temp 106	interference with:temp 106	temp 105	temp %rax	temp %r10	temp %rsi	temp 109	temp %rdi	temp 108	temp 106	
+temp 108	interference with:temp 106	temp 108	temp 108	
+temp %rdi	interference with:temp 106	
+temp 109	interference with:temp 106	temp 109	temp 109	
+temp %rsi	interference with:temp 106	temp %r10	
+temp %r10	interference with:temp 106	temp %rsi	temp %rdx	
+temp %rdx	interference with:temp %r10	
+temp %r11	interference with:
+temp %rcx	interference with:
+temp %r8	interference with:
+temp %r9	interference with:
+temp %rax	interference with:temp %rax	temp 106	temp %rax	
+temp 105	interference with:temp 106	temp 105	temp 105	
 end Live_liveness
 start color reg
 print build
@@ -216,124 +265,57 @@ enter build
 build nodes:temp 106	temp 108	temp %rdi	temp 109	temp %rsi	temp %r10	temp %rdx	temp %r11	temp %rcx	temp %r8	temp %r9	temp %rax	temp 105	
 temp 106	temp 108	temp %rdi	temp 109	temp %rsi	temp %r10	temp %rdx	temp %r11	temp %rcx	temp %r8	temp %r9	temp %rax	temp 105	end buildend build
 print MakeWorklist
+-------------============move related nodex============------------
+temp 108	
+-------------============move related nodex============------------
+temp 109	
+-------------============move related nodex============------------
+temp 105	
 end MakeWorklist
 print simplify
+---------------------------simplify--------------------------
+temp 106	
 end simplify
-print simplify
-end simplify
-print simplify
-end simplify
-print simplify
-end simplify
-print simplify
-end simplify
-print simplify
-end simplify
-print simplify
-end simplify
-print simplify
-end simplify
-print simplify
-end simplify
-print simplify
-end simplify
-print simplify
-end simplify
-print simplify
-end simplify
-print simplify
-end simplify
+print coalesce
+-------------------coalesce------------------
+--------------================Combine=========------------
+temp %rdi	temp 105	
+------------------==============end combine==============--------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------================Combine=========------------
+temp %rsi	temp 109	
+------------------==============end combine==============--------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+--------------================Combine=========------------
+temp %rdi	temp 108	
+------------------==============end combine==============--------------
+--------------------add worklist-----------------
+-------------------end add worklist--------------------
+---------------------end coalesce-------------------
+end coalesce
 print AssignColors
+-----------------assign color--------------
+assign:temp 106	with color:temp %r9	
 end AssignColors
 end color reg
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-22222222222dfsdfsf
-22222222222dfsdfssdfasdfdf
-src reg:%rbp, dst reg:%rbx
+src reg:%rbp, dst reg:%r9
 src reg:102, dst reg:106
-sdfjkalskjdf
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-22222222222dfsdfsf
-22222222222dfsdfssdfasdfdf
-src reg:%r9, dst reg:%rdi
+src reg:%rdi, dst reg:%rdi
 src reg:108, dst reg:100
-sdfjkalskjdf
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-22222222222dfsdfsf
-22222222222dfsdfssdfasdfdf
-src reg:%r9, dst reg:%rsi
+src reg:%rsi, dst reg:%rsi
 src reg:109, dst reg:101
-sdfjkalskjdf
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-22222222222dfsdfsf
-22222222222dfsdfssdfasdfdf
-src reg:%rax, dst reg:%r9
+src reg:%rax, dst reg:%rdi
 src reg:104, dst reg:105
-sdfjkalskjdf
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-22222222222dfsdfsf
-22222222222dfsdfssdfasdfdf
-src reg:%r9, dst reg:%rdi
+src reg:%rdi, dst reg:%rdi
 src reg:105, dst reg:100
-sdfjkalskjdf
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-22222222222dfsdfsf
-22222222222dfsdfssdfasdfdf
 src reg:%rax, dst reg:%rax
 src reg:104, dst reg:104
-sdfjkalskjdf
-sdfssssssssssssssssddddddddddddddddddddd
-22222222222
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-arrive hereeeeee
 ----======after RA=======-----
 BEGIN write
 END write
@@ -416,24 +398,50 @@ stm kind 1
 emit:L8
 stm kind 3
 exp kind:2
+-----------------munch exp a temp-------------------
+temp 100
+
 exp kind:2
+-----------------munch exp a temp-------------------
+temp 101
+
 emit:cmpq `s0, `s1
 emit:jg `j0
 stm kind 1
 emit:L3
 stm kind 4
 exp kind:2
+-----------------munch exp a temp-------------------
+temp 101
+
+------------------------move src-------------------
+
+temp 101
+-----------------move to a temp-----------------
 exp kind:2
-move src:temp %rsi
+-----------------munch exp a temp-------------------
+temp 103
+
+move src:temp 101
 move dst:temp 103
 emit:movq `s0, `d0
 stm kind 1
 emit:L4
 stm kind 4
 exp kind:2
+-----------------munch exp a temp-------------------
+temp 103
+
+------------------------move src-------------------
+
+temp 103
+-----------------move to a temp-----------------
 exp kind:2
+-----------------munch exp a temp-------------------
+temp 104
+
 move src:temp 103
-move dst:temp %rax
+move dst:temp 104
 emit:movq `s0, `d0
 stm kind 2
 emit:jmp `j0
@@ -441,8 +449,18 @@ stm kind 1
 emit:L2
 stm kind 4
 exp kind:2
+-----------------munch exp a temp-------------------
+temp 100
+
+------------------------move src-------------------
+
+temp 100
+-----------------move to a temp-----------------
 exp kind:2
-move src:temp %rdi
+-----------------munch exp a temp-------------------
+temp 103
+
+move src:temp 100
 move dst:temp 103
 emit:movq `s0, `d0
 stm kind 2
@@ -521,6 +539,9 @@ inst: jmp `j0
 inst: movq `s0, `d0
 inst: jmp `j0
 inst: addq $L1_framesize, `d0
+-------===========interference===========-------------
+temp 103	interference with:temp 103	temp 103	
+temp %rax	interference with:
 end Live_liveness
 start color reg
 print build
@@ -528,72 +549,12 @@ enter build
 build nodes:temp 103	temp %rax	
 temp 103	temp %rax	end buildend build
 print MakeWorklist
+-------------============move related nodex============------------
+temp 103	
 end MakeWorklist
-print simplify
-end simplify
-print simplify
-end simplify
-print AssignColors
-end AssignColors
-end color reg
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-22222222222dfsdfsf
-22222222222dfsdfssdfasdfdf
-src reg:%rsi, dst reg:%rbx
-src reg:101, dst reg:103
-sdfjkalskjdf
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-22222222222dfsdfsf
-22222222222dfsdfssdfasdfdf
-src reg:%rbx, dst reg:%rax
-src reg:103, dst reg:104
-sdfjkalskjdf
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-22222222222dfsdfsf
-22222222222dfsdfssdfasdfdf
-src reg:%rdi, dst reg:%rbx
-src reg:100, dst reg:103
-sdfjkalskjdf
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-111111111
-asdfljkkkkkkkkkkkkkkkkkkkkkkkk
-333333333333
-arrive hereeeeee
-----======after RA=======-----
-BEGIN write
-END write
+print coalesce
+-------------------coalesce------------------
+--------------================Combine=========------------
+temp %rax	temp 103	
+------------------==============end combine==============--------------
+--------------------add worklist
