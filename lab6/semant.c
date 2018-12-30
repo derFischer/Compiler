@@ -216,7 +216,16 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 		Ty_tyList formals = func->u.fun.formals;
 		Ty_ty result = func->u.fun.result;
 		Tr_expList TrexpList = explistSame(venv, tenv, args, formals, a, level, label);
-		Tr_exp Trexp = Tr_callExp(func->u.fun.label, TrexpList, level, func->u.fun.level);
+		S_table externalCall = E_base_venv();
+		Tr_exp Trexp;
+		if(S_look(externalCall, a->u.call.func))
+		{
+			Trexp = Tr_externalCall(func->u.fun.label, TrexpList, level, func->u.fun.level);
+		}
+		else
+		{
+			Trexp = Tr_callExp(func->u.fun.label, TrexpList, level, func->u.fun.level);
+		}
 		return expTy(Trexp, actual_ty(result));
 	}
 	case A_opExp:
@@ -527,6 +536,15 @@ struct expty transDec(S_table venv, S_table tenv, A_dec d, Tr_level level, Temp_
 			Ty_tyList formals = makeFormalTyList(tenv, tmp->params);
 			Temp_label newLable = Temp_newlabel();
 			U_boolList escapes = functionParamEscape(tmp->params);
+			U_boolList tes = escapes;
+			while(tes)
+			{
+				if(tes->head)
+				{
+					printf("escape!!!!!!!!!\n");
+				}
+				tes = tes->tail;
+			}
 			S_enter(venv, tmp->name, E_FunEntry(Tr_newLevel(level, newLable, escapes), newLable, formals, result));
 		}
 		list = d->u.function;
@@ -542,6 +560,7 @@ struct expty transDec(S_table venv, S_table tenv, A_dec d, Tr_level level, Temp_
 				EM_error(d->pos, "fundec empty pointer\n");
 			}
 			Tr_accessList accesses = Tr_formals(e->u.fun.level);
+			accesses = accesses->tail;
 			for (; fieldlist && formals && accesses; fieldlist = fieldlist->tail, formals = formals->tail, accesses = accesses->tail)
 			{
 				S_enter(venv, fieldlist->head->name, E_VarEntry(accesses->head, formals->head));

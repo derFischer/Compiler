@@ -51,6 +51,7 @@ waitStructList WaitStructList(waitStruct head, waitStructList tail)
 
 Temp_tempList FG_def(G_node n)
 {
+	assert(n);
 	//your code here.
 	AS_instr inst = G_nodeInfo(n);
 	switch (inst->kind)
@@ -81,7 +82,9 @@ Temp_tempList FG_def(G_node n)
 Temp_tempList FG_use(G_node n)
 {
 	//your code here.
+	assert(n);
 	AS_instr inst = G_nodeInfo(n);
+	assert(inst);
 	switch (inst->kind)
 	{
 	case I_OPER:
@@ -144,11 +147,12 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 	G_node prevNode = NULL;
 	Temp_labelList labelList = NULL;
 	waitStructList waitToFill = NULL;
+	// AS_printInstrList(stdout,il,Temp_layerMap(F_tempMap,Temp_name()));
 	printf("build flow graph\n");
 	while (il)
 	{
 		AS_instr inst = il->head;		
-		printf("%s\n", inst->u.MOVE.assem);
+		// printf("%s\n", inst->u.MOVE.assem);
 		switch (inst->kind)
 		{
 		case I_OPER:
@@ -166,7 +170,7 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 			}
 			if (inst->u.OPER.jumps)
 			{
-				printf("YESSSSSSSSSSSSS");
+				//printf("YESSSSSSSSSSSSS");
 				waitToFill = WaitStructList(WaitStruct(inst->u.OPER.jumps, node), waitToFill);
 			}
 			break;

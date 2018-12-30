@@ -12,6 +12,7 @@
 #include "regalloc.h"
 #include "table.h"
 #include "flowgraph.h"
+#include "helper.h"
 #include <string.h>
 
 #define INSTLENGTH 200
@@ -27,6 +28,45 @@ Temp_tempList tempIntersection(Temp_tempList tmpl1, Temp_tempList tmpl2)
 		}
 	}
 	return result;
+}
+
+Temp_tempList RewriteInstr(Temp_tempList old, Temp_temp spillTemp, Temp_temp newTemp)
+{
+	Temp_tempList result = old;
+	for(; old; old = old->tail)
+	{
+		if(old->head == spillTemp)
+		{
+			old->head = newTemp;
+		}
+	}
+	return result;
+}
+
+void modifySrc(AS_instr instr, Temp_temp spill, Temp_temp new)
+{
+	switch(instr->kind)
+	{
+		case I_OPER:
+		instr->u.OPER.src = RewriteInstr(instr->u.OPER.src, spill, new);
+		break;
+		case I_MOVE:
+		instr->u.MOVE.src = RewriteInstr(instr->u.MOVE.src, spill, new);
+		break;
+	}
+}
+
+void modifyDst(AS_instr instr, Temp_temp spill, Temp_temp new)
+{
+	switch(instr->kind)
+	{
+		case I_OPER:
+		instr->u.OPER.dst = RewriteInstr(instr->u.OPER.dst, spill, new);
+		break;
+		case I_MOVE:
+		instr->u.MOVE.dst = RewriteInstr(instr->u.MOVE.dst, spill, new);
+		break;
+	}
 }
 
 AS_instrList RewriteProgram(F_frame f, AS_instrList il, Temp_tempList spills)
@@ -56,7 +96,7 @@ AS_instrList RewriteProgram(F_frame f, AS_instrList il, Temp_tempList spills)
 		if(inst->kind == I_MOVE)
 		{
 			src = inst->u.MOVE.src;
-			src = inst->u.MOVE.dst;
+			dst = inst->u.MOVE.dst;
 		}
 
 		//calculate the temps that need to load/store of each instr
@@ -70,8 +110,12 @@ AS_instrList RewriteProgram(F_frame f, AS_instrList il, Temp_tempList spills)
 			Temp_temp newTemp = Temp_newtemp();
 			char load[INSTLENGTH];
 			sprintf(load, "movq %d(`s0), `d0", F_frameLength(f) * WORDSIZE + F_accessOffset(access));
-			AS_instr loadInstr = AS_Move(String(load), Temp_TempList(newTemp, NULL), Temp_TempList(F_RSP(), NULL));
-
+			AS_instr loadInstr = AS_Oper(String(load), Temp_TempList(newTemp, NULL), Temp_TempList(F_RSP(), NULL), NULL);
+			modifySrc(inst, temp, newTemp);
+			il->head = loadInstr;
+			il->tail = AS_InstrList(inst,il->tail);
+			il = il->tail;
+			spilledSrc = spilledSrc->tail;
 		}
 		while(spilledDst)
 		{
@@ -80,9 +124,14 @@ AS_instrList RewriteProgram(F_frame f, AS_instrList il, Temp_tempList spills)
 			Temp_temp newTemp = Temp_newtemp();
 			char store[INSTLENGTH];
 			sprintf(store, "movq `s0, %d(`s1)", F_frameLength(f) * WORDSIZE + F_accessOffset(access));
-			AS_instr storeInstr = AS_Move(String(store), NULL, Temp_TempList(newTemp, Temp_TempList(F_RSP(), NULL)));
+			AS_instr storeInstr = AS_Oper(String(store), NULL, Temp_TempList(newTemp, Temp_TempList(F_RSP(), NULL)), NULL);
+			modifyDst(inst, temp, newTemp);
+			il->tail = AS_InstrList(storeInstr,il->tail);
+			spilledDst = spilledDst->tail;
 		}
+		il = il->tail;
 	}
+	
 	return result;
 }
 
@@ -101,7 +150,12 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
 	if(colorResult.spills != NULL)
 	{
 		printf("enter rewrite\n");
+		showTempList(colorResult.spills);
+		printf("----------------------old------------------\n");
+		AS_printInstrList(stdout,il,Temp_layerMap(F_tempMap,Temp_name()));
 		AS_instrList newIl = RewriteProgram(f, il, colorResult.spills);
+		printf("----------------------new------------------\n");
+		AS_printInstrList(stdout,newIl,Temp_layerMap(F_tempMap,Temp_name()));
 		return RA_regAlloc(f, newIl);
 	}
 

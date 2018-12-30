@@ -1,3 +1,15 @@
+#include "util.h"
+#include "symbol.h"
+#include "temp.h"
+#include "tree.h"
+#include "absyn.h"
+#include "assem.h"
+#include "frame.h"
+#include "graph.h"
+#include "liveness.h"
+#include "color.h"
+#include "table.h"
+
 #ifndef HELPER_H_
 #define HELPER_H_
 
@@ -89,7 +101,4 @@
 #define get_var_access(x) (x->u.var.access)
 #define get_func_label(x) (x->u.fun.label)
 #define get_func_level(x) (x->u.fun.level)
-
-
-
 #endif

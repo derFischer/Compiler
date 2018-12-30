@@ -1,82 +1,62 @@
+.text
+.globl L0
+.type L0, @function
+L0:
+subq $L0_framesize, %rsp
+movq %rdi, -8(%rbp)
+L10:
+movq $5, -16(%rbp)
+movq -16(%rbp), %rdi
+call printi
+leaq L8, %rdi
+call print
+movq %rbp, %rdi
+movq $2, %rsi
+call L1
+movq -16(%rbp), %rdi
+call printi
+jmp L9
+L9:
+addq $L0_framesize, %rsp
+ret
+
 .section .rodata
-.L7:
+L8:
 .int 1
 .string "\n"
+.text
+.globl L1
+.type L1, @function
+L1:
+subq $L1_framesize, %rsp
+movq %rdi, -8(%rbp)
+L12:
+movq $1, %rax
+movq $3, %r10
+cmpq %r10, %rsi
+jg L2
+L3:
+movq $0, %rax
+L2:
+movq $0, %r9
+cmpq %r9, %rax
+jne L5
+L6:
+movq -8(%rbp), %r10
+addq $-16, %r10
+movq $4, (%r10)
+movq $0, %rax
+L7:
+jmp L11
+L5:
+leaq L4, %rdi
+call print
+jmp L7
+L11:
+addq $L1_framesize, %rsp
+ret
+
 .section .rodata
-.L3:
+L4:
 .int 20
 .string "hey! Bigger than 3!\n"
-.text
-.globl tigermain
-.type tigermain, @function
-tigermain:
-pushq %rbp
-movq %rsp, %rbp
-subq $8, %rsp
-.L9:
-movq %rbp, %rax
-addq $-8, %rax
-movq $5, (%rax)
-movq %rbp, %rax
-addq $-8, %rax
-movq (%rax), %rdi
-pushq %rbp
-call printi
-leaq .L7, %rdi
-pushq %rbp
-call print
-movq $2, %rdi
-pushq %rbp
-call g
-movq %rbp, %rax
-addq $-8, %rax
-movq (%rax), %rdi
-pushq %rbp
-call printi
-jmp .L8
-.L8:
-movq %rbp, %rsp
-popq %rbp
-ret
-
-.text
-.globl g
-.type g, @function
-g:
-pushq %rbp
-movq %rsp, %rbp
-subq $8, %rsp
-movq %r12, -8(%rbp)
-.L11:
-movq $1, %r12
-movq $3, %rax
-cmpq %rax, %rdi
-jg .L1
-jmp .L2
-.L2:
-movq $0, %r12
-.L1:
-movq $0, %rax
-cmpq %rax, %r12
-jne .L5
-jmp .L6
-.L6:
-movq %rbp, %rax
-addq $16, %rax
-movq (%rax), %rax
-addq $-8, %rax
-movq $4, (%rax)
-movq $0, %rax
-.L4:
-jmp .L10
-.L5:
-leaq .L3, %rdi
-pushq %rbp
-call print
-jmp .L4
-.L10:
-movq -8(%rbp), %r12
-movq %rbp, %rsp
-popq %rbp
-ret
-

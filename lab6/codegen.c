@@ -279,9 +279,12 @@ static Temp_temp munchExp(T_exp e)
         char inst[INSTLENGTH];
         sprintf(inst, "call %s", Temp_labelstring(fun->u.NAME));
         emit(AS_Oper(String(inst), Temp_TempList(F_RAX(), F_callersaves()), argsRegs, NULL));
-        char inst2[INSTLENGTH];
-        sprintf(inst2, "addq $%d, `d0", calArgsStackSpace(args) * WORDSIZE);
-        emit(AS_Oper(String(inst2), Temp_TempList(F_RSP(), NULL), Temp_TempList(F_RSP(), NULL), NULL));
+        if (calArgsStackSpace(args) != 0)
+        {
+            char inst2[INSTLENGTH];
+            sprintf(inst2, "addq $%d, `d0", calArgsStackSpace(args) * WORDSIZE);
+            emit(AS_Oper(String(inst2), Temp_TempList(F_RSP(), NULL), Temp_TempList(F_RSP(), NULL), NULL));
+        }
         return F_RV();
     }
     }
@@ -295,13 +298,13 @@ int calArgsStackSpace(T_expList args)
         num++;
         args = args->tail;
     }
-    if (num > 7)
+    if (num > 6)
     {
         num -= 6;
     }
     else
     {
-        num = 1;
+        num = 0;
     }
     return num;
 }
@@ -309,11 +312,12 @@ int calArgsStackSpace(T_expList args)
 static Temp_tempList passArgs(T_expList args)
 {
     printf("enter passargs\n");
-    T_exp staticLink = args->head;
+    /*T_exp staticLink = args->head;
     Temp_tempList result = NULL;
     Temp_temp slReg = munchExp(staticLink);
     printTempff(slReg);
-    args = args->tail;
+    args = args->tail;*/
+    Temp_tempList result = NULL;
     int index = 1;
     while (args && index <= 6)
     {
@@ -349,7 +353,7 @@ static Temp_tempList passArgs(T_expList args)
         args = args->tail;
         index++;
     }
-    emit(AS_Oper("push `s0", Temp_TempList(F_RSP(), F_callersaves()), Temp_TempList(slReg, NULL), NULL));
+    /*emit(AS_Oper("push `s0", Temp_TempList(F_RSP(), F_callersaves()), Temp_TempList(slReg, NULL), NULL));*/
     return result;
 }
 
@@ -447,7 +451,7 @@ static void munchStm(T_stm s)
             src = munchExp(s->u.MOVE.src);
         }
         printf("------------------------move src-------------------\n");
-        printTempff(src);
+        //printTempff(src);
         printf("\n");
         T_exp dst = s->u.MOVE.dst;
         if (dst->kind == T_MEM)
@@ -604,6 +608,26 @@ AS_instrList F_codegen(F_frame f, T_stmList stmList)
     char frameSpace[INSTLENGTH];
     sprintf(frameSpace, "subq $%s, `d0", String(rbpConvert));
     emit(AS_Oper(String(frameSpace), Temp_TempList(F_RSP(), NULL), Temp_TempList(F_RSP(), NULL), NULL));
+
+    F_accessList formals = F_formals(f);
+    int index = 1;
+    while(formals && index <= 6)
+    {
+        F_access access = formals->head;
+        if(access->kind == inReg)
+        {
+            emit(AS_Move("movq `s0, `d0", Temp_TempList(access->u.reg, NULL), Temp_TempList(F_argsReg(index), NULL)));
+        }
+        else
+        {
+            int offset = access->u.offset;
+            char moveArg[INSTLENGTH];
+            sprintf(moveArg, "movq `s0, %d(`s1)", offset);
+            emit(AS_Oper(String(moveArg), NULL, L(F_argsReg(index), L(F_RBP(), NULL)), NULL));
+        }
+        formals = formals->tail;
+        index++;
+    }
     while (stmList)
     {
         munchStm(stmList->head);
@@ -612,6 +636,6 @@ AS_instrList F_codegen(F_frame f, T_stmList stmList)
     char endFrame[INSTLENGTH];
     sprintf(endFrame, "addq $%s, `d0", String(rbpConvert));
     emit(AS_Oper(String(endFrame), Temp_TempList(F_RSP(), NULL), Temp_TempList(F_RSP(), NULL), NULL));
-
+    emit(AS_Oper("ret", NULL, F_calleesaves(), NULL));
     return iList;
 }

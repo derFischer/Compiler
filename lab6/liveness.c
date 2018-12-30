@@ -10,6 +10,7 @@
 #include "flowgraph.h"
 #include "liveness.h"
 #include "table.h"
+#include "color.h"
 
 void printTemp(Temp_temp temp)
 {
@@ -217,7 +218,7 @@ void printInst(G_node node)
 struct Live_graph Live_liveness(G_graph flow)
 {
 	printf("flow graph:");
-	printFlowgraph(flow);
+	//printFlowgraph(flow);
 	//your code here.
 	struct Live_graph lg;
 
@@ -228,16 +229,30 @@ struct Live_graph Live_liveness(G_graph flow)
 	bool fixPoint = FALSE;
 	while (!fixPoint)
 	{
+		printf("outer loop start\n");
 		nodes = G_nodes(flow);
 		fixPoint = TRUE;
 		while (nodes)
 		{
+			printf("inner loop start\n");
 			G_node node = nodes->head;
+			AS_print(stdout, G_getInstr(node), Temp_layerMap(F_tempMap, Temp_name()));
 			Temp_tempList oldIn = TAB_look(tempListIn, node);
 			Temp_tempList oldOut = TAB_look(tempListOut, node);
+			printf("inner loop point 2\n");
+			FG_use(node);
+			printf("inner loop point 4\n");
+			FG_def(node);
+			printf("inner loop point 5\n");
+			showTempList(FG_use(node));
+			printf("inner loop point 6\n");
+			showTempList(FG_def(node));
+			printf("inner loop point 7\n");
+			showTempList(oldOut);
 			Temp_tempList newIn = L_tempListUnion(FG_use(node), L_tempListMinus(oldOut, FG_def(node)));
+			printf("fix point loop point 3\n");
 			Temp_tempList newOut = L_calSuccIn(node, tempListIn);
-
+			printf("fix point loop point 1\n");
 			if (!sameTempList(oldIn, newIn) || !sameTempList(oldOut, newOut))
 			{
 				fixPoint = FALSE;
@@ -303,10 +318,10 @@ struct Live_graph Live_liveness(G_graph flow)
 		if (!FG_isMove(node))
 		{
 			Temp_tempList defs = FG_def(node);
-			Temp_tempList outs = TAB_look(tempListOut, node);
 			while (defs)
 			{
 				Temp_temp defTemp = defs->head;
+				Temp_tempList outs = TAB_look(tempListOut, node);
 				/*if (framePointer(defTemp))
 				{
 					defs = defs->tail;
@@ -346,7 +361,6 @@ struct Live_graph Live_liveness(G_graph flow)
 		{
 			Temp_tempList moveDst = FG_MoveDst(node);
 			Temp_tempList moveSrc = FG_MoveSrc(node);
-			Temp_tempList outs = TAB_look(tempListOut, node);
 			while (moveDst)
 			{
 				Temp_temp movTemp = moveDst->head;
@@ -363,6 +377,7 @@ struct Live_graph Live_liveness(G_graph flow)
 					TAB_enter(tempToNode, movTemp, movTempNode);
 				}*/
 				G_node movTempNode = TAB_look(tempToNode, movTemp);
+				Temp_tempList outs = TAB_look(tempListOut, node);
 				while (outs)
 				{
 					Temp_temp outTemp = outs->head;

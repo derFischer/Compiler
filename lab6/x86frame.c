@@ -67,18 +67,18 @@ struct F_frame_
 	Temp_tempList specialregs;
 };
 
-struct F_access_
-{
-	enum
-	{
-		inFrame,
-		inReg
-	} kind;
-	union {
-		int offset;	//inFrame
-		Temp_temp reg; //inReg
-	} u;
-};
+// struct F_access_
+// {
+// 	enum
+// 	{
+// 		inFrame,
+// 		inReg
+// 	} kind;
+// 	union {
+// 		int offset;	//inFrame
+// 		Temp_temp reg; //inReg
+// 	} u;
+// };
 static F_access InFrame(int offset)
 {
 	F_access access = malloc(sizeof(*access));
@@ -129,16 +129,22 @@ F_frame F_newFrame(Temp_label name, U_boolList formals)
 	int index = 1;
 	while (formals)
 	{
-		if (!formals->head)
+		if(index > 6)
 		{
-			F_access access = inRegg(F_argsReg(index));
+			F_access access = InFrame(frame_offset);
+			frame_offset += WORDSIZE;
+			tmp->tail = F_AccessList(access, NULL);
+		}
+		else if (!formals->head)
+		{
+			F_access access = F_allocLocal(frame, FALSE);
 			tmp->tail = F_AccessList(access, NULL);
 		}
 		else
 		{
-			F_access access = InFrame(frame_offset);
+			printf("a variable is escape.\n");
+			F_access access = F_allocLocal(frame, TRUE);
 			tmp->tail = F_AccessList(access, NULL);
-			frame_offset += WORDSIZE;
 		}
 		tmp = tmp->tail;
 		formals = formals->tail;
@@ -166,6 +172,7 @@ F_access F_allocLocal(F_frame frame, bool escape)
 	F_access access;
 	if (escape)
 	{
+		++frame->length;
 		access = InFrame(-WORDSIZE * (frame->length));
 	}
 	else
@@ -173,7 +180,6 @@ F_access F_allocLocal(F_frame frame, bool escape)
 		access = inRegg(Temp_newtemp());
 	}
 	frame->locals = F_AccessList(access, frame->locals);
-	++frame->length;
 	return access;
 }
 
@@ -277,6 +283,7 @@ Temp_tempList F_allRegisters()
 	Temp_tempList calleesaves = F_calleesaves();
 	Temp_tempList callersaves = F_callersaves();
 	Temp_tempList allRegisters = L_tempListUnion(calleesaves, callersaves);
+	allRegisters = Temp_TempList(F_RAX(), allRegisters);
 	free(calleesaves);
 	free(callersaves);
 	Temp_tempList specialregs = Temp_TempList(F_RSP(), Temp_TempList(F_RBP(), NULL));
@@ -288,6 +295,7 @@ Temp_temp F_RSP(void)
 {
 	if (rsp == NULL)
 	{
+		printf("rsp generate\n");
 		rsp = Temp_newtemp();
 		Temp_enter(F_tempMap, rsp, "%rsp");
 	}

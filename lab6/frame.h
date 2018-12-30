@@ -13,7 +13,18 @@ typedef struct F_access_ *F_access;
 typedef struct F_accessList_ *F_accessList;
 
 struct F_accessList_ {F_access head; F_accessList tail;};
-
+struct F_access_
+{
+	enum
+	{
+		inFrame,
+		inReg
+	} kind;
+	union {
+		int offset;	//inFrame
+		Temp_temp reg; //inReg
+	} u;
+};
 
 /* declaration for fragments */
 Temp_map F_tempMap;

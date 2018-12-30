@@ -100,6 +100,8 @@ void G_addEdgeNonDirection(G_node from, G_node to)
   assert(from);
   assert(to);
   assert(from->mygraph == to->mygraph);
+  if(from == to)
+    return;
   if (G_goesTo(from, to) || G_goesTo(to, from))
     return;
   to->preds = G_NodeList(from, to->preds);

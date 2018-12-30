@@ -160,9 +160,11 @@ static void traverseVar(S_table env, int depth, A_var v)
     {
         case A_simpleVar:
         {
+            printf("traverse simplevar\n");
             escapeEntry ee = S_look(env, get_simplevar_sym(v));
             if(ee && ee->depth < depth)
             {
+                printf("analysis escape find an escape v\n");
                 *(ee->escape) = 1;
             }
             return;

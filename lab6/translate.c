@@ -208,6 +208,16 @@ Tr_level Tr_newLevel(Tr_level parent, Temp_label name, U_boolList formals)
 	Tr_level level = malloc(sizeof(*level));
 
 	//add static link to formals
+	formals = U_BoolList(TRUE, formals);
+	U_boolList tf = formals;
+	while(tf)
+	{
+		if(tf->head)
+		{
+			printf("tr escaple！！！！！1\n");
+		}
+		tf = tf->tail;
+	}
 	level->frame = F_newFrame(name, formals);
 	level->parent = parent;
 	return level;
@@ -246,7 +256,7 @@ Tr_exp Tr_simpleVar(Tr_access access, Tr_level level)
 	T_exp fp = T_Temp(F_FP());
 	while (level != access->level)
 	{
-		fp = T_Mem(T_Binop(T_plus, T_Const(WORDSIZE), fp));
+		fp = T_Mem(T_Binop(T_plus, T_Const(-WORDSIZE), fp));
 		level = level->parent;
 	}
 	return Tr_Ex(F_exp(access->access, fp));
@@ -282,6 +292,17 @@ Tr_exp Tr_stringExp(string stringg)
 Tr_exp Tr_seqExp(Tr_exp first, Tr_exp second)
 {
 	return Tr_Ex(T_Eseq(unNx(first), unEx(second)));
+}
+
+Tr_exp Tr_externalCall(Temp_label fname, Tr_expList params, Tr_level caller, Tr_level callee)
+{
+	//EM_error(0, "tr call exp start\n");
+	T_expList args = NULL;
+	for (; params; params = params->tail)
+	{
+		args = T_ExpList(unEx(params->head), args);
+	}
+	return Tr_Ex(T_Call(T_Name(fname), args));
 }
 
 Tr_exp Tr_callExp(Temp_label fname, Tr_expList params, Tr_level caller, Tr_level callee)
@@ -366,6 +387,10 @@ Tr_exp Tr_intCompExp(A_oper op, Tr_exp left, Tr_exp right)
 		break;
 	}
 	T_stm stm = T_Cjump(rop, unEx(left), unEx(right), NULL, NULL);
+	if(unEx(right)->kind == T_CONST)
+	{
+		printf("cmp right const:%d\n", unEx(right)->u.CONST);
+	}
 	patchList trues = PatchList(&(stm->u.CJUMP.true), NULL);
 	patchList falses = PatchList(&(stm->u.CJUMP.false), NULL);
 	return Tr_Cx(trues, falses, stm);

@@ -1,41 +1,21 @@
 .text
-.globl tigermain
-.type tigermain, @function
-tigermain:
-pushq %rbp
-movq %rsp, %rbp
-subq $8, %rsp
-movq %rbx, -8(%rbp)
-.L2:
-movq $0, %rax
-movq $2, %rdi
-imulq $8, %rdi
-pushq %rax
+.globl L0
+.type L0, @function
+L0:
+subq $L0_framesize, %rsp
+movq %rdi, -8(%rbp)
+L2:
+movq $16, %rdi
 call malloc
-movq $8, %rdi
-imulq $0, %rdi
-movq %rax, %rbx
-addq %rdi, %rbx
-movq $3, (%rbx)
-movq $8, %rdi
-imulq $1, %rdi
-movq %rax, %rbx
-addq %rdi, %rbx
-movq $4, (%rbx)
-movq %rax, %rbx
-movq %rbx, %rax
-addq $0, %rax
-movq (%rax), %rdi
-pushq %rbp
+movq %rax, 0(%rsp)
+movq 0(%rsp), %r10
+movq 0(%r10), %rdi
 call printi
-addq $8, %rbx
-movq (%rbx), %rdi
-pushq %rbp
+movq 0(%rsp), %r10
+movq 8(%r10), %rdi
 call printi
-jmp .L1
-.L1:
-movq -8(%rbp), %rbx
-movq %rbp, %rsp
-popq %rbp
+jmp L1
+L1:
+addq $L0_framesize, %rsp
 ret
 

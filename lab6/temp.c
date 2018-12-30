@@ -53,13 +53,32 @@ Temp_temp Temp_newtemp(void)
 Temp_temp Temp_stringToTemp(string name)
 {
   Temp_tempList allregs = F_allRegisters();
+  allregs = Temp_TempList(F_RBP(), allregs);
+  allregs = Temp_TempList(F_RSP(), allregs);
   while(allregs)
   {
     Temp_temp reg = allregs->head;
     string n = Temp_look(F_tempMap, reg);
-    if(strncmp(n, name, 3) == 0)
+    if(name[2] >= 'a' && name[2] <= 'z')
     {
-      return reg;
+      if(strncmp(n, name, 4) == 0)
+      {
+        return reg;
+      }
+    }
+    else if(name[2] == '1')
+    {
+      if(strncmp(n, name, 4) == 0)
+      {
+        return reg;
+      }
+    }
+    else
+    {
+      if(strncmp(n, name, 3) == 0)
+      {
+        return reg;
+      }
     }
     allregs = allregs->tail;
   }

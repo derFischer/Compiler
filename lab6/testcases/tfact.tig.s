@@ -15,6 +15,7 @@ addq $8, %rsp
 jmp L5
 L5:
 addq $L0_framesize, %rsp
+ret
 
 .text
 .globl L1
@@ -22,19 +23,19 @@ addq $L0_framesize, %rsp
 L1:
 subq $L1_framesize, %rsp
 L8:
-movq $0, %r9
-cmpq %r9, %rdi
+movq $0, %r10
+cmpq %r10, %rdi
 je L2
 L3:
-movq %rdi, %r8
-movq 8(%rbp), %r9
+movq %rdi, 8(%rsp)
+movq 8(%rbp), %r10
 subq $1, %rdi
-push %r9
+push %r10
 call L1
 addq $8, %rsp
-movq %rax, %r9
-movq %r8, %rax
-imulq %r9, %rax
+movq %rax, %r10
+movq 8(%rsp), %rax
+imulq %r10, %rax
 L4:
 jmp L7
 L2:
@@ -42,4 +43,5 @@ movq $1, %rax
 jmp L4
 L7:
 addq $L1_framesize, %rsp
+ret
 

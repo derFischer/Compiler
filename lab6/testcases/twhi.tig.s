@@ -1,42 +1,41 @@
 .text
-.globl tigermain
-.type tigermain, @function
-tigermain:
-pushq %rbp
-movq %rsp, %rbp
-subq $8, %rsp
-movq %rbx, -8(%rbp)
-.L8:
-movq $10, %rbx
-.L5:
+.globl L0
+.type L0, @function
+L0:
+subq $L0_framesize, %rsp
+L8:
+movq $10, %rax
+movq %rax, 8(%rsp)
+L5:
 movq $0, %rax
-cmpq %rax, %rbx
-jge .L6
-jmp .L1
-.L1:
+movq 8(%rsp), %r10
+cmpq %rax, %r10
+jge L6
+L1:
 movq $0, %rax
-jmp .L7
-.L6:
-pushq %rbp
-movq %rbx, %rdi
+jmp L7
+L6:
+movq 8(%rsp), %rdi
+push %rbp
 call printi
-subq $1, %rbx
+addq $8, %rsp
+movq 8(%rsp), %r10
+subq $1, %r10
+movq %r10, 8(%rsp)
 movq $2, %rax
-cmpq %rax, %rbx
-je .L3
-jmp .L4
-.L4:
+movq 8(%rsp), %r10
+cmpq %rax, %r10
+je L2
+L3:
 movq $0, %rax
-.L2:
-jmp .L5
-.L3:
-jmp .L1
-.L9:
+L4:
+jmp L5
+L2:
+jmp L1
+L9:
 movq $0, %rax
-jmp .L2
-.L7:
-movq -8(%rbp), %rbx
-movq %rbp, %rsp
-popq %rbp
+jmp L4
+L7:
+addq $L0_framesize, %rsp
 ret
 
