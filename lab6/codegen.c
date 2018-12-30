@@ -611,10 +611,10 @@ AS_instrList F_codegen(F_frame f, T_stmList stmList)
 
     F_accessList formals = F_formals(f);
     int index = 1;
-    while(formals && index <= 6)
+    while (formals && index <= 6)
     {
         F_access access = formals->head;
-        if(access->kind == inReg)
+        if (access->kind == inReg)
         {
             emit(AS_Move("movq `s0, `d0", Temp_TempList(access->u.reg, NULL), Temp_TempList(F_argsReg(index), NULL)));
         }
@@ -628,10 +628,71 @@ AS_instrList F_codegen(F_frame f, T_stmList stmList)
         formals = formals->tail;
         index++;
     }
+
+    Temp_tempList calleesaves = F_calleesaves;
+    Temp_temp saveRbx = Temp_newtemp();
+    Temp_temp saveRbp = Temp_newtemp();
+    Temp_temp saveR12 = Temp_newtemp();
+    Temp_temp saveR13 = Temp_newtemp();
+    Temp_temp saveR14 = Temp_newtemp();
+    Temp_temp saveR15 = Temp_newtemp();
+
+    index = 1;
+    while (index <= 6)
+    {
+        switch (index)
+        {
+        case 1:
+            emit(AS_Move("movq `s0, `d0", L(saveRbx, NULL), L(F_calleesavesIndex(index), NULL)));
+            break;
+        case 2:
+            emit(AS_Move("movq `s0, `d0", L(saveRbp, NULL), L(F_calleesavesIndex(index), NULL)));
+            break;
+        case 3:
+            emit(AS_Move("movq `s0, `d0", L(saveR12, NULL), L(F_calleesavesIndex(index), NULL)));
+            break;
+        case 4:
+            emit(AS_Move("movq `s0, `d0", L(saveR13, NULL), L(F_calleesavesIndex(index), NULL)));
+            break;
+        case 5:
+            emit(AS_Move("movq `s0, `d0", L(saveR14, NULL), L(F_calleesavesIndex(index), NULL)));
+            break;
+        case 6:
+            emit(AS_Move("movq `s0, `d0", L(saveR15, NULL), L(F_calleesavesIndex(index), NULL)));
+            break;
+        }
+        index++;
+    }
     while (stmList)
     {
         munchStm(stmList->head);
         stmList = stmList->tail;
+    }
+    index = 1;
+    while (index <= 6)
+    {
+        switch (index)
+        {
+        case 1:
+            emit(AS_Move("movq `s0, `d0", L(F_calleesavesIndex(index), NULL), L(saveRbx, NULL)));
+            break;
+        case 2:
+            emit(AS_Move("movq `s0, `d0", L(F_calleesavesIndex(index), NULL), L(saveRbp, NULL)));
+            break;
+        case 3:
+            emit(AS_Move("movq `s0, `d0", L(F_calleesavesIndex(index), NULL), L(saveR12, NULL)));
+            break;
+        case 4:
+            emit(AS_Move("movq `s0, `d0", L(F_calleesavesIndex(index), NULL), L(saveR13, NULL)));
+            break;
+        case 5:
+            emit(AS_Move("movq `s0, `d0", L(F_calleesavesIndex(index), NULL), L(saveR14, NULL)));
+            break;
+        case 6:
+            emit(AS_Move("movq `s0, `d0", L(F_calleesavesIndex(index), NULL), L(saveR15, NULL)));
+            break;
+        }
+        index++;
     }
     char endFrame[INSTLENGTH];
     sprintf(endFrame, "addq $%s, `d0", String(rbpConvert));

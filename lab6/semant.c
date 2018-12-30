@@ -262,6 +262,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 	}
 	case A_recordExp:
 	{
+		printf("enter record exp\n");
 		Ty_ty type = S_look(tenv, a->u.record.typ);
 		type = actual_ty(type);
 
@@ -275,10 +276,11 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 		Ty_fieldList list = type->u.record;
 		Tr_expList Trexplist = fieldlistSame(venv, tenv, tmp, list, a, level, label);
 		int size = 0;
-		while (Trexplist)
+		Tr_expList t = Trexplist;
+		while (t)
 		{
 			++size;
-			Trexplist = Trexplist->tail;
+			t = t->tail;
 		}
 		return expTy(Tr_recordExp(size, Trexplist), type);
 	}

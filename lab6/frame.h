@@ -65,7 +65,7 @@ Temp_tempList F_callersaves();
 Temp_tempList F_allRegisters();
 int F_accessOffset(F_access access);
 int F_frameLength(F_frame f);
-
+Temp_temp F_calleesavesIndex(int index);
 
 Temp_temp F_RSP(void);
 Temp_temp F_RBP(void);

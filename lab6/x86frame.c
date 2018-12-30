@@ -278,6 +278,25 @@ Temp_tempList F_calleesaves()
 																				 Temp_TempList(F_R15(), NULL))))));
 }
 
+Temp_temp F_calleesavesIndex(int index)
+{
+	switch(index)
+	{
+		case 1:
+		return F_RBX();
+		case 2:
+		return F_RBP();
+		case 3:
+		return F_R12();
+		case 4:
+		return F_R13();
+		case 5:
+		return F_R14();
+		case 6:
+		return F_R15();
+	}
+}
+
 Temp_tempList F_allRegisters()
 {
 	Temp_tempList calleesaves = F_calleesaves();

@@ -405,12 +405,20 @@ Tr_exp stringCompExp(A_oper op, Tr_exp left, Tr_exp right)
 
 Tr_exp Tr_recordExp(int size, Tr_expList list)
 {
+	printf("enter tr recordecp\n");
+	assert(list);
 	Temp_temp addr = Temp_newtemp();
 	T_stm mallocSpace = T_Move(T_Temp(addr), F_externalCall("malloc", T_ExpList(T_Const(size * WORDSIZE), NULL)));
 	T_exp exp = T_Temp(addr);
 	int i = 0;
+	assert(list);
+	if(list)
+	{
+		printf("????????\n");
+	}
 	for (; list; list = list->tail)
 	{
+		printf("record assign initial\n");
 		exp = T_Eseq(T_Move(T_Mem(T_Binop(T_plus, T_Temp(addr), T_Const(i * WORDSIZE))), unEx(list->head)), exp);
 		++i;
 	}
