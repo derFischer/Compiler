@@ -20,7 +20,6 @@ struct AS_instr_ { enum {I_OPER, I_LABEL, I_MOVE} kind;
 AS_instr AS_Oper(string a, Temp_tempList d, Temp_tempList s, AS_targets j);
 AS_instr AS_Label(string a, Temp_label label);
 AS_instr AS_Move(string a, Temp_tempList d, Temp_tempList s);
-
 void AS_print(FILE *out, AS_instr i, Temp_map m);
 
 typedef struct AS_instrList_ *AS_instrList;
@@ -36,7 +35,7 @@ struct AS_proc_ {
   AS_instrList body;
   string epilog;
 };
-
+AS_instrList AS_rewrite(AS_instrList il, int framesize);
 AS_proc AS_Proc(string p, AS_instrList b, string e);
 
 

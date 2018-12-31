@@ -192,8 +192,7 @@ void DecrementDegree(G_node node)
 {
 	//printf("---------------decrement degree------------\n");
 	nodeInfo info = G_nodeInfo(node);
-	info->degree--;
-	if (info->degree == regNum)
+	if (info->degree-- == regNum)
 	{
 		printf("---------------decrement degree------------\n");
 		printTemp233(G_getReg(node));
@@ -395,7 +394,7 @@ void Coalesce()
 		AddWorkList(newSrc);
 		AddWorkList(newDst);
 	}
-	else if ((G_inNodeList(newSrc, precoloredList) && canCombine(newSrc, newDst))|| (!G_inNodeList(newSrc, precoloredList) && canCombine(newSrc, newDst)))
+	else if ((G_inNodeList(newSrc, precoloredList) && adjOk(newDst, newSrc))|| (!G_inNodeList(newSrc, precoloredList) && Conservative(G_setUnion(G_adj(newSrc), G_adj(newDst)))))
 	{
 		coalescedMoves = Live_MoveList(rawSrc, rawDst, coalescedMoves);
 		Combine(newSrc, newDst);
@@ -709,7 +708,7 @@ struct COL_result COL_color(G_graph ig, Temp_map initial, Temp_tempList regs, Li
 			//printf("spillworklist node list:");
 			//printGnodeList(spillWorklist);
 		}
-		sleep(1);
+		//sleep(1);
 	}
 	printf("print AssignColors\n");
 	AssignColors(colored);

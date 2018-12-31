@@ -85,7 +85,7 @@ static void format(char *result, string assem,
 		   AS_targets jumps, Temp_map m)
 {
 
-  //fprintf(stdout, "a format: assem=%s, dst=%p, src=%p\n", assem, dst, src);
+  fprintf(stdout, "a format: assem=%s, dst=%p, src=%p\n", assem, dst, src);
   char *p;
   int i = 0; /* offset to result string */
   for(p = assem; p && *p != '\0'; p++){
@@ -162,4 +162,61 @@ AS_proc AS_Proc(string p, AS_instrList b, string e)
 {AS_proc proc = checked_malloc(sizeof(*proc));
  proc->prolog=p; proc->body=b; proc->epilog=e;
  return proc;
+}
+
+AS_instrList AS_rewrite(AS_instrList il, int framesize)
+{
+  AS_instrList new_il = il;
+  while (il)
+  {
+    AS_instr inst = il->head;
+    if (inst->kind == I_MOVE)
+    {
+      if (inst->u.MOVE.src->head == F_FP())
+      {
+        char inst_c[100];
+        sprintf(inst_c, "leaq %d(%rsp), `d0", framesize);
+        il->head = AS_Oper(String(inst_c), inst->u.MOVE.dst, NULL, NULL);
+      }
+    }
+    else if (inst->kind == I_OPER)
+    {
+      // movq %d(%rbp), `d0
+      if (inst->u.OPER.src && inst->u.OPER.src->head == F_FP())
+      {
+        string assem = inst->u.OPER.assem;
+        char inst_type[20];
+        int num;
+        sscanf(assem, "%s %d", inst_type, &num);
+
+        //printf("%s\n", inst_type);
+        if (strcmp(inst_type, "movq") == 0)
+        {
+          char inst_c[100];
+          sprintf(inst_c, "movq %d(%rsp), `d0", framesize + num);
+          il->head = AS_Oper(String(inst_c), inst->u.OPER.dst, NULL, NULL);
+        }
+      }
+
+      // movq `s0, %d(%rbp)
+      else if (inst->u.OPER.src && inst->u.OPER.src->tail && inst->u.OPER.src->tail->head == F_FP())
+      {
+        string assem = inst->u.OPER.assem;
+        char inst_type[20];
+        char source[20];
+        int num;
+
+        sscanf(assem, "%s %s %d", inst_type, source, &num);
+        // printf("%d\n", num);
+        if (strcmp(inst_type, "movq") == 0)
+        {
+          char inst_c[100];
+          sprintf(inst_c, "movq `s0, %d(%rsp)", framesize + num);
+          il->head = AS_Oper(String(inst_c), NULL, inst->u.OPER.src, NULL);
+        }
+      }
+    }
+    il = il->tail;
+  }
+  return new_il;
 }

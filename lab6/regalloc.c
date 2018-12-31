@@ -109,8 +109,8 @@ AS_instrList RewriteProgram(F_frame f, AS_instrList il, Temp_tempList spills)
 			F_access access = TAB_look(tempPos, temp);
 			Temp_temp newTemp = Temp_newtemp();
 			char load[INSTLENGTH];
-			sprintf(load, "movq %d(`s0), `d0", F_frameLength(f) * WORDSIZE + F_accessOffset(access));
-			AS_instr loadInstr = AS_Oper(String(load), Temp_TempList(newTemp, NULL), Temp_TempList(F_RSP(), NULL), NULL);
+			sprintf(load, "movq %d(`s0), `d0", F_accessOffset(access));
+			AS_instr loadInstr = AS_Oper(String(load), Temp_TempList(newTemp, NULL), Temp_TempList(F_RBP(), NULL), NULL);
 			modifySrc(inst, temp, newTemp);
 			il->head = loadInstr;
 			il->tail = AS_InstrList(inst,il->tail);
@@ -123,8 +123,8 @@ AS_instrList RewriteProgram(F_frame f, AS_instrList il, Temp_tempList spills)
 			F_access access = TAB_look(tempPos, temp);
 			Temp_temp newTemp = Temp_newtemp();
 			char store[INSTLENGTH];
-			sprintf(store, "movq `s0, %d(`s1)", F_frameLength(f) * WORDSIZE + F_accessOffset(access));
-			AS_instr storeInstr = AS_Oper(String(store), NULL, Temp_TempList(newTemp, Temp_TempList(F_RSP(), NULL)), NULL);
+			sprintf(store, "movq `s0, %d(`s1)", F_accessOffset(access));
+			AS_instr storeInstr = AS_Oper(String(store), NULL, Temp_TempList(newTemp, Temp_TempList(F_RBP(), NULL)), NULL);
 			modifyDst(inst, temp, newTemp);
 			il->tail = AS_InstrList(storeInstr,il->tail);
 			spilledDst = spilledDst->tail;
@@ -161,11 +161,15 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
 	printf("finish\n");
 	Temp_map allRegsMap = Temp_layerMap(F_tempMap, colorResult.coloring);
 	allRegsMap = Temp_layerMap(allRegsMap, Temp_name());
-	// AS_printInstrList(stdout, il, allRegsMap);
+
+	char modifyRSP[INSTLENGTH];
+	sprintf(modifyRSP, "subq $%d, `s0", F_frameLength(f) * WORDSIZE);
+	AS_instr inst = AS_Oper(String(modifyRSP), Temp_TempList(F_RSP(), NULL), Temp_TempList(F_RSP(), NULL), NULL);
+	il = AS_InstrList(inst, il->tail);
 	AS_instrList *instPointer = &il;
 	while(*instPointer)
 	{
-		printf("enter loop\n");
+		//printf("enter loop\n");
 		AS_instr inst = (*instPointer)->head;
 		//printf("lueluelue\n");
 		AS_print(stdout, inst, allRegsMap);
@@ -176,7 +180,7 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
 			Temp_temp src = inst->u.MOVE.src->head;
 			Temp_temp dst = inst->u.MOVE.dst->head;
 			//printf("sdjf\n");
-			printf("src reg:%s, dst reg:%s\n", (char *)Temp_look(allRegsMap, src), (char *)Temp_look(allRegsMap, dst));
+			//printf("src reg:%s, dst reg:%s\n", (char *)Temp_look(allRegsMap, src), (char *)Temp_look(allRegsMap, dst));
 			//printf("src reg:%s, dst reg:%s\n", (char *)Temp_look(Temp_name(), src), (char *)Temp_look(Temp_name(), dst));
 			int result = strcmp(Temp_look(allRegsMap, src), Temp_look(allRegsMap, dst));
 			//printf("abcdefg\n");
@@ -190,10 +194,26 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
 		}
 		//printf("askdjflskdjf\n");
 		instPointer = &((*instPointer)->tail);
-		printf("finish loop\n");
+		//printf("finish loop\n");
 	}
 
+	char recoverSpace[INSTLENGTH];
+	sprintf(recoverSpace, "addq $%d, `s0", F_frameLength(f) * WORDSIZE);
+	AS_instr recover = AS_Oper(String(recoverSpace), Temp_TempList(F_RSP(), NULL), Temp_TempList(F_RSP(), NULL), NULL);
+	AS_instrList t = il;
+	while(t)
+	{
+		if(t->tail->tail == NULL)
+		{
+			t->head = recover;
+			break;
+		}
+		t = t->tail;
+	}
 	ret.coloring = colorResult.coloring;
-	ret.il = il;
+	AS_printInstrList(stdout, il, allRegsMap);
+	printf("----------------------------------------\n");
+	ret.il = AS_rewrite(il, F_frameLength(f) * WORDSIZE);
+	AS_printInstrList(stdout, il, allRegsMap);
 	return ret;
 }

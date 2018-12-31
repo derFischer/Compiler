@@ -723,7 +723,7 @@ Ty_ty transTy(S_table tenv, A_ty a)
 
 F_fragList SEM_transProg(A_exp exp)
 {
-	Temp_label label = Temp_newlabel();
+	Temp_label label = Temp_namedlabel("tigermain");
 	Tr_level mainn = Tr_newLevel(Tr_outermost(), label, NULL);
 	E_enventry fun = E_FunEntry(mainn, label, NULL, Ty_Void());
 

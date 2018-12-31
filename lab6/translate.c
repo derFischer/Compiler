@@ -13,7 +13,8 @@
 
 #define WORDSIZE 8
 //LAB5: you can modify anything you want.
-F_fragList frags = NULL;
+F_fragList funcfrags = NULL;
+F_fragList strfrags = NULL;
 struct Tr_access_
 {
 	Tr_level level;
@@ -285,7 +286,7 @@ Tr_exp Tr_intExp(int intt)
 Tr_exp Tr_stringExp(string stringg)
 {
 	Temp_label label = Temp_newlabel();
-	frags = F_FragList(F_StringFrag(label, stringg), frags);
+	strfrags = F_FragList(F_StringFrag(label, stringg), strfrags);
 	return Tr_Ex(T_Name(label));
 }
 
@@ -501,11 +502,23 @@ void Tr_procEntryExit1(Tr_level level, Tr_exp body, Tr_accessList formals)
 {
 	T_stm exitStm = T_Move(T_Temp(F_RV()), unEx(body));
 	F_frag frag = F_ProcFrag(exitStm, level->frame);
-	frags = F_FragList(frag, frags);
+	funcfrags = F_FragList(frag, funcfrags);
 	return;
 }
 
 F_fragList Tr_getResult(void)
 {
-	return frags;
+	if(strfrags == NULL)
+	{
+		return funcfrags;
+	}
+
+	F_fragList fl = strfrags;
+	while(fl->tail)
+	{
+		fl = fl->tail;
+	}
+
+	fl->tail = funcfrags;
+	return strfrags;
 }

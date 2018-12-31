@@ -646,7 +646,7 @@ AS_instrList F_codegen(F_frame f, T_stmList stmList)
             emit(AS_Move("movq `s0, `d0", L(saveRbx, NULL), L(F_calleesavesIndex(index), NULL)));
             break;
         case 2:
-            emit(AS_Move("movq `s0, `d0", L(saveRbp, NULL), L(F_calleesavesIndex(index), NULL)));
+            // emit(AS_Move("movq `s0, `d0", L(saveRbp, NULL), L(F_calleesavesIndex(index), NULL)));
             break;
         case 3:
             emit(AS_Move("movq `s0, `d0", L(saveR12, NULL), L(F_calleesavesIndex(index), NULL)));
@@ -677,7 +677,7 @@ AS_instrList F_codegen(F_frame f, T_stmList stmList)
             emit(AS_Move("movq `s0, `d0", L(F_calleesavesIndex(index), NULL), L(saveRbx, NULL)));
             break;
         case 2:
-            emit(AS_Move("movq `s0, `d0", L(F_calleesavesIndex(index), NULL), L(saveRbp, NULL)));
+            // emit(AS_Move("movq `s0, `d0", L(F_calleesavesIndex(index), NULL), L(saveRbp, NULL)));
             break;
         case 3:
             emit(AS_Move("movq `s0, `d0", L(F_calleesavesIndex(index), NULL), L(saveR12, NULL)));
