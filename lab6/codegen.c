@@ -163,7 +163,7 @@ static Temp_temp munchExp(T_exp e)
             Temp_temp right = munchExp(e->u.BINOP.right);
             AS_instr prepareResult1 = moveReg(left, F_RAX());
             AS_instr prepareResult2 = AS_Oper("cqto", L(F_RDX(), NULL), NULL, NULL);
-            AS_instr calOper = AS_Oper("idivq `s0", L(F_RAX(), L(F_RDX(), NULL)), L(F_RDX(), L(F_RAX(), L(right, NULL))), NULL);
+            AS_instr calOper = AS_Oper("idivq `s0", L(F_RAX(), L(F_RDX(), NULL)), L(right, L(F_RAX(), NULL)), NULL);
             AS_instr movRes = moveReg(F_RAX(), result);
             emit(prepareResult1);
             emit(prepareResult2);

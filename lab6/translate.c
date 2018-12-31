@@ -495,7 +495,7 @@ Tr_exp Tr_breakExp(Temp_label label)
 Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init)
 {
 	Temp_temp r = Temp_newtemp();
-	return Tr_Ex(T_Eseq(T_Move(T_Temp(r), F_externalCall("initArray", T_ExpList(T_Binop(T_mul, unEx(size), T_Const(WORDSIZE)), T_ExpList(unEx(init), NULL)))), T_Temp(r)));
+	return Tr_Ex(T_Eseq(T_Move(T_Temp(r), F_externalCall("initArray", T_ExpList(unEx(size), T_ExpList(unEx(init), NULL)))), T_Temp(r)));
 }
 
 void Tr_procEntryExit1(Tr_level level, Tr_exp body, Tr_accessList formals)
