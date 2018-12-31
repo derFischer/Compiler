@@ -172,7 +172,7 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
 		//printf("enter loop\n");
 		AS_instr inst = (*instPointer)->head;
 		//printf("lueluelue\n");
-		AS_print(stdout, inst, allRegsMap);
+		//AS_print(stdout, inst, allRegsMap);
 		//printf("dfalskdjflskj\n");
 		if(inst->kind == I_MOVE && strstr(inst->u.MOVE.assem, "movq `s0, `d0"))
 		{
@@ -211,6 +211,7 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
 		t = t->tail;
 	}
 	ret.coloring = colorResult.coloring;
+	printf("----------------------------------------\n");
 	AS_printInstrList(stdout, il, allRegsMap);
 	printf("----------------------------------------\n");
 	ret.il = AS_rewrite(il, F_frameLength(f) * WORDSIZE);

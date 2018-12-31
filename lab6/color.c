@@ -233,6 +233,8 @@ void Simplify()
 void AddWorkList(G_node node)
 {
 	printf("--------------------add worklist-----------------\n");
+	printf("spillworklist:");
+	showNodeList(spillWorklist);
 	nodeInfo info = G_nodeInfo(node);
 	if (!G_inNodeList(node, precoloredList) && !MoveRelated(node) && info->degree < regNum && !G_inNodeList(node, selectStack))
 	{
@@ -342,7 +344,7 @@ void Combine(G_node node1, G_node node2)
 	if (info1->degree >= regNum && G_inNodeList(node1, freezeWorklist))
 	{
 		freezeWorklist = G_setMinus(freezeWorklist, G_NodeList(node1, NULL));
-		spillWorklist = G_setUnion(spilledNodes, G_NodeList(node1, NULL));
+		spillWorklist = G_setUnion(spillWorklist, G_NodeList(node1, NULL));
 	}
 	printf("------------------==============end combine==============--------------\n");
 }

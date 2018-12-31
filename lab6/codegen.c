@@ -440,15 +440,10 @@ static void munchStm(T_stm s)
         bool srcConst = FALSE;
         int srcConstNum = 0;
         T_exp srcExp = s->u.MOVE.src;
-        Temp_temp src;
         if (srcExp->kind == T_CONST)
         {
             srcConst = TRUE;
             srcConstNum = srcExp->u.CONST;
-        }
-        else
-        {
-            src = munchExp(s->u.MOVE.src);
         }
         printf("------------------------move src-------------------\n");
         //printTempff(src);
@@ -457,25 +452,29 @@ static void munchStm(T_stm s)
         if (dst->kind == T_MEM)
         {
             printf("---------------move to a mem-----------\n");
+            Temp_temp src = munchExp(s->u.MOVE.src);
             T_exp addr = dst->u.MEM;
             switch (addr->kind)
             {
-            case T_CONST:
-            {
-                char inst[INSTLENGTH];
-                if (srcConst)
-                {
-                    sprintf(inst, "movq $%d, %d", srcConstNum, addr->u.CONST);
-                    emit(AS_Oper(String(inst), NULL, NULL, NULL));
-                    break;
-                }
-                else
-                {
-                    sprintf(inst, "movq `s0, %d", addr->u.CONST);
-                    emit(AS_Oper(String(inst), NULL, L(src, NULL), NULL));
-                    break;
-                }
-            }
+            // case T_CONST:
+            // {
+            //     char inst[INSTLENGTH];
+            //     sprintf(inst, "movq `s0, %d", addr->u.CONST);
+            //     emit(AS_Oper(String(inst), NULL, L(src, NULL), NULL));
+            //     break;
+            //     // if (srcConst)
+            //     // {
+            //     //     sprintf(inst, "movq $%d, %d", srcConstNum, addr->u.CONST);
+            //     //     emit(AS_Oper(String(inst), NULL, NULL, NULL));
+            //     //     break;
+            //     // }
+            //     // else
+            //     // {
+            //     //     sprintf(inst, "movq `s0, %d", addr->u.CONST);
+            //     //     emit(AS_Oper(String(inst), NULL, L(src, NULL), NULL));
+            //     //     break;
+            //     // }
+            // }
             case T_BINOP:
             {
                 T_exp left = addr->u.BINOP.left;
@@ -483,58 +482,65 @@ static void munchStm(T_stm s)
                 if (left->kind == T_CONST && right->kind == T_TEMP)
                 {
                     char inst[INSTLENGTH];
-                    if (srcConst)
-                    {
-                        sprintf(inst, "movq $%d, %d(`s0)", srcConstNum, left->u.CONST);
-                        emit(AS_Oper(String(inst), NULL, L(munchExp(right), NULL), NULL));
-                    }
-                    else
-                    {
-                        sprintf(inst, "movq `s0, %d(`s1)", left->u.CONST);
-                        emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(right), NULL)), NULL));
-                    }
+                    sprintf(inst, "movq `s0, %d(`s1)", left->u.CONST);
+                    emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(right), NULL)), NULL));
+                    // if (srcConst)
+                    // {
+                    //     sprintf(inst, "movq $%d, %d(`s0)", srcConstNum, left->u.CONST);
+                    //     emit(AS_Oper(String(inst), NULL, L(munchExp(right), NULL), NULL));
+                    // }
+                    // else
+                    // {
+                    //     sprintf(inst, "movq `s0, %d(`s1)", left->u.CONST);
+                    //     emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(right), NULL)), NULL));
+                    // }
                 }
                 else if (right->kind == T_CONST && left->kind == T_TEMP)
                 {
                     char inst[INSTLENGTH];
-                    if (srcConst)
-                    {
-                        sprintf(inst, "movq $%d, %d(`s0)", srcConstNum, right->u.CONST);
-                        emit(AS_Oper(String(inst), NULL, L(munchExp(left), NULL), NULL));
-                    }
-                    else
-                    {
-                        sprintf(inst, "movq `s0, %d(`s1)", right->u.CONST);
-                        emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(left), NULL)), NULL));
-                    }
+                    sprintf(inst, "movq `s0, %d(`s1)", right->u.CONST);
+                    emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(left), NULL)), NULL));
+                    // if (srcConst)
+                    // {
+                    //     sprintf(inst, "movq $%d, %d(`s0)", srcConstNum, right->u.CONST);
+                    //     emit(AS_Oper(String(inst), NULL, L(munchExp(left), NULL), NULL));
+                    // }
+                    // else
+                    // {
+                    //     sprintf(inst, "movq `s0, %d(`s1)", right->u.CONST);
+                    //     emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(left), NULL)), NULL));
+                    // }
                 }
                 else if (left->kind == T_TEMP && right->kind == T_TEMP)
                 {
                     char inst[INSTLENGTH];
-                    if (srcConst)
-                    {
-                        sprintf(inst, "movq $%d, (`s0, `s1)", srcConstNum);
-                        emit(AS_Oper(String(inst), NULL, L(munchExp(left), L(munchExp(right), NULL)), NULL));
-                    }
-                    else
-                    {
-                        sprintf(inst, "movq `s0, (`s1,`s2)");
-                        emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(left), L(munchExp(right), NULL))), NULL));
-                    }
+                    sprintf(inst, "movq `s0, (`s1,`s2)");
+                    emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(left), L(munchExp(right), NULL))), NULL));
+                    // if (srcConst)
+                    // {
+                    //     sprintf(inst, "movq $%d, (`s0, `s1)", srcConstNum);
+                    //     emit(AS_Oper(String(inst), NULL, L(munchExp(left), L(munchExp(right), NULL)), NULL));
+                    // }
+                    // else
+                    // {
+                    //     sprintf(inst, "movq `s0, (`s1,`s2)");
+                    //     emit(AS_Oper(String(inst), NULL, L(src, L(munchExp(left), L(munchExp(right), NULL))), NULL));
+                    // }
                 }
                 else
                 {
                     Temp_temp address = munchExp(addr);
-                    if (srcConst)
-                    {
-                        char inst[INSTLENGTH];
-                        sprintf(inst, "movq $%d, (`s0)", srcConstNum);
-                        emit(AS_Oper(String(inst), NULL, L(address, NULL), NULL));
-                    }
-                    else
-                    {
-                        emit(AS_Oper("movq `s0, (`s1)", NULL, L(src, L(address, NULL)), NULL));
-                    }
+                    emit(AS_Oper("movq `s0, (`s1)", NULL, L(src, L(address, NULL)), NULL));
+                    // if (srcConst)
+                    // {
+                    //     char inst[INSTLENGTH];
+                    //     sprintf(inst, "movq $%d, (`s0)", srcConstNum);
+                    //     emit(AS_Oper(String(inst), NULL, L(address, NULL), NULL));
+                    // }
+                    // else
+                    // {
+                    //     emit(AS_Oper("movq `s0, (`s1)", NULL, L(src, L(address, NULL)), NULL));
+                    // }
                 }
                 break;
             }
@@ -569,6 +575,7 @@ static void munchStm(T_stm s)
             }
             else
             {
+                Temp_temp src = munchExp(s->u.MOVE.src);
                 Temp_temp dstt = munchExp(dst);
                 printf("move src:");
                 printTempff(src);
@@ -629,7 +636,7 @@ AS_instrList F_codegen(F_frame f, T_stmList stmList)
         index++;
     }
 
-    Temp_tempList calleesaves = F_calleesaves;
+    Temp_tempList calleesaves = F_calleesaves();
     Temp_temp saveRbx = Temp_newtemp();
     Temp_temp saveRbp = Temp_newtemp();
     Temp_temp saveR12 = Temp_newtemp();
@@ -646,7 +653,7 @@ AS_instrList F_codegen(F_frame f, T_stmList stmList)
             emit(AS_Move("movq `s0, `d0", L(saveRbx, NULL), L(F_calleesavesIndex(index), NULL)));
             break;
         case 2:
-            // emit(AS_Move("movq `s0, `d0", L(saveRbp, NULL), L(F_calleesavesIndex(index), NULL)));
+            // +
             break;
         case 3:
             emit(AS_Move("movq `s0, `d0", L(saveR12, NULL), L(F_calleesavesIndex(index), NULL)));
