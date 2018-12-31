@@ -158,26 +158,39 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
 		AS_printInstrList(stdout,newIl,Temp_layerMap(F_tempMap,Temp_name()));
 		return RA_regAlloc(f, newIl);
 	}
-
+	printf("finish\n");
 	Temp_map allRegsMap = Temp_layerMap(F_tempMap, colorResult.coloring);
+	allRegsMap = Temp_layerMap(allRegsMap, Temp_name());
+	// AS_printInstrList(stdout, il, allRegsMap);
 	AS_instrList *instPointer = &il;
 	while(*instPointer)
 	{
+		printf("enter loop\n");
 		AS_instr inst = (*instPointer)->head;
+		//printf("lueluelue\n");
+		AS_print(stdout, inst, allRegsMap);
+		//printf("dfalskdjflskj\n");
 		if(inst->kind == I_MOVE && strstr(inst->u.MOVE.assem, "movq `s0, `d0"))
 		{
+			//printf("enter if exp\n");
 			Temp_temp src = inst->u.MOVE.src->head;
 			Temp_temp dst = inst->u.MOVE.dst->head;
-			//printf("src reg:%s, dst reg:%s\n", (char *)Temp_look(allRegsMap, src), (char *)Temp_look(allRegsMap, dst));
+			//printf("sdjf\n");
+			printf("src reg:%s, dst reg:%s\n", (char *)Temp_look(allRegsMap, src), (char *)Temp_look(allRegsMap, dst));
 			//printf("src reg:%s, dst reg:%s\n", (char *)Temp_look(Temp_name(), src), (char *)Temp_look(Temp_name(), dst));
-			strcmp((char *)Temp_look(allRegsMap, src), (char *)Temp_look(allRegsMap, dst));
-			if(strcmp((char *)Temp_look(allRegsMap, src), (char *)Temp_look(allRegsMap, dst)) == 0)
+			int result = strcmp(Temp_look(allRegsMap, src), Temp_look(allRegsMap, dst));
+			//printf("abcdefg\n");
+			if(result == 0)
 			{
+				//printf("sdfdsf\n");
 				*instPointer = (*instPointer)->tail;
+				//printf("finish loop\n");
 				continue;
 			}
 		}
+		//printf("askdjflskdjf\n");
 		instPointer = &((*instPointer)->tail);
+		printf("finish loop\n");
 	}
 
 	ret.coloring = colorResult.coloring;

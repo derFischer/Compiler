@@ -30,21 +30,22 @@ L8:
 L1:
 subq $L1_framesize, %rsp
 movq %rdi, -8(%rbp)
+movq %rbp, 0(%rsp)
 L12:
-movq $1, %rax
-movq $3, %r10
-cmpq %r10, %rsi
+movq $1, %r10
+movq $3, %rax
+cmpq %rax, %rsi
 jg L2
 L3:
-movq $0, %rax
+movq $0, %r10
 L2:
-movq $0, %r9
-cmpq %r9, %rax
+movq $0, %r11
+cmpq %r11, %r10
 jne L5
 L6:
-movq -8(%rbp), %r10
-addq $-16, %r10
-movq $4, (%r10)
+movq -8(%rbp), %rax
+addq $-16, %rax
+movq $4, (%rax)
 movq $0, %rax
 L7:
 jmp L11
@@ -53,6 +54,7 @@ leaq L4, %rdi
 call print
 jmp L7
 L11:
+movq 0(%rsp), %rbp
 addq $L1_framesize, %rsp
 ret
 

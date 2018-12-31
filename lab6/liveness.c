@@ -214,6 +214,15 @@ void printInst(G_node node)
 	AS_print(stdout, G_getInstr(node), Temp_layerMap(F_tempMap, Temp_name()));
 }
 
+bool isHardwareNode(G_node node)
+{
+	Temp_temp nodeTemp = G_getReg(node);
+	string n = Temp_look(F_tempMap, nodeTemp);
+	// printf("----------------is precolored--------------\n");
+	// printf("temp: %s\n", n);
+	return (n != NULL);
+}
+
 struct Live_graph Live_liveness(G_graph flow)
 {
 	printf("flow graph:");
@@ -233,39 +242,40 @@ struct Live_graph Live_liveness(G_graph flow)
 		fixPoint = TRUE;
 		while (nodes)
 		{
-			//printf("inner loop start\n");
 			G_node node = nodes->head;
-			//AS_print(stdout, G_getInstr(node), Temp_layerMap(F_tempMap, Temp_name()));
 			Temp_tempList oldIn = TAB_look(tempListIn, node);
 			Temp_tempList oldOut = TAB_look(tempListOut, node);
-			//printf("inner loop point 2\n");
 			FG_use(node);
-			//printf("inner loop point 4\n");
 			FG_def(node);
-			//printf("inner loop point 5\n");
-			//showTempList(FG_use(node));
-			//printf("inner loop point 6\n");
-			//showTempList(FG_def(node));
-			//printf("inner loop point 7\n");
-			//showTempList(oldOut);
 			Temp_tempList newIn = L_tempListUnion(FG_use(node), L_tempListMinus(oldOut, FG_def(node)));
-			//printf("fix point loop point 3\n");
 			Temp_tempList newOut = L_calSuccIn(node, tempListIn);
-			//printf("fix point loop point 1\n");
 			if (!sameTempList(oldIn, newIn) || !sameTempList(oldOut, newOut))
 			{
 				fixPoint = FALSE;
 			}
 			TAB_enter(tempListIn, node, newIn);
 			TAB_enter(tempListOut, node, newOut);
-			/****************************************/
-			// free(oldIn);
-			// free(oldOut);
-			/****************************************/
 			nodes = nodes->tail;
 		}
 	}
 
+	printf("------------------in out analysis---------------\n");
+	G_nodeList ana = G_nodes(flow);
+	while(ana)
+	{
+		G_node node = ana->head;
+		AS_print(stdout, G_getInstr(node), Temp_layerMap(F_tempMap, Temp_name()));
+		Temp_tempList in = TAB_look(tempListIn, node);
+		printf("in:");
+		showTempList(in);
+		printf("\n");
+		Temp_tempList out = TAB_look(tempListOut, node);
+		printf("out:");
+		showTempList(out);
+		printf("\n");
+		ana = ana->tail;
+	}
+	printf("------------------end out analysis-----------------\n");
 	//interference graph
 	//to do:判断重复
 	printf("start build interference\n");
@@ -405,6 +415,30 @@ struct Live_graph Live_liveness(G_graph flow)
 			}
 		}
 		nodes = nodes->tail;
+	}
+
+	G_nodeList interferenceNodes = G_nodes(interference);
+	G_nodeList precoloredNodes = NULL;
+	while(interferenceNodes)
+	{
+		G_node node = interferenceNodes->head;
+		if(isHardwareNode(node))
+		{
+			precoloredNodes = G_NodeList(node, precoloredNodes);
+		}
+		interferenceNodes = interferenceNodes->tail;
+	}
+
+	while(precoloredNodes)
+	{
+		G_node head = precoloredNodes->head;
+		G_nodeList tail = precoloredNodes->tail;
+		while(tail)
+		{
+			G_addEdgeNonDirection(head, tail->head);
+			tail = tail->tail;
+		}
+		precoloredNodes = precoloredNodes->tail;
 	}
 
 	printf("-------===========interference===========-------------\n");
