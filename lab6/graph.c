@@ -95,6 +95,13 @@ void G_addEdge(G_node from, G_node to)
   from->succs = G_NodeList(to, from->succs);
 }
 
+void printTemp21(Temp_temp temp)
+{
+	Temp_map map = Temp_layerMap(F_tempMap, Temp_name());
+	printf("temp %s\t", Temp_look(map, temp));
+	return;
+}
+
 void G_addEdgeNonDirection(G_node from, G_node to)
 {
   assert(from);
@@ -104,6 +111,13 @@ void G_addEdgeNonDirection(G_node from, G_node to)
     return;
   if (G_goesTo(from, to) || G_goesTo(to, from))
     return;
+  
+  printf("-------------add interfernce edge------------\n");
+  printf("node1:");
+  printTemp21(G_getReg(from));
+  printf("node2:");
+  printTemp21(G_getReg(to));
+  printf("\n");
   to->preds = G_NodeList(from, to->preds);
   from->succs = G_NodeList(to, from->succs);
 }

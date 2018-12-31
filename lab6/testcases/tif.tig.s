@@ -3,6 +3,7 @@
 .type L0, @function
 L0:
 subq $L0_framesize, %rsp
+movq %rdi, -8(%rbp)
 L6:
 movq %rbp, %rdi
 movq $4, %rsi
@@ -20,13 +21,14 @@ ret
 .type L1, @function
 L1:
 subq $L1_framesize, %rsp
+movq %rdi, -8(%rbp)
+movq %rsi, %rax
 L8:
-cmpq %rdx, %rsi
+cmpq %rdx, %rax
 jg L2
 L3:
-movq %rdx, %rsi
+movq %rdx, %rax
 L4:
-movq %rsi, %rax
 jmp L7
 L2:
 jmp L4

@@ -67,17 +67,17 @@ void showMoveList(Live_moveList list)
 
 void showTempList(Temp_tempList list)
 {
-	printf("enter show temp list\n");
+	//printf("enter show temp list\n");
 	Temp_map some_map = Temp_layerMap(F_tempMap, Temp_name());
-	printf("enter show temp list2\n");
+	//printf("enter show temp list2\n");
 	for (; list; list = list->tail)
 	{
-		printf("enter show temp list3\n");
+		//printf("enter show temp list3\n");
 		assert(list->head);
 		printf("%s, ", Temp_look(some_map, list->head));
 	}
-	printf("\n");
-	printf("exit show temp list\n");
+	//printf("\n");
+	//printf("exit show temp list\n");
 }
 
 

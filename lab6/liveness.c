@@ -211,8 +211,7 @@ void printFlowgraph(G_graph flow)
 
 void printInst(G_node node)
 {
-	AS_instr inst = G_getInstr(node);
-	printf("inst: %s\n", inst->u.MOVE.assem);
+	AS_print(stdout, G_getInstr(node), Temp_layerMap(F_tempMap, Temp_name()));
 }
 
 struct Live_graph Live_liveness(G_graph flow)
@@ -229,30 +228,30 @@ struct Live_graph Live_liveness(G_graph flow)
 	bool fixPoint = FALSE;
 	while (!fixPoint)
 	{
-		printf("outer loop start\n");
+		//printf("outer loop start\n");
 		nodes = G_nodes(flow);
 		fixPoint = TRUE;
 		while (nodes)
 		{
-			printf("inner loop start\n");
+			//printf("inner loop start\n");
 			G_node node = nodes->head;
-			AS_print(stdout, G_getInstr(node), Temp_layerMap(F_tempMap, Temp_name()));
+			//AS_print(stdout, G_getInstr(node), Temp_layerMap(F_tempMap, Temp_name()));
 			Temp_tempList oldIn = TAB_look(tempListIn, node);
 			Temp_tempList oldOut = TAB_look(tempListOut, node);
-			printf("inner loop point 2\n");
+			//printf("inner loop point 2\n");
 			FG_use(node);
-			printf("inner loop point 4\n");
+			//printf("inner loop point 4\n");
 			FG_def(node);
-			printf("inner loop point 5\n");
-			showTempList(FG_use(node));
-			printf("inner loop point 6\n");
-			showTempList(FG_def(node));
-			printf("inner loop point 7\n");
-			showTempList(oldOut);
+			//printf("inner loop point 5\n");
+			//showTempList(FG_use(node));
+			//printf("inner loop point 6\n");
+			//showTempList(FG_def(node));
+			//printf("inner loop point 7\n");
+			//showTempList(oldOut);
 			Temp_tempList newIn = L_tempListUnion(FG_use(node), L_tempListMinus(oldOut, FG_def(node)));
-			printf("fix point loop point 3\n");
+			//printf("fix point loop point 3\n");
 			Temp_tempList newOut = L_calSuccIn(node, tempListIn);
-			printf("fix point loop point 1\n");
+			//printf("fix point loop point 1\n");
 			if (!sameTempList(oldIn, newIn) || !sameTempList(oldOut, newOut))
 			{
 				fixPoint = FALSE;
