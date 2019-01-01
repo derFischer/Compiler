@@ -401,10 +401,10 @@ Tr_exp Tr_intCompExp(A_oper op, Tr_exp left, Tr_exp right)
 	return Tr_Cx(trues, falses, stm);
 }
 
-Tr_exp stringCompExp(A_oper op, Tr_exp left, Tr_exp right)
+Tr_exp Tr_stringCompExp(A_oper op, Tr_exp left, Tr_exp right)
 {
 	Tr_exp l = Tr_Ex(F_externalCall("stringEqual", T_ExpList(unEx(left), T_ExpList(unEx(right), NULL))));
-	Tr_exp r = Tr_Ex(T_Const(0));
+	Tr_exp r = Tr_Ex(T_Const(1));
 	return Tr_intCompExp(op, l, r);
 }
 
@@ -417,10 +417,6 @@ Tr_exp Tr_recordExp(int size, Tr_expList list)
 	T_exp exp = T_Temp(addr);
 	int i = 0;
 	assert(list);
-	if(list)
-	{
-		printf("????????\n");
-	}
 	for (; list; list = list->tail)
 	{
 		printf("record assign initial\n");

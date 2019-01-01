@@ -33,7 +33,7 @@ static Live_moveList frozenMoves = NULL;
 static Live_moveList worklistMoves = NULL;
 static Live_moveList activeMoves = NULL;
 
-const int regNum = 16;
+const int regNum = 14;
 const int MAX = 10000000;
 void printTemp233(Temp_temp temp);
 void printGnodeList(G_nodeList nodelist);

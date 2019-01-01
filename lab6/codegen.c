@@ -61,7 +61,7 @@ static Temp_temp opCode(string op, T_exp left, T_exp right)
     Temp_temp result = Temp_newtemp();
     AS_instr calOper;
     AS_instr prepareResult;
-    if (left->kind == T_CONST)
+    if (left->kind == T_CONST && !strstr(op, "subq"))
     {
         printf("opcode left kind const\n");
         printf("result:");

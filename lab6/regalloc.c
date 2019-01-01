@@ -215,6 +215,7 @@ struct RA_result RA_regAlloc(F_frame f, AS_instrList il) {
 	AS_printInstrList(stdout, il, allRegsMap);
 	printf("----------------------------------------\n");
 	ret.il = AS_rewrite(il, F_frameLength(f) * WORDSIZE);
+	//ret.il = il;
 	AS_printInstrList(stdout, il, allRegsMap);
 	return ret;
 }

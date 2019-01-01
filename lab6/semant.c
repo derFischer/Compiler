@@ -249,6 +249,10 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, Tr_level level, Temp_
 				EM_error(a->u.op.left->pos, "same type required");
 				return expTy(NULL, Ty_Int());
 			}
+			if(actual_ty(left.ty)->kind == Ty_string)
+			{
+				return expTy(Tr_stringCompExp(oper, left.exp, right.exp), Ty_Int());
+			}
 		}
 		else
 		{

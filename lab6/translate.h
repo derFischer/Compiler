@@ -90,6 +90,7 @@ Tr_exp Tr_forExp(Tr_access access, Tr_exp lo, Tr_exp hi, Tr_exp body, Temp_label
 Tr_exp Tr_breakExp(Temp_label label);
 Tr_exp Tr_arrayExp(Tr_exp size, Tr_exp init);
 Tr_exp Tr_externalCall(Temp_label fname, Tr_expList params, Tr_level caller, Tr_level callee);
+Tr_exp Tr_stringCompExp(A_oper op, Tr_exp left, Tr_exp right);
 
 void Tr_procEntryExit1(Tr_level level, Tr_exp body, Tr_accessList formals);
 F_fragList Tr_getResult(void);
