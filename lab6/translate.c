@@ -268,9 +268,9 @@ Tr_exp Tr_fieldVar(Tr_exp address, int offset)
 	return Tr_Ex(T_Mem(T_Binop(T_plus, T_Const(offset * WORDSIZE), unEx(address))));
 }
 
-Tr_exp Tr_subscriptVar(Tr_exp address, int offset)
+Tr_exp Tr_subscriptVar(Tr_exp address, Tr_exp offset)
 {
-	return Tr_fieldVar(address, offset);
+	return Tr_Ex(T_Mem(T_Binop(T_plus, T_Binop(T_mul, unEx(offset), T_Const(WORDSIZE)), unEx(address))));
 }
 
 Tr_exp Tr_nilExp()
@@ -309,11 +309,15 @@ Tr_exp Tr_externalCall(Temp_label fname, Tr_expList params, Tr_level caller, Tr_
 Tr_exp Tr_callExp(Temp_label fname, Tr_expList params, Tr_level caller, Tr_level callee)
 {
 	//EM_error(0, "tr call exp start\n");
-	T_expList args = NULL;
+	T_expList args = T_ExpList(NULL, NULL);
+	T_expList tmp = args;
 	for (; params; params = params->tail)
 	{
-		args = T_ExpList(unEx(params->head), args);
+		tmp->tail = T_ExpList(unEx(params->head), NULL);
+		tmp = tmp->tail;
+		//args = T_ExpList(unEx(params->head), args);
 	}
+	args = args->tail;
 	//EM_error(0, "tr call exp here111\n");
 	T_exp fp = T_Temp(F_FP());
 	callee = callee->parent;
@@ -323,7 +327,7 @@ Tr_exp Tr_callExp(Temp_label fname, Tr_expList params, Tr_level caller, Tr_level
 	}
 	while (callee != caller)
 	{
-		fp = T_Mem(T_Binop(T_plus, T_Const(WORDSIZE), fp));
+		fp = T_Mem(T_Binop(T_plus, T_Const(-WORDSIZE), fp));
 		caller = caller->parent;
 	}
 	//EM_error(0, "tr call exp here222\n");

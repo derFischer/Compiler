@@ -72,7 +72,7 @@ Tr_expList Tr_ExpList(Tr_exp head, Tr_expList tail);
 
 Tr_exp Tr_simpleVar(Tr_access access, Tr_level level);
 Tr_exp Tr_fieldVar(Tr_exp address, int offset);
-Tr_exp Tr_subscriptVar(Tr_exp address, int offset);
+Tr_exp Tr_subscriptVar(Tr_exp address, Tr_exp offset);
 
 Tr_exp Tr_nilExp();
 Tr_exp Tr_intExp(int intt);

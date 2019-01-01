@@ -111,7 +111,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v, Tr_level level, Temp_
 			EM_error(v->pos, "it is not an int type");
 			return expTy(NULL, Ty_Int());
 		}
-		return expTy(Tr_arrayExp(tmp.exp, t.exp), actual_ty(tmp.ty->u.array));
+		return expTy(Tr_subscriptVar(tmp.exp, t.exp), actual_ty(tmp.ty->u.array));
 	}
 	}
 }
