@@ -147,12 +147,9 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 	G_node prevNode = NULL;
 	Temp_labelList labelList = NULL;
 	waitStructList waitToFill = NULL;
-	// AS_printInstrList(stdout,il,Temp_layerMap(F_tempMap,Temp_name()));
-	printf("build flow graph\n");
 	while (il)
 	{
 		AS_instr inst = il->head;		
-		// printf("%s\n", inst->u.MOVE.assem);
 		switch (inst->kind)
 		{
 		case I_OPER:
@@ -170,7 +167,6 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 			}
 			if (inst->u.OPER.jumps)
 			{
-				//printf("YESSSSSSSSSSSSS");
 				waitToFill = WaitStructList(WaitStruct(inst->u.OPER.jumps, node), waitToFill);
 			}
 			break;
@@ -201,18 +197,14 @@ G_graph FG_AssemFlowGraph(AS_instrList il, F_frame f)
 		}
 		il = il->tail;
 	}
-	printf("fill the wait list\n");
 	while (waitToFill)
 	{
 		waitStruct tmp = waitToFill->head;
 		G_node node = tmp->node;
-		printf("inst:%s\n", G_getInstr(node)->u.MOVE.assem);
 		Temp_labelList labels = tmp->waitsLabel->labels;
-		printf("jump to:");
 		while (labels)
 		{
 			G_node dst = TAB_look(nodeLabel, labels->head);
-			printf("%s\n", G_getInstr(dst)->u.MOVE.assem);
 			G_addEdge(node, TAB_look(nodeLabel, labels->head));
 			labels = labels->tail;
 		}

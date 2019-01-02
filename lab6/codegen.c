@@ -24,16 +24,8 @@ Temp_tempList L(Temp_temp head, Temp_tempList tail)
     return Temp_TempList(head, tail);
 }
 
-void printTempff(Temp_temp temp)
-{
-    Temp_map map = Temp_layerMap(F_tempMap, Temp_name());
-    printf("temp %s\t", Temp_look(Temp_name(), temp));
-    return;
-}
-
 static void emit(AS_instr inst)
 {
-    printf("emit:%s\n", inst->u.MOVE.assem);
     if (last != NULL)
     {
         last->tail = AS_InstrList(inst, NULL);
@@ -41,7 +33,8 @@ static void emit(AS_instr inst)
     }
     else
     {
-        iList = last = AS_InstrList(inst, NULL);
+        last = AS_InstrList(inst, NULL);
+        iList = last;
     }
 }
 
@@ -102,7 +95,6 @@ static Temp_temp munchExp(T_exp e)
         }
         case T_mul:
         {
-            printf("--------------munch a multi exp---------------\n");
             oper = "imulq";
             break;
         }
@@ -156,22 +148,6 @@ static Temp_temp munchExp(T_exp e)
             emit(movRes);
             return result;
         }
-        /*else
-        {
-            if(e->u.BINOP.right->kind != T_CONST)
-            {
-                printf("v of for loop should add const 1 each time\n");
-                assert(0);
-            }
-            else
-            {
-                Temp_temp left = munchExp(e->u.BINOP.left);
-                char inst[INSTLENGTH];
-                sprintf(inst, "addq $%d, `s0", e->u.BINOP.right->u.CONST);
-                emit(AS_Oper(String(inst), Temp_TempList(left, NULL), Temp_TempList(left, NULL), NULL));
-                return left;
-            }
-        }*/
     }
     case T_MEM:
     {
