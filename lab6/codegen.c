@@ -256,15 +256,14 @@ int calArgsStackSpace(T_expList args)
         num++;
         args = args->tail;
     }
-    if (num > 6)
+    if(num > 6)
     {
-        num -= 6;
+        return num - 6;
     }
     else
     {
-        num = 0;
+        return 0;
     }
-    return num;
 }
 
 static Temp_tempList passArgs(T_expList args)
